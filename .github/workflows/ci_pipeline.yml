@@ -1,0 +1,31 @@
+name: CI/CD Pipeline
+
+on: [push]
+#  push:
+#    branches:
+#      - "**"
+#    tags:
+#      - "v*.*.*"
+#  pull_request:
+#    branches:
+#      - "main"
+
+jobs:
+  lint-and-test:
+    name: Run linter and tests
+    runs-on: [self-hosted, Linux]
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.12.7"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Linting
+        run: npm run lint
