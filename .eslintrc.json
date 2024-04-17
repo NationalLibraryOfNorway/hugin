@@ -1,3 +1,159 @@
 {
-  "extends": "next/core-web-vitals"
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended-type-checked",
+    "next/core-web-vitals"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": true,
+    "tsconfigRootDir": "__dirname"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "@stylistic"
+  ],
+  "rules": {
+    "@stylistic/arrow-parens": [
+      "error",
+      "as-needed"
+    ],
+    "@stylistic/comma-dangle": "off",
+    "@stylistic/indent": [
+      "error",
+      2,
+      {
+        "ObjectExpression": "first",
+        "FunctionDeclaration": {
+          "parameters": "first"
+        },
+        "FunctionExpression": {
+          "parameters": "first"
+        }
+      }
+    ],
+    "@stylistic/linebreak-style": [
+      "off",
+      "unix"
+    ],
+    "@stylistic/max-len": [
+      "error",
+      {
+        "code": 140
+      }
+    ],
+    "@stylistic/member-delimiter-style": [
+      "error",
+      {
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }
+    ],
+    "@stylistic/new-parens": "error",
+    "@stylistic/no-trailing-spaces": "error",
+    "@stylistic/quote-props": [
+      "error",
+      "as-needed"
+    ],
+    "@stylistic/quotes": [
+      "error",
+      "single"
+    ],
+    "@stylistic/semi": [
+      "error"
+    ],
+    "@stylistic/space-in-parens": [
+      "error",
+      "never"
+    ],
+    "@stylistic/spaced-comment": [
+      "error",
+      "always",
+      {
+        "markers": [
+          "/"
+        ]
+      }
+    ],
+    "@typescript-eslint/naming-convention": [
+      "error",
+      {
+        "selector": "property",
+        "format": ["camelCase"],
+        "filter": {
+          "regex": "[-]",
+          "match": false
+        }
+      }
+    ],
+
+    "@typescript-eslint/no-shadow": "error",
+    "@typescript-eslint/unified-signatures": "error",
+    "eqeqeq": [
+      "error",
+      "smart"
+    ],
+    "guard-for-in": "error",
+    "id-denylist": [
+      "error",
+      "any",
+      "Number",
+      "number",
+      "String",
+      "string",
+      "Boolean",
+      "boolean",
+      "Undefined",
+      "undefined"
+    ],
+    "id-match": "error",
+    "no-bitwise": "error",
+    "no-caller": "error",
+    "no-console": [
+      "error",
+      {
+        "allow": [
+          "assert",
+          "clear",
+          "Console",
+          "context",
+          "count",
+          "countReset",
+          "dir",
+          "dirxml",
+          "error",
+          "group",
+          "groupEnd",
+          "groupCollapsed",
+          "log",
+          "profile",
+          "profileEnd",
+          "table",
+          "timeLog",
+          "timeStamp",
+          "warn"
+        ]
+      }
+    ],
+    "no-eval": "error",
+    "no-new-wrappers": "error",
+    "no-restricted-imports": [
+      "error",
+      "rxjs/Rx"
+    ],
+    "no-throw-literal": "error",
+    "no-undef-init": "error",
+    "no-underscore-dangle": "error",
+    "no-var": "error",
+    "object-shorthand": "error",
+    "one-var": [
+      "error",
+      "never"
+    ],
+    "prefer-const": "error",
+    "radix": "error"
+  },
+  "root": true
 }
