@@ -12,7 +12,7 @@ on: [push]
 
 jobs:
   lint-and-test:
-    name: Run linter and tests
+    name: Run linter and tests (testing if the npm cache works as intended)
     runs-on: [self-hosted, Linux]
     steps:
       - name: Checkout the repository
