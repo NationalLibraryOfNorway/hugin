@@ -150,4 +150,3 @@ jobs:
           kubectl config view
           kubectl version
           kubectl apply -f k8s/stage
-          kubectl rollout restart deploy/bikube
