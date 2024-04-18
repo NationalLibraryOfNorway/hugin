@@ -1,7 +1,9 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hugin
+  namespace: tekst-stage
 spec:
   replicas: 1
   selector:
@@ -16,11 +18,11 @@ spec:
         - name: app
           image: harbor.nb.no/tekst/hugin:<version>
           ports:
-            - containerPort: 8000
+            - name: app-port
+              containerPort: 8000
           imagePullPolicy: Always
 
 ---
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -35,11 +37,11 @@ spec:
   type: ClusterIP
 
 ---
-
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: hugin-ingress
+  namespace: tekst-stage
 spec:
   rules:
     - host: <host_url>
