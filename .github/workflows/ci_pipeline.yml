@@ -33,12 +33,21 @@ jobs:
       - name: Linting
         run: npm run lint
 
+      - name: Build application
+        run: npm run build
+
       - name: Cache node_modules
         uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node_modules-${{ hashFiles('**/package-lock.json') }}
           restore-keys: ${{ runner.os }}-node_modules-
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: next-build
+          path: .next
 
   build-and-publish:
     name: Create and push Docker image
@@ -59,6 +68,11 @@ jobs:
         with:
           path: node_modules
           key: ${{ runner.os }}-node_modules-
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: next-build
 
       - name: Import secrets
         id: import-secrets
