@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +14,7 @@ spec:
         app: hugin
     spec:
       containers:
-        - name: app
+        - name: hugin
           image: harbor.nb.no/tekst/hugin:<version>
           ports:
             - name: app-port
@@ -23,6 +22,7 @@ spec:
           imagePullPolicy: Always
 
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -37,6 +37,7 @@ spec:
   type: ClusterIP
 
 ---
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
