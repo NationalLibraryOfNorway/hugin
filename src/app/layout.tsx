@@ -17,9 +17,11 @@ export default function RootLayout({
     <html lang="en" className="light">
       <body>
         <Providers>
-          <AppShell>
-            {children}
-          </AppShell>
+          <main>
+            <AppShell>
+              {children}
+            </AppShell>
+          </main>
         </Providers>
       </body>
     </html>

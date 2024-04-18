@@ -1,8 +1,5 @@
-'use client';
-
-import {Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from '@nextui-org/react';
 import React from 'react';
-import {Divider} from '@nextui-org/divider';
+import Header from '@/app/ui/Header';
 
 export default function AppShell({
   children,
@@ -10,24 +7,13 @@ export default function AppShell({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen flex flex-col">
-      <Navbar>
-        <NavbarBrand>
-          <p className="font-bold text-inherit">Hugin</p>
-        </NavbarBrand>
-        <NavbarContent justify="end">
-          <NavbarItem className="hidden lg:flex">
-            <Link href="#">Logg inn</Link>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
-      <Divider />
-      <main className="flex-grow text-center">
+    <div className="h-screen flex flex-col text-center">
+      <Header />
+      <div className="flex-grow h-screen">
         {children}
-      </main>
-      <Divider />
-      <footer className="text-center">
-        <p>Nasjonalbiblioteket &copy; 2024</p>
+      </div>
+      <footer className="py-3">
+        <p className="text-sm ">Nasjonalbiblioteket &copy; 2024</p>
       </footer>
     </div>
   );

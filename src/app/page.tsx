@@ -1,12 +1,9 @@
-import {Button} from '@nextui-org/button';
+import SearchBar from '@/app/ui/SearchBar';
 
 export default function Home() {
   return (
-    <main>
-      <div>
-        Frontpage
-        <Button>Klikk!</Button>
-      </div>
-    </main>
+    <div className="top-32 w-96">
+      <SearchBar />
+    </div>
   );
 }
