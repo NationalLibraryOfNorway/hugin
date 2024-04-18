@@ -110,8 +110,8 @@ jobs:
       - name: Deploy to stage cluster
         run: |
           echo "Deploying to stage version ${{ github.ref_name }}"
-          sed -i "s/<version>/${{ env.APP_VERSION }}/g" k8s/stage/hugin.yml
-          sed -i "s/<host_url>/${{ steps.import-secrets.outputs.K8S_HOST_URL }}/g" k8s/stage/hugin.yml
+          sed -i "s/<version>/${{ env.APP_VERSION }}/g" k8s/stage/deployment.yml
+          sed -i "s/<host_url>/${{ steps.import-secrets.outputs.K8S_HOST_URL }}/g" k8s/stage/ingress.yml
           kubectl config set-cluster stagecl --server=${{ steps.import-secrets.outputs.K8S_STAGE_SERVER }}
           kubectl config set clusters.stagecl.certificate-authority-data ${{ steps.import-secrets.outputs.K8S_STAGE_NB_NO_CA }}
           kubectl config set-credentials ${{ steps.import-secrets.outputs.K8S_STAGE_USER }} --token=${{ steps.import-secrets.outputs.K8S_STAGE_NB_NO_TOKEN }}
@@ -119,5 +119,5 @@ jobs:
           kubectl config use-context tekst
           kubectl config view
           kubectl version
-          kubectl apply -f k8s/stage/hugin.yml
+          kubectl apply -f k8s/stage
           kubectl rollout restart deploy/bikube
