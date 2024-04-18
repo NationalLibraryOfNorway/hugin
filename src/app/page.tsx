@@ -1,10 +1,11 @@
-import styles from './page.module.css';
+import {Button} from '@nextui-org/button';
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
+    <main>
+      <div>
         Frontpage
+        <Button>Klikk!</Button>
       </div>
     </main>
   );
