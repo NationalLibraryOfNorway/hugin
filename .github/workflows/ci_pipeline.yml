@@ -82,7 +82,7 @@ jobs:
           file: Dockerfile
 
   deploy-to-stage:
-    name: [STAGE] Deploy to kubernetes
+    name: Deploy stage environment
     needs: build-and-publish
     runs-on: [self-hosted, Linux]
     # if: github.ref == 'refs/heads/main'
