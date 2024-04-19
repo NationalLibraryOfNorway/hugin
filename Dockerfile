@@ -1,6 +1,12 @@
 FROM node:20-alpine AS base
 
 FROM base AS deps
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
