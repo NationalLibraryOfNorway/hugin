@@ -20,5 +20,5 @@ spec:
           image: harbor.nb.no/tekst/hugin:<version>
           ports:
             - name: app-port
-              containerPort: 8000
+              containerPort: 3000
           imagePullPolicy: Always

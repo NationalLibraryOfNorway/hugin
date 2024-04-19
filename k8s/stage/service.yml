@@ -4,9 +4,9 @@ metadata:
   name: hugin-service
 spec:
   ports:
-    - port: 8000
+    - port: 80
       name: http
-      targetPort: 8000
+      targetPort: 3000
   selector:
     app: hugin
   type: ClusterIP
