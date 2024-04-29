@@ -1,28 +1,39 @@
 'use client';
 
 import {Autocomplete, AutocompleteItem} from '@nextui-org/autocomplete';
+import {useAsyncList} from '@react-stately/data';
+import {useRouter} from 'next/navigation';
+import {Key} from 'react';
 
-const testData = [
-  {id: 1, name: 'Rana Blad'},
-  {id: 2, name: 'Avisa Nordland'},
-  {id: 3, name: 'Nordlys'},
-  {id: 4, name: 'Finnmark Dagblad'},
-  {id: 5, name: 'Fædrelandsvennen'},
-  {id: 6, name: 'Stavanger Aftenblad'},
-  {id: 7, name: 'Bergens Tidende'},
-  {id: 8, name: 'Aftenposten'},
-  {id: 9, name: 'Dagens Næringsliv'},
-  {id: 10, name: 'Klassekampen'},
-];
 export default function SearchBar() {
+  const router = useRouter();
+
+  const titles = useAsyncList({
+    async load({signal, filterText}) {
+      const response = await fetch(`/api/title/search?searchTerm=${filterText}&materialType=NEWSPAPER`, {signal});
+      const data = await response.json() as Title[];
+      return {
+        items: data.map(title => ({id: title.catalogueId, name: title.name})),
+      };
+    }
+  });
+
+  const onSelectionChange = (key: Key) => {
+    router.push(`/${key.toString()}`);
+  };
+
   return (
     <Autocomplete
-      defaultItems={testData}
+      inputValue={titles.filterText}
+      isLoading={titles.isLoading}
+      items={titles.items}
       size="lg"
       variant="bordered"
       label="Søk etter avistittel"
+      onSelectionChange={$key => onSelectionChange($key)}
+      onInputChange={titles.setFilterText}
     >
-      {item => <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>}
+      {item => <AutocompleteItem key={item.id} textValue={item.name}>{item.name}</AutocompleteItem>}
     </Autocomplete>
   );
 }

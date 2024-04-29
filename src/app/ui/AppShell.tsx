@@ -9,7 +9,7 @@ export default function AppShell({
   return (
     <div className="h-screen flex flex-col text-center">
       <Header />
-      <div className="flex-grow h-screen">
+      <div className="flex-grow h-screen flex justify-center pt-10">
         {children}
       </div>
       <footer className="py-3">

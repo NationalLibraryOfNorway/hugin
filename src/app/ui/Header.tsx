@@ -8,14 +8,12 @@ export default function Header() {
   return (
     <Navbar>
       <NavbarBrand>
-        <p className="font-bold text-inherit">Hugin</p>
+        <Link className="font-bold text-inherit" href="/">Hugin</Link>
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
           <Button
             as={Link}
-            href=""
-            showAnchorIcon
             variant="light"
             color="primary"
           >Logg inn</Button>
