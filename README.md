@@ -8,10 +8,10 @@ For å kjøre lokalt må du sette de nødvendige miljøvariablene:
 cp .env.example .env.local
 ```
 
-| Variabelnavn       | Standardverdi                | Beskrivelse                                                                 |
-|--------------------|------------------------------|-----------------------------------------------------------------------------|
-| BASE_PATH          | /hugin                       | Base path for applikasjonen                                                 |
-| CATALOGUE_API_PATH | http://localhost:8087/bikube | Sti til [katalog APIet ](https://github.com/NationalLibraryOfNorway/bikube) |
+| Variabelnavn       | Standardverdi                | Beskrivelse                                                                                                          |
+|--------------------|------------------------------|----------------------------------------------------------------------------------------------------------------------|
+| BASE_PATH          | /hugin                       | Base path for applikasjonen                                                                                          |
+| CATALOGUE_API_PATH | http://localhost:8087/bikube | Sti til [katalog APIet ](https://github.com/NationalLibraryOfNorway/bikube)<br/>Må starte med http:// eller https:// |
 
 
 Deretter kan du kjøre følgende kommandoer:

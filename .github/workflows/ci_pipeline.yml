@@ -17,6 +17,7 @@ jobs:
   lint-and-test:
     name: Run linter and tests
     runs-on: [self-hosted-linux]
+    environment: development
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -26,6 +27,10 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
+
+      - name: Set env variables
+        run: |
+          echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_API_PATH }}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: npm install
