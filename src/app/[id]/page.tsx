@@ -1,14 +1,14 @@
 'use client';
 
 import {useEffect, useState} from 'react';
+import {fetchNewspaperTitle} from '@/services/data';
+import {Title} from '@/models/Title';
 
 export default function Page({ params }: { params: { id: string } }) {
   const [title, setTitle] = useState<Title>();
 
   useEffect(() => {
-    void fetch(`/api/title?catalogueId=${params.id}&materialType=NEWSPAPER`)
-      .then(response => response.json())
-      .then((data: Title) => setTitle(data));
+    void fetchNewspaperTitle(params.id).then((data: Title) => setTitle(data));
   }, [params]);
 
   return (

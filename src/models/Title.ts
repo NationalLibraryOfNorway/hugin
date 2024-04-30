@@ -1,4 +1,4 @@
-interface Title {
+export interface Title {
   catalogueId: string;
   name: string;
   startDate: string; // Could be Date
