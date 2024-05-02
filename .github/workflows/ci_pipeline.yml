@@ -35,10 +35,10 @@ jobs:
 
       - name: Set environment variables based on ref
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_STAGE_API_PATH }}" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_PROD_API_PATH }}" >> $GITHUB_ENV
+          else
+            echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_STAGE_API_PATH }}" >> $GITHUB_ENV
           fi
 
       - name: Build application
