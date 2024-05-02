@@ -17,7 +17,6 @@ jobs:
   lint-and-test:
     name: Run linter and tests
     runs-on: [self-hosted-linux]
-    environment: development
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -28,15 +27,19 @@ jobs:
           node-version: "20"
           cache: "npm"
 
-      - name: Set env variables
-        run: |
-          echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_API_PATH }}" >> $GITHUB_ENV
-
       - name: Install dependencies
         run: npm install
 
       - name: Linting
         run: npm run lint
+
+      - name: Set environment variables based on ref
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_STAGE_API_PATH }}" >> $GITHUB_ENV
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_PROD_API_PATH }}" >> $GITHUB_ENV
+          fi
 
       - name: Build application
         run: npm run build
@@ -94,6 +97,7 @@ jobs:
           build-args: |
             HTTP_PROXY=${{ secrets.HTTP_PROXY }}
             HTTPS_PROXY=${{ secrets.HTTPS_PROXY }}
+            CATALOGUE_API_PATH=${{ env.CATALOGUE_API_PATH }}
             SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
