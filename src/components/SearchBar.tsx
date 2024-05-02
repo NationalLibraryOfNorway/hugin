@@ -43,15 +43,16 @@ export default function SearchBar() {
       listboxProps={{
         hideEmptyContent: true
       }}
+      allowsEmptyCollection={false}
+      onKeyDown={e => {
+        if ('continuePropagation' in e) {
+          e.continuePropagation();
+        }
+      }}
     >
       {(title: Title) =>
         <AutocompleteItem key={title.catalogueId} textValue={title.name}>
-          <div className="flex gap-2 items-center">
-            <div className="flex flex-col">
-              <span className="text-small">{title.name}</span>
-              <span className="text-tiny text-default-400">{title.publisher}</span>
-            </div>
-          </div>
+          {title.name}
         </AutocompleteItem>}
     </Autocomplete>
   );
