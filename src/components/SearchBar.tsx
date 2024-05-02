@@ -34,7 +34,6 @@ export default function SearchBar() {
       inputValue={titles.filterText}
       isLoading={titles.isLoading}
       items={titles.items as Title[]}
-      size="lg"
       variant="bordered"
       label="Søk etter avistittel"
       onSelectionChange={key => onSelectionChange(key)}
