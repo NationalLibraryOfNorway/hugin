@@ -1,7 +1,7 @@
 export interface Title {
   catalogueId: string;
   name: string;
-  startDate: string; // Could be Date
+  startDate?: string;
   endDate?: string;
   publisher?: string;
   publisherPlace?: string;

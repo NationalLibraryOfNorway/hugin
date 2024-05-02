@@ -22,13 +22,14 @@ export default function SearchBar() {
     }
   });
 
-  const onSelectionChange = (key: Key) => {
-    router.push(`/${key.toString()}`);
+  const onSelectionChange = (key: Key | null) => {
+    key && router.push(`/${key.toString()}`);
   };
 
   return (
     <Autocomplete
       autoFocus={true}
+      menuTrigger="focus"
       radius="full"
       inputValue={titles.filterText}
       isLoading={titles.isLoading}
@@ -39,15 +40,19 @@ export default function SearchBar() {
       onSelectionChange={key => onSelectionChange(key)}
       onInputChange={value => titles.setFilterText(value)}
       selectorIcon={null}
+      listboxProps={{
+        hideEmptyContent: true
+      }}
     >
-      {(title: Title) => <AutocompleteItem key={title.catalogueId} textValue={title.name}>
-        <div className="flex gap-2 items-center">
-          <div className="flex flex-col">
-            <span className="text-small">{title.name}</span>
-            <span className="text-tiny text-default-400">{title.startDate}</span>
+      {(title: Title) =>
+        <AutocompleteItem key={title.catalogueId} textValue={title.name}>
+          <div className="flex gap-2 items-center">
+            <div className="flex flex-col">
+              <span className="text-small">{title.name}</span>
+              <span className="text-tiny text-default-400">{title.publisher}</span>
+            </div>
           </div>
-        </div>
-      </AutocompleteItem>}
+        </AutocompleteItem>}
     </Autocomplete>
   );
 }
