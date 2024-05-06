@@ -3,7 +3,11 @@ import {withSentryConfig} from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
-    basePath: "/hugin"
+    basePath: "/hugin",
+    sentry: {
+        disableServerWebpackPlugin: true,
+        disableClientWebpackPlugin: true,
+    },
 };
 
 export default withSentryConfig(nextConfig, {
