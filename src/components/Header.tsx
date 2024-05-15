@@ -11,7 +11,7 @@ export default function Header() {
   return (
     <Navbar>
       <NavbarBrand>
-        <Link color="foreground" className="font-bold text-inherit" onClick={() => router.push('/')}>Hugin</Link>
+        <Link color="foreground" className="font-bold text-inherit hover:cursor-pointer" onClick={() => router.push('/')}>Hugin</Link>
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
