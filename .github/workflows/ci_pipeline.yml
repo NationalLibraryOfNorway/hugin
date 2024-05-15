@@ -16,7 +16,7 @@ env:
 jobs:
   lint-and-test:
     name: Run linter and tests
-    runs-on: [self-hosted]
+    runs-on: [self-hosted-linux]
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -40,7 +40,7 @@ jobs:
     name: Create and push Docker image
     needs: lint-and-test
     if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
-    runs-on: [self-hosted]
+    runs-on: [self-hosted-linux]
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
@@ -97,7 +97,7 @@ jobs:
   deploy-to-stage:
     name: Deploy stage environment
     needs: build-and-publish
-    runs-on: [self-hosted]
+    runs-on: [self-hosted-linux]
     if: github.ref == 'refs/heads/main'
     environment: stage
     steps:
