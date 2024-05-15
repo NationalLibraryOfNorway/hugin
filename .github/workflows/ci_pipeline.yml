@@ -102,6 +102,7 @@ jobs:
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}
             SENTRY_URL=${{ secrets.SENTRY_URL }}
+            CATALOGUE_API_PATH=${{ env.CATALOGUE_API_PATH }}
 
   deploy-to-stage:
     name: Deploy stage environment
