@@ -33,6 +33,14 @@ jobs:
       - name: Linting
         run: npm run lint
 
+      - name: Set environment variables based on ref
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_PROD_API_PATH }}" >> $GITHUB_ENV
+          else
+            echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_STAGE_API_PATH }}" >> $GITHUB_ENV
+          fi
+
       - name: Build application
         run: npm run build
 
@@ -89,6 +97,7 @@ jobs:
           build-args: |
             HTTP_PROXY=${{ secrets.HTTP_PROXY }}
             HTTPS_PROXY=${{ secrets.HTTPS_PROXY }}
+            CATALOGUE_API_PATH=${{ env.CATALOGUE_API_PATH }}
             SENTRY_DSN=${{ secrets.SENTRY_DSN }}
             SENTRY_ORG=${{ secrets.SENTRY_ORG }}
             SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}

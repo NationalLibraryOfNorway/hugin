@@ -2,7 +2,16 @@ import {withSentryConfig} from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "standalone",
-    basePath: "/hugin",
+    basePath: process.env.BASE_PATH,
+    async rewrites() {
+        return [
+            {
+                source: '/api/:path*',
+                destination: `${process.env.CATALOGUE_API_PATH}/:path*`,
+                basePath: false
+            },
+        ];
+    }
 };
 
 export default withSentryConfig(nextConfig, {

@@ -1,11 +1,11 @@
-import styles from './page.module.css';
+import SearchBar from '@/components/SearchBar';
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        Frontpage
-      </div>
-    </main>
+    <div className="w-96 flex flex-col items-center justify-start">
+      <Image className="m-5" src="/hugin/hugin.svg" alt="Hugin logo" width={128} height={128}/>
+      <SearchBar />
+    </div>
   );
 }
