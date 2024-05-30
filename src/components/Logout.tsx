@@ -1,14 +1,17 @@
 'use client';
 
 import federatedLogout from '@/utils/federatedLogout';
+import {Button} from '@nextui-org/button';
 
 export default function Logout() {
 
   return (
-    <button
-      type="button"
-      onClick={() => void federatedLogout()}>
-        Logg ut
-    </button>
+    <Button
+      onClick={() => void federatedLogout()}
+      variant="bordered"
+      color="primary"
+    >
+      Logg ut
+    </Button>
   );
 }

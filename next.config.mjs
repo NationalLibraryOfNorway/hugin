@@ -3,15 +3,10 @@ import {withSentryConfig} from "@sentry/nextjs";
 const nextConfig = {
     output: "standalone",
     basePath: process.env.NEXT_PUBLIC_BASE_PATH,
-    env: {
-        NEXTAUTH_URL: process.env.NEXTAUTH_URL,
-        KEYCLOAK_ISSUER: process.env.KEYCLOAK_ISSUER,
-        APP_URL: process.env.APP_URL,
-    },
     async rewrites() {
         return [
             {
-                source: `${process.env.NEXT_PUBLIC_BASE_PATH}/api/:path*`,
+                source: `${process.env.NEXT_PUBLIC_BASE_PATH}/api/catalogue/:path*`,
                 destination: `${process.env.CATALOGUE_API_PATH}/:path*`,
                 basePath: false
             },
