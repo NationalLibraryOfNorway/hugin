@@ -2,12 +2,15 @@
 
 import {Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from '@nextui-org/react';
 import React from 'react';
-import {Button} from '@nextui-org/button';
 import {usePathname, useRouter} from 'next/navigation';
 import SearchBar from '@/components/SearchBar';
 import Image from 'next/image';
 
-export default function Header() {
+export default function Header({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   const router = useRouter();
 
   const pathname = usePathname() || '';
@@ -32,15 +35,8 @@ export default function Header() {
         </NavbarItem>
       </NavbarContent> }
       <NavbarContent justify="end">
-        <NavbarItem className="lg:flex">
-          <Button
-            as={Link}
-            variant="light"
-            color="primary"
-            className="edit-button-style"
-          >
-              Logg inn
-          </Button>
+        <NavbarItem className="hidden lg:flex">
+          {children}
         </NavbarItem>
       </NavbarContent>
     </Navbar>
