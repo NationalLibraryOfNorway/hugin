@@ -15,13 +15,13 @@ function handleEmptyToken() {
   return NextResponse.json(response, responseHeaders);
 }
 
-function sendEndSessionEndpointToURL(token: JWT) {
-  const endSessionEndPoint = new URL(
+function endKeycloakSession(token: JWT) {
+  const keycloakLogoutURL = new URL(
     `${process.env.KEYCLOAK_ISSUER}/protocol/openid-connect/logout`
   );
   const params: Record<string, string> = logoutParams(token);
   const endSessionParams = new URLSearchParams(params);
-  const response = { url: `${endSessionEndPoint.href}/?${endSessionParams.toString()}` };
+  const response = { url: `${keycloakLogoutURL.href}/?${endSessionParams.toString()}` };
   return NextResponse.json(response);
 }
 
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   try {
     const token = await getToken({ req });
     if (token) {
-      return sendEndSessionEndpointToURL(token);
+      return endKeycloakSession(token);
     }
     return handleEmptyToken();
   } catch (error) {
