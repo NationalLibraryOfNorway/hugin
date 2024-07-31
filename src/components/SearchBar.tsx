@@ -4,8 +4,8 @@ import {Autocomplete, AutocompleteItem} from '@nextui-org/autocomplete';
 import {useAsyncList} from '@react-stately/data';
 import {useRouter} from 'next/navigation';
 import {Key} from 'react';
-import {searchNewspaperTitles} from '@/services/data';
-import {Title} from '@/models/Title';
+import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
+import {CatalogTitle} from '@/models/CatalogTitle';
 
 export default function SearchBar() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function SearchBar() {
       if (!filterText) {
         return {items: []};
       }
-      const data = await searchNewspaperTitles(filterText, signal);
+      const data = await searchNewspaperTitlesInCatalog(filterText, signal);
       return {
         items: data.map(title => ({id: title.catalogueId, name: title.name})),
       };
@@ -33,7 +33,7 @@ export default function SearchBar() {
       radius="full"
       inputValue={titles.filterText}
       isLoading={titles.isLoading}
-      items={titles.items as Title[]}
+      items={titles.items as CatalogTitle[]}
       variant="bordered"
       label="Søk etter avistittel"
       onSelectionChange={key => onSelectionChange(key)}
@@ -49,7 +49,7 @@ export default function SearchBar() {
         }
       }}
     >
-      {(title: Title) =>
+      {(title: CatalogTitle) =>
         <AutocompleteItem key={title.catalogueId} textValue={title.name}>
           {title.name}
         </AutocompleteItem>}

@@ -1,26 +1,74 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import {fetchNewspaperTitle} from '@/services/data';
-import {Title} from '@/models/Title';
+import React, {useEffect, useState} from 'react';
+import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
+import {CatalogTitle} from '@/models/CatalogTitle';
+import {getLocalTitle} from '@/services/local.data';
+import {title} from '@prisma/client';
+import {useRouter} from 'next/navigation';
 
-export default function Page({ params }: { params: { id: string } }) {
-  const [title, setTitle] = useState<Title>();
+export default function Page({params}: { params: { id: string } }) {
+  const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
+  const [localTitle, setLocalTitle] = useState<title>();
+  const router = useRouter();
 
   useEffect(() => {
-    void fetchNewspaperTitle(params.id).then((data: Title) => setTitle(data));
+    void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setCatalogTitle(data));
+  }, [params]);
+
+  useEffect(() => {
+    void getLocalTitle(params.id).then((data: title) => setLocalTitle(data));
   }, [params]);
 
   return (
     <div>
-      {title ? (
+      {catalogTitle ? (
         <div>
-          <h1>{title.name}</h1>
-          <p>{title.catalogueId}</p>
+          <h1 className="text-2xl font-bold mb-4">{catalogTitle.name}</h1>
         </div>
       ) : (
-        <div>Loading...</div>
+        <div className="mb-4">Henter tittel ...</div>
       )}
+
+      <p className="mb-4">Serie-ID: {params.id}</p>
+
+      {localTitle ? (
+        <div>
+          {localTitle.vendor && <p>Avleverer: {localTitle.vendor}</p>}
+          {localTitle.contact_name && <p>Kontaktperson: {localTitle.contact_name}</p>}
+          {localTitle.contact_email && <p>E-post: {localTitle.contact_email}</p>}
+          {localTitle.contact_phone && <p>Telefon: {localTitle.contact_phone}</p>}
+
+          <br></br>
+
+          {localTitle.last_box && <p>Eske til registrering: {localTitle.last_box}</p>}
+
+          <br></br>
+
+          {localTitle.release_pattern &&
+                <>
+                  <p>Utgivelsesmønster:</p>
+                  <p>Mandag: {localTitle.release_pattern[0]}</p>
+                  <p>Tirsdag: {localTitle.release_pattern[1]}</p>
+                  <p>Onsdag: {localTitle.release_pattern[2]}</p>
+                  <p>Torsdag: {localTitle.release_pattern[3]}</p>
+                  <p>Fredag: {localTitle.release_pattern[4]}</p>
+                  <p>Lørdag: {localTitle.release_pattern[5]}</p>
+                  <p>Søndag: {localTitle.release_pattern[6]}</p>
+                </>
+          }
+
+          <button
+            type="button"
+            className="bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-5"
+            onClick={() => router.push(`/${params.id}/edit`)}
+          >
+              Rediger
+          </button>
+
+        </div>
+      ) : (<p> Henter lokal informasjon... </p>)
+      }
     </div>
   );
 }
