@@ -21,8 +21,10 @@ export default async function handle(
 // GET api/title/[id]
 async function handleGET(titleId: string, res: NextApiResponse) {
   const id: number = +titleId;
-  const title = await prisma.title.findUnique({
+  const title = await prisma.title.findUniqueOrThrow({
     where: { id }
+  }).catch(e => {
+    return res.status(404).json({error: `Failed to find title: ${e}`});
   });
 
   return res.status(200).json(title);

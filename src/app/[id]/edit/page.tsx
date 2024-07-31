@@ -20,7 +20,24 @@ export default function Page({params}: { params: { id: string } }) {
   }, [params]);
 
   useEffect(() => {
-    void getLocalTitle(params.id).then((data: title) => setLocalTitle(data));
+    void getLocalTitle(params.id)
+      .then((data: title) => setLocalTitle(data))
+      .catch((e: string) => {
+        if (e.toLowerCase().includes('not found')) {
+          setLocalTitle({
+            id: +params.id,
+            vendor: '',
+            /* eslint-disable @typescript-eslint/naming-convention */
+            contact_name: '',
+            contact_email: '',
+            contact_phone: '',
+            release_pattern: [0, 0, 0, 0, 0, 0, 0],
+            /* eslint-enable @typescript-eslint/naming-convention */
+          } as title);
+        } else {
+          alert('Noe gikk galt ved henting av tittelinformasjon. Kontakt tekst-teamet om problemet vedvarer.');
+        }
+      });
   }, [params]);
 
   function showSavedMessage() {

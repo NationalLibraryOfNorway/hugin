@@ -11,13 +11,26 @@ export default function Page({params}: { params: { id: string } }) {
   const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
   const [localTitle, setLocalTitle] = useState<title>();
   const router = useRouter();
+  const [localTitleNotFound, setLocalTitleNotFound] = useState<boolean>(false);
 
   useEffect(() => {
     void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setCatalogTitle(data));
   }, [params]);
 
   useEffect(() => {
-    void getLocalTitle(params.id).then((data: title) => setLocalTitle(data));
+    void getLocalTitle(params.id)
+      .then((data: title) => {
+        setLocalTitle(data);
+        setLocalTitleNotFound(false);
+      })
+      .catch((e: string) => {
+        setLocalTitle(undefined);
+        if (e.toLowerCase().includes('not found')) {
+          setLocalTitleNotFound(true);
+        } else {
+          alert('Kunne ikke se etter kontakt- og utgivelsesinformasjon. Kontakt tekst-teamet om problemet vedvarer.');
+        }
+      });
   }, [params]);
 
   return (
@@ -67,7 +80,24 @@ export default function Page({params}: { params: { id: string } }) {
           </button>
 
         </div>
-      ) : (<p> Henter lokal informasjon... </p>)
+      ) : (
+        <>
+          { !localTitleNotFound && <p> Henter kontakt- og utgivelsesinformasjon... </p> }
+        </>
+      )
+      }
+
+      {localTitleNotFound &&
+          <>
+            <p className="mt-10">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å legge til? </p>
+            <button
+              type="button"
+              className="bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded mt-5"
+              onClick={() => router.push(`/${params.id}/edit`)}
+            >
+              Legg til informasjon
+            </button>
+          </>
       }
     </div>
   );
