@@ -14,7 +14,7 @@ export async function getLocalTitle(id: string): Promise<title> {
 }
 
 export async function postLocalTitle(localTitle: title): Promise<Response> {
-  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title`, {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${localTitle.id}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
