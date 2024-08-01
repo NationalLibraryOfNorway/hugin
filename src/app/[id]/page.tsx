@@ -6,6 +6,7 @@ import {CatalogTitle} from '@/models/CatalogTitle';
 import {getLocalTitle} from '@/services/local.data';
 import {title} from '@prisma/client';
 import {useRouter} from 'next/navigation';
+import { NotFoundError } from '@/models/Errors';
 
 export default function Page({params}: { params: { id: string } }) {
   const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
@@ -23,9 +24,9 @@ export default function Page({params}: { params: { id: string } }) {
         setLocalTitle(data);
         setLocalTitleNotFound(false);
       })
-      .catch((e: string) => {
+      .catch((e: Error) => {
         setLocalTitle(undefined);
-        if (e.toLowerCase().includes('not found')) {
+        if (e instanceof NotFoundError) {
           setLocalTitleNotFound(true);
         } else {
           alert('Kunne ikke se etter kontakt- og utgivelsesinformasjon. Kontakt tekst-teamet om problemet vedvarer.');

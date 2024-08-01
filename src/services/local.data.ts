@@ -1,3 +1,4 @@
+import { NotFoundError } from '@/models/Errors';
 import { title } from '@prisma/client';
 
 export async function getLocalTitle(id: string): Promise<title> {
@@ -7,9 +8,9 @@ export async function getLocalTitle(id: string): Promise<title> {
   case 200:
     return await response.json() as Promise<title>;
   case 404:
-    return Promise.reject('Title not found');
+    return Promise.reject(new NotFoundError('Title not found'));
   default:
-    return Promise.reject('Failed to fetch title');
+    return Promise.reject(new Error('Failed to fetch title'));
   }
 }
 

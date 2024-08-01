@@ -8,6 +8,7 @@ import {CatalogTitle} from '@/models/CatalogTitle';
 import {Field, Form, Formik} from 'formik';
 import {useRouter} from 'next/navigation';
 import {Button} from '@nextui-org/button';
+import { NotFoundError } from '@/models/Errors';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -22,8 +23,8 @@ export default function Page({params}: { params: { id: string } }) {
   useEffect(() => {
     void getLocalTitle(params.id)
       .then((data: title) => setLocalTitle(data))
-      .catch((e: string) => {
-        if (e.toLowerCase().includes('not found')) {
+      .catch((e: Error) => {
+        if (e instanceof NotFoundError) {
           setLocalTitle({
             id: +params.id,
             vendor: '',

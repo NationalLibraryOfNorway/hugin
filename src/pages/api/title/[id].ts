@@ -40,7 +40,7 @@ async function handlePOST(localTitle: title, res: NextApiResponse) {
     update: { ...localTitle },
     create: { ...localTitle },
   }).catch(e => {
-    throw new Error(`Failed to create or update title: ${e}`);
+    return res.status(500).json({error: `Failed to create or update title: ${e}`});
   });
 
   return res.status(200).json(localTitle);
