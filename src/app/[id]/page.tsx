@@ -53,32 +53,26 @@ export default function Page({params}: { params: { id: string } }) {
       {localTitle ? (
         <div className="flex flex-col">
           {localTitle.last_box ? (
-            <div className="flex flex-row items-center">
+            <div className="flex flex-row items-center mb-2">
               <p className="text-lg font-bold" >Eske til registrering: </p>
               <p className="text-lg ml-2">{localTitle.last_box}</p>
-
-              <Button
-                endContent={<FaBoxOpen/>}
-                className="ml-3 font-bold"
-                size={'lg'}
-              >
-                Ny eske
-              </Button>
-
             </div>
-          ) : (
-            <Button
-              endContent={<FaBoxOpen/>}
-              size={'lg'}
-              className="font-bold"
-              // TODO Add form for barcode (?) and/or link to box creation here (related to TT-1559)
-            >
-              Legg til eske
-            </Button>
-          )
+          ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
           }
 
+          <Button
+            endContent={<FaBoxOpen size={25}/>}
+            size={'lg'}
+            className="font-bold text-lg"
+            // TODO Add form for barcode (?) and/or link to box creation here (related to TT-1559)
+          >
+            Ny eske
+          </Button>
+
           <br></br>
+          <br></br>
+
+          <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 
           {localTitle.vendor &&
             <div className="self-start flex flex-row">
@@ -157,8 +151,8 @@ export default function Page({params}: { params: { id: string } }) {
           <Button
             type="button"
             size="lg"
-            className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4"
-            endContent={<FaEdit/>}
+            className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4 text-lg"
+            endContent={<FaEdit size={25}/>}
             onClick={() => router.push(`/${params.id}/edit`)}
           >
               Rediger
