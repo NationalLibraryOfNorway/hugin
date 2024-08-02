@@ -11,7 +11,13 @@ export default function Header() {
   return (
     <Navbar>
       <NavbarBrand>
-        <Link color="foreground" className="font-bold text-inherit hover:cursor-pointer" onClick={() => router.push('/')}>Hugin</Link>
+        <Link
+          color="foreground"
+          className="font-bold text-2xl hover:cursor-pointer"
+          onClick={() => router.push('/')}
+        >
+            Hugin
+        </Link>
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
@@ -19,7 +25,10 @@ export default function Header() {
             as={Link}
             variant="light"
             color="primary"
-          >Logg inn</Button>
+            className="text-base"
+          >
+              Logg inn
+          </Button>
         </NavbarItem>
       </NavbarContent>
     </Navbar>
