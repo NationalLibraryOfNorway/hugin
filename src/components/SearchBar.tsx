@@ -28,6 +28,7 @@ export default function SearchBar() {
 
   return (
     <Autocomplete
+      size={'lg'}
       autoFocus={true}
       menuTrigger="focus"
       radius="full"
