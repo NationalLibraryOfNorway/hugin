@@ -8,7 +8,8 @@ import {title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
-import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
+import {FaArrowAltCircleLeft, FaEdit} from 'react-icons/fa';
+import BoxRegistration from '@/components/BoxRegistration';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -63,14 +64,7 @@ export default function Page({params}: { params: { id: string } }) {
           ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
           }
 
-          <Button
-            endContent={<FaBoxOpen size={25}/>}
-            size={'lg'}
-            className="font-bold text-lg mb-12"
-            // TODO Add form for barcode (?) and/or link to box creation here (related to TT-1559)
-          >
-            Ny eske
-          </Button>
+          <BoxRegistration titleId={params.id}/>
 
           <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 
