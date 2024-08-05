@@ -51,9 +51,7 @@ export default function Page({params}: { params: { id: string } }) {
         <div className="mb-4">Henter tittel ...</div>
       )}
 
-      <p className="text-xl">Serie-ID: {params.id}</p>
-
-      <br></br>
+      <p className="text-xl mb-6">Serie-ID: {params.id}</p>
 
       {titleFromDb ? (
         <div className="flex flex-col">
@@ -68,14 +66,11 @@ export default function Page({params}: { params: { id: string } }) {
           <Button
             endContent={<FaBoxOpen size={25}/>}
             size={'lg'}
-            className="font-bold text-lg"
+            className="font-bold text-lg mb-12"
             // TODO Add form for barcode (?) and/or link to box creation here (related to TT-1559)
           >
             Ny eske
           </Button>
-
-          <br></br>
-          <br></br>
 
           <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 
@@ -107,11 +102,8 @@ export default function Page({params}: { params: { id: string } }) {
             </div>
           }
 
-          <br></br>
-          <br></br>
-
           {titleFromDb.release_pattern &&
-            <div className="self-start">
+            <div className="self-start mt-12">
               <h2 className="font-bold text-xl mb-3">Utgivelsesmønster:</h2>
 
               <table className="table-fixed">
@@ -151,12 +143,10 @@ export default function Page({params}: { params: { id: string } }) {
             </div>
           }
 
-          <br></br>
-
           <Button
             type="button"
             size="lg"
-            className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4 text-lg"
+            className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4 text-lg mt-5"
             endContent={<FaEdit size={25}/>}
             onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
           >
