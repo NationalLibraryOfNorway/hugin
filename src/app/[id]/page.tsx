@@ -42,6 +42,12 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params]);
 
+  function updateBox(newBoxId: string) {
+    setLocalTitle(
+      {...localTitle as title, ['last_box']: newBoxId}
+    );
+  }
+
   return (
     <div>
       {titleString ? (
@@ -64,7 +70,7 @@ export default function Page({params}: { params: { id: string } }) {
           ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
           }
 
-          <BoxRegistration titleId={params.id}/>
+          <BoxRegistration titleId={params.id} sendNewId={updateBox}/>
 
           <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 

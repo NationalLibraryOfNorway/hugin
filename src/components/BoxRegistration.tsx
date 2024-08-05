@@ -8,25 +8,16 @@ import {ErrorMessage, Field, Form, Formik, useField} from 'formik';
 import {updateLocalTitle} from '@/services/local.data';
 
 
-export default function BoxRegistration(props: {titleId: string}) {
+export default function BoxRegistration(props: {titleId: string; sendNewId: (a: string) => void}) {
 
   const [showForm, setShowForm] = useState<boolean>(false);
-  const [saveMessageIsVisible, setSaveMessageIsVisible] = useState<boolean>(false);
 
   function toggleForm() {
     setShowForm(!showForm);
   }
 
-  function showSavedMessage() {
-    setSaveMessageIsVisible(true);
-    setTimeout(() => setSaveMessageIsVisible(false), 5000);
-  }
-
   return (
     <div>
-      <div>
-        {saveMessageIsVisible && <p className="flex justify-end mt-2"> Lagret! </p>}
-      </div>
       {showForm ? (
         <div>
           <Formik
@@ -37,7 +28,7 @@ export default function BoxRegistration(props: {titleId: string}) {
                   setSubmitting(false);
                   setShowForm(false);
                   if (res.ok) {
-                    showSavedMessage();
+                    props.sendNewId(values.boxId);
                   } else {
                     alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
                   }
