@@ -76,7 +76,7 @@ export default function Page({params}: { params: { id: string } }) {
   }
 
   return (
-    <div className='flex w-7/12 flex-col max-w-screen-lg'>
+    <div className='flex w-7/12 flex-col max-w-screen-lg items-start'>
       <Button
         type='button'
         className='bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-fit mb-5'
@@ -89,7 +89,7 @@ export default function Page({params}: { params: { id: string } }) {
       <div className='flex flex-row justify-between mb-12'>
         <div>
           {titleString ? (
-            <div className='flex flex-row justify-start items-center'>
+            <div className='flex flex-row items-center'>
               <h1 className='text-4xl font-bold'> {titleString} </h1>
               <p className='ml-4 text-2xl'> ({params.id}) </p>
             </div>
@@ -121,7 +121,7 @@ export default function Page({params}: { params: { id: string } }) {
               isSubmitting,
               isValid
             }) => (
-              <Form className='flex flex-col items-start justify-start' onSubmit={handleSubmit}>
+              <Form className='flex flex-col items-start' onSubmit={handleSubmit}>
                 <div className='flex flex-row'>
                   <div className='w-60 mr-20 flex flex-col'>
                     <p className='text-gray-700 text-xl font-bold mb-4 text-left'>Kontaktinformasjon</p>
@@ -329,7 +329,7 @@ export default function Page({params}: { params: { id: string } }) {
                 />}
           </div>
         </div>
-      ) : (<p> Henter skjema...</p>)}
+      ) : (<p className=''> Henter skjema...</p>)}
     </div>
   );
 }
