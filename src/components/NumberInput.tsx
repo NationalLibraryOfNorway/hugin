@@ -49,7 +49,7 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
     <div>
       <div className='flex flex-row'>
         <button
-          type={'button'}
+          type='button'
           onClick={decreaseValue}
         >
           <CiCircleMinus size={30} style={{color: 'red'}}/>
