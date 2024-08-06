@@ -8,7 +8,12 @@ import {CatalogTitle} from '@/models/CatalogTitle';
 import {Field, Form, Formik} from 'formik';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Button} from '@nextui-org/button';
-import { NotFoundError } from '@/models/Errors';
+import {NotFoundError} from '@/models/Errors';
+import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
+import NumberInputWithButtons from '@/components/NumberInput';
+import SuccessModal from '@/components/SuccessModal';
+import {FiSave} from 'react-icons/fi';
+import {FaArrowAltCircleLeft} from 'react-icons/fa';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -51,37 +56,61 @@ export default function Page({params}: { params: { id: string } }) {
     setTimeout(() => setSaveMessageIsVisible(false), 5000);
   }
 
-  function validatePositiveNumber(value: number) {
+  function validateBetweenZeroAndFive(value: number) {
     let error;
     if (value < 0) {
       error = 'Tallet kan ikke være negativt';
+    } else if (value > 5) {
+      error = 'Tallet kan ikke være større enn 5';
     }
     return error;
   }
 
+  async function submitForm(values: title) {
+    const res = await postLocalTitle(values);
+    if (res.ok) {
+      showSavedMessage();
+    } else {
+      alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
+    }
+  }
+
   return (
-    <div className="flex w-10/12 flex-col max-w-screen-lg">
-      <div className="mb-7">
-        {titleString ? (<h1>{titleString} ({params.id})</h1>)
-          : (<p>Henter navn fra katalogen...</p>)
-        }
+    <div className='flex w-7/12 flex-col max-w-screen-lg items-start'>
+      <Button
+        type='button'
+        className='bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-fit mb-5'
+        startContent={<FaArrowAltCircleLeft/>}
+        onClick={() => router.push(`/${params.id}?title=${titleString}`)}
+      >
+        Tilbake til titteloversikt
+      </Button>
+
+      <div className='flex flex-row justify-between mb-12'>
+        <div>
+          {titleString ? (
+            <div className='flex flex-row items-center'>
+              <h1 className='text-4xl font-bold'> {titleString} </h1>
+              <p className='ml-4 text-2xl'> ({params.id}) </p>
+            </div>
+          )
+            : (<p>Henter navn fra katalogen...</p>)
+          }
+        </div>
+
+        <div>
+
+        </div>
       </div>
+
       {titleFromDb ? (
         <div>
-          <h2 className="mb-5">Rediger tittelinformasjon</h2>
           <Formik
             enableReinitialize
             initialValues={titleFromDb}
-            onSubmit={(values, {setSubmitting}) => {
-              void postLocalTitle(values).then(res => {
-                setSubmitting(false);
-                if (res.ok) {
-                  showSavedMessage();
-                } else {
-                  alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
-                }
-              });
-
+            onSubmit={(values: title, {setSubmitting}) => {
+              void submitForm(values)
+                .then(() => setSubmitting(false));
             }}
           >
             {({
@@ -90,171 +119,181 @@ export default function Page({params}: { params: { id: string } }) {
               handleBlur,
               handleSubmit,
               isSubmitting,
-              errors,
               isValid
             }) => (
-              <Form className="flex flex-col" onSubmit={handleSubmit}>
-                <div className="flex flex-row">
-                  <div className="w-2/3 mr-10">
-                    <label htmlFor="vendor" className="block text-gray-700 text-sm mb-1"> Avleverer </label>
+              <Form className='flex flex-col items-start' onSubmit={handleSubmit}>
+                <div className='flex flex-row'>
+                  <div className='w-60 mr-20 flex flex-col'>
+                    <p className='text-gray-700 text-xl font-bold mb-4 text-left'>Kontaktinformasjon</p>
+                    <label htmlFor='vendor' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Avleverer </label>
                     <Field
-                      type="text"
-                      name="vendor"
-                      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                      type='text'
+                      id='vendor'
+                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.vendor ?? ''}
                     />
 
-                    <label htmlFor="contact_name"
-                      className="block text-gray-700 text-sm mb-1"> Kontaktperson </label>
+                    <label htmlFor='contact_name' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Navn </label>
                     <Field
-                      type="text"
-                      name="contact_name"
-                      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                      type='text'
+                      id='contact_name'
+                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_name ?? ''}
                     />
 
-                    <label htmlFor="contact_email" className="block text-gray-700 text-sm mb-1"> E-post </label>
+                    <label htmlFor='contact_email' className='block text-gray-700 text-medium font-bold mb-1 self-start'> E-post </label>
                     <Field
-                      type="text"
-                      name="contact_email"
-                      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                      type='text'
+                      id='contact_email'
+                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_email ?? ''}
                     />
 
-                    <label htmlFor="contact_phone" className="block text-gray-700 text-sm mb-1"> Telefon </label>
+                    <label htmlFor='contact_phone' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Telefon </label>
                     <Field
-                      type="text"
-                      name="contact_phone"
-                      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                      type='text'
+                      id='contact_phone'
+                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_phone ?? ''}
                     />
                   </div>
 
-                  <div className="w-1/3 overflow-auto">
-                    <label className="text-gray-700 text-sm mb-1"> Utgivelsesmønster </label>
-                    <table className="w-full table-fixed">
-                      <tbody className="">
-                        <tr className="">
-                          <td className="w-1/2">Mandag</td>
-                          <td className="w-1/2 ml-2">
+                  <div className='w-60 overflow-auto flex flex-col'>
+                    <p className='text-gray-700 text-xl font-bold mb-4 text-left'> Utgivelsesmønster </p>
+                    <Table hideHeader removeWrapper className='table-fixed text-left' aria-labelledby='releaseTable'>
+                      <TableHeader>
+                        <TableColumn>Dag</TableColumn>
+                        <TableColumn>Antall</TableColumn>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow className='text-left'>
+                          <TableCell className='text-lg p-0'>Mandag</TableCell>
+                          <TableCell className='py-0 pr-0 w-full'>
                             <Field
-                              type="number"
-                              name="release_pattern[0]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                              name={'release_pattern[0]'}
+                              value={+values.release_pattern[0]}
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
                               onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
-                              value={+values.release_pattern[0] ?? 0}
-                              validate={validatePositiveNumber}
+                              minValue={0}
+                              maxValue={5}
                             />
-                            {errors.release_pattern && errors.release_pattern[0] && <p>{errors.release_pattern[0]}</p>}
-                          </td>
-                        </tr>
+                          </TableCell>
+                        </TableRow>
 
-                        <tr>
-                          <td>Tirsdag</td>
-                          <td>
+                        <TableRow>
+                          <TableCell className='text-lg p-0' >Tirsdag</TableCell>
+                          <TableCell className='py-0 pr-0'>
                             <Field
-                              type="number"
-                              name="release_pattern[1]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
-                              onChange={handleChange}
-                              onBlur={handleBlur}
+                              name={'release_pattern[1]'}
                               value={+values.release_pattern[1]}
-                              validate={validatePositiveNumber}
-                            />
-                            {errors.release_pattern && errors.release_pattern[1] && <p>{errors.release_pattern[1]}</p>}
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>Onsdag</td>
-                          <td>
-                            <Field
-                              type="number"
-                              name="release_pattern[2]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
                               onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
+                              minValue={0}
+                              maxValue={5}
+                            />
+                          </TableCell>
+                        </TableRow>
+
+                        <TableRow>
+                          <TableCell className='text-lg p-0' >Onsdag</TableCell>
+                          <TableCell className='py-0 pr-0'>
+                            <Field
+                              name={'release_pattern[2]'}
                               value={+values.release_pattern[2]}
-                              validate={validatePositiveNumber}
-                            />
-                            {errors.release_pattern && errors.release_pattern[2] && <p>{errors.release_pattern[2]}</p>}
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>Torsdag</td>
-                          <td>
-                            <Field
-                              type="number"
-                              name="release_pattern[3]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
                               onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
+                              minValue={0}
+                              maxValue={5}
+                            />
+                          </TableCell>
+                        </TableRow>
+
+                        <TableRow>
+                          <TableCell className='text-lg p-0' >Torsdag</TableCell>
+                          <TableCell className='py-0 pr-0'>
+                            <Field
+                              name={'release_pattern[3]'}
                               value={+values.release_pattern[3]}
-                              validate={validatePositiveNumber}
-                            />
-                            {errors.release_pattern && errors.release_pattern[3] && <p>{errors.release_pattern[3]}</p>}
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>Fredag</td>
-                          <td>
-                            <Field
-                              type="number"
-                              name="release_pattern[4]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
                               onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
+                              minValue={0}
+                              maxValue={5}
+                            />
+                          </TableCell>
+                        </TableRow>
+
+                        <TableRow>
+                          <TableCell className='text-lg p-0' >Fredag</TableCell>
+                          <TableCell className='py-0 pr-0'>
+                            <Field
+                              name={'release_pattern[4]'}
                               value={+values.release_pattern[4]}
-                              validate={validatePositiveNumber}
-                            />
-                            {errors.release_pattern && errors.release_pattern[4] && <p>{errors.release_pattern[4]}</p>}
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>Lørdag</td>
-                          <td>
-                            <Field
-                              type="number"
-                              name="release_pattern[5]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
                               onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
+                              minValue={0}
+                              maxValue={5}
+                            />
+                          </TableCell>
+                        </TableRow>
+
+                        <TableRow>
+                          <TableCell className='text-lg p-0' >Lørdag</TableCell>
+                          <TableCell className='py-0 pr-0'>
+                            <Field
+                              name={'release_pattern[5]'}
                               value={+values.release_pattern[5]}
-                              validate={validatePositiveNumber}
-                            />
-                            {errors.release_pattern && errors.release_pattern[5] && <p>{errors.release_pattern[5]}</p>}
-                          </td>
-                        </tr>
-
-                        <tr>
-                          <td>Søndag</td>
-                          <td>
-                            <Field
-                              type="number"
-                              name="release_pattern[6]"
-                              className="border w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
                               onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
-                              value={+values.release_pattern[6]}
-                              validate={validatePositiveNumber}
+                              minValue={0}
+                              maxValue={5}
                             />
-                            {errors.release_pattern && errors.release_pattern[6] && <p>{errors.release_pattern[6]}</p>}
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                          </TableCell>
+                        </TableRow>
+
+                        <TableRow>
+                          <TableCell className='text-lg p-0' >Søndag</TableCell>
+                          <TableCell className='py-0 pr-0'>
+                            <Field
+                              name={'release_pattern[6]'}
+                              value={+values.release_pattern[6]}
+                              component={NumberInputWithButtons}
+                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              onChange={handleChange}
+                              validate={validateBetweenZeroAndFive}
+                              onBlur={handleBlur}
+                              minValue={0}
+                              maxValue={5}
+                            />
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
                   </div>
                 </div>
 
@@ -268,9 +307,11 @@ export default function Page({params}: { params: { id: string } }) {
                   </button>
 
                   <Button
-                    type="submit"
+                    type='submit'
                     disabled={isSubmitting || !isValid}
-                    className="bg-blue-400 enabled:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:bg-red-400"
+                    size='lg'
+                    endContent={<FiSave/>}
+                    className='bg-blue-400 enabled:hover:bg-blue-600 text-white text-xl font-bold py-2 px-4 rounded disabled:bg-red-400'
                   >
                     Lagre
                   </Button>
@@ -280,10 +321,15 @@ export default function Page({params}: { params: { id: string } }) {
             )}
           </Formik>
           <div>
-            {saveMessageIsVisible && <p className="flex justify-end mt-2"> Lagret! </p>}
+            {saveMessageIsVisible &&
+                <SuccessModal
+                  text='Lagret!'
+                  buttonText='Til titteloversikt'
+                  buttonOnClick={() => router.push(`/${params.id}?title=${titleString}`)}
+                />}
           </div>
         </div>
-      ) : (<p> Henter skjema...</p>)}
+      ) : (<p className=''> Henter skjema...</p>)}
     </div>
   );
 }
