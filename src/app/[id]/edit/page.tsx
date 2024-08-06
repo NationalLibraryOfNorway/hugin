@@ -262,7 +262,7 @@ export default function Page({params}: { params: { id: string } }) {
                   <button
                     type="button"
                     className="bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => router.push(`/${params.id}`)}
+                    onClick={() => router.push(`/${params.id}?title=${titleString}`)}
                   >
                     Tilbake
                   </button>

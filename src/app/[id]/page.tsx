@@ -189,7 +189,7 @@ export default function Page({params}: { params: { id: string } }) {
                 size={'lg'}
                 className="bg-blue-400 hover:bg-blue-600 text-white font-bold py-2 px-4"
                 endContent={<FaEdit/>}
-                onClick={() => router.push(`/${params.id}/edit`)}
+                onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
               >
                 Legg til informasjon
               </Button>
