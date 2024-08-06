@@ -8,14 +8,15 @@ import {title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
-import {FaArrowAltCircleLeft, FaEdit} from 'react-icons/fa';
-import BoxRegistration from '@/components/BoxRegistration';
+import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
 import {Box} from '@/models/Box';
+import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
   const [titleFromDb, setTitleFromDb] = useState<title>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
+  const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
   const router = useRouter();
   const titleFromQueryParams = useSearchParams()?.get('title');
 
@@ -80,7 +81,21 @@ export default function Page({params}: { params: { id: string } }) {
           ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
           }
 
-          <BoxRegistration titleId={params.id} sendNewId={updateBox}/>
+          {showBoxRegistrationModal &&
+            <BoxRegistrationModal
+              text='Registrer en ny eske'
+              closeModal={() => setShowBoxRegistrationModal(false)}
+              updateBoxInfo={updateBox}
+              titleId={params.id}/>
+          }
+
+          <Button
+            endContent={<FaBoxOpen size={25}/>}
+            size={'lg'}
+            className="font-bold text-lg my-4"
+            onClick={() => setShowBoxRegistrationModal(true)}>
+              Ny eske
+          </Button>
 
           <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 
