@@ -25,6 +25,7 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
     if (maxValue === undefined || oldValue < maxValue) {
       void setFieldTouched(field.name, true);
       void setFieldValue(field.name, oldValue + 1);
+      setShowCustomText(undefined);
     } else if (oldValue >= maxValue) {
       setShowCustomText(`Maksverdi nådd (${maxValue})`);
       setTimeout(() => setShowCustomText(undefined), 2000);
@@ -37,6 +38,7 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
     if (minValue === undefined || oldValue > minValue) {
       void setFieldTouched(field.name, true);
       void setFieldValue(field.name, oldValue - 1);
+      setShowCustomText(undefined);
     } else if (oldValue <= minValue) {
       setShowCustomText(`Minimumsverdi nådd (${minValue})`);
       setTimeout(() => setShowCustomText(undefined), 2000);
@@ -47,10 +49,10 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
     <div>
       <div className='flex flex-row'>
         <button
-          type='button'
-          onClick={increaseValue}
+          type={'button'}
+          onClick={decreaseValue}
         >
-          <CiCirclePlus size={30} style={{color: 'green'}}/>
+          <CiCircleMinus size={30} style={{color: 'red'}}/>
         </button>
 
         <input
@@ -60,10 +62,10 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
         />
 
         <button
-          type={'button'}
-          onClick={decreaseValue}
+          type='button'
+          onClick={increaseValue}
         >
-          <CiCircleMinus size={30} style={{color: 'red'}}/>
+          <CiCirclePlus size={30} style={{color: 'green'}}/>
         </button>
 
       </div>
