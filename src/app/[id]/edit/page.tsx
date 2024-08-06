@@ -81,7 +81,7 @@ export default function Page({params}: { params: { id: string } }) {
         type='button'
         className='bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-fit mb-5'
         startContent={<FaArrowAltCircleLeft/>}
-        onClick={() => router.push(`/${params.id}`)}
+        onClick={() => router.push(`/${params.id}?title=${titleString}`)}
       >
         Tilbake til titteloversikt
       </Button>
@@ -325,7 +325,7 @@ export default function Page({params}: { params: { id: string } }) {
                 <SuccessModal
                   text='Lagret!'
                   buttonText='Til titteloversikt'
-                  buttonOnClick={() => router.push(`/${params.id}`)}
+                  buttonOnClick={() => router.push(`/${params.id}?title=${titleString}`)}
                 />}
           </div>
         </div>
