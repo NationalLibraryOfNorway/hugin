@@ -79,7 +79,7 @@ export default function Page({params}: { params: { id: string } }) {
     <div className='flex w-7/12 flex-col max-w-screen-lg items-start'>
       <Button
         type='button'
-        className='bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded w-fit mb-5'
+        className='bg-green-400 hover:bg-green-600 font-bold py-2 px-4 rounded w-fit mb-5'
         startContent={<FaArrowAltCircleLeft/>}
         onClick={() => router.push(`/${params.id}?title=${titleString}`)}
       >
@@ -297,15 +297,7 @@ export default function Page({params}: { params: { id: string } }) {
                   </div>
                 </div>
 
-                <div className="mt-10 flex w-full justify-between">
-                  <button
-                    type="button"
-                    className="bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => router.push(`/${params.id}?title=${titleString}`)}
-                  >
-                    Tilbake
-                  </button>
-
+                <div className="mt-10">
                   <Button
                     type='submit'
                     disabled={isSubmitting || !isValid}
