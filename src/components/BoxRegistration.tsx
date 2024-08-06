@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
 import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaBoxOpen} from 'react-icons/fa';
-import DateRangePicker from '@wojtekmaj/react-daterange-picker';
-import 'react-calendar/dist/Calendar.css';
-import '@wojtekmaj/react-daterange-picker/dist/DateRangePicker.css';
-import {ErrorMessage, Field, Form, Formik, useField} from 'formik';
+import {Field, Form, Formik} from 'formik';
 import {updateLocalTitle} from '@/services/local.data';
+import {Box} from '@/models/Box';
 
 
-export default function BoxRegistration(props: {titleId: string; sendNewId: (a: string) => void}) {
+export default function BoxRegistration(props: {titleId: string; sendNewId: (a: string, d: Date) => void}) {
 
   const [showForm, setShowForm] = useState<boolean>(false);
 
@@ -21,14 +19,15 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
       {showForm ? (
         <div>
           <Formik
-            initialValues={{boxId: '', dateRange: ''}}
+            initialValues={{boxId: '', startDate: ''}}
             onSubmit={(values, {setSubmitting}) => {
+              const box = new Box(values.boxId, values.startDate);
               setTimeout(() => {
-                void updateLocalTitle(props.titleId, values.boxId).then(res => {
+                void updateLocalTitle(props.titleId, box).then(res => {
                   setSubmitting(false);
                   setShowForm(false);
                   if (res.ok) {
-                    props.sendNewId(values.boxId);
+                    props.sendNewId(values.boxId, box.startDate);
                   } else {
                     alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
                   }
@@ -42,11 +41,12 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
               <Field
                 className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
                 name="boxId" type="text" required/>
-              <ErrorMessage name="boxId"/>
               <br/>
 
-              <label className="block text-gray-700 text-sm mb-1" htmlFor="dateRange">Datoene</label>
-              <DateRangePickerField fieldName="dateRange"/>
+              <label className="block text-gray-700 text-sm mb-1" htmlFor="startDate">Fra dato</label>
+              <Field
+                className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                name="startDate" type="date" placeholder="dd-mm-yyyy" required/>
               <br/>
 
               <Button type="submit"
@@ -79,17 +79,3 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
   );
 }
 
-const DateRangePickerField = (props: { fieldName: string }) => {
-  const [field, , {setValue}] = useField(props.fieldName);
-  return (
-    <DateRangePicker
-      id="date-range-picker"
-      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
-      {...field}
-      onChange={val => {
-        void setValue(val);
-      }}
-      required
-    />
-  );
-};

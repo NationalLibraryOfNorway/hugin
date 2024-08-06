@@ -15,4 +15,5 @@ model title {
   contact_phone   String? @db.VarChar
   vendor          String? @db.VarChar
   release_pattern Int[]
+  last_box_from   DateTime?
 }

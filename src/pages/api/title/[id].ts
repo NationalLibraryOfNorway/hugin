@@ -2,6 +2,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '@/lib/prisma';
 import {title} from '@prisma/client';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
+import {Box} from '@/models/Box';
 
 
 // ANY api/title/[id]
@@ -17,7 +18,7 @@ export default async function handle(
   case 'POST':
     return handlePOST(req.body as title, res);
   case 'PATCH':
-    return handlePATCH(titleId as string, req.body as string, res);
+    return handlePATCH(titleId as string, req.body as Box, res);
   default:
     throw new Error('Method not supported');
   }
@@ -53,14 +54,14 @@ async function handlePOST(localTitle: title, res: NextApiResponse) {
 }
 
 // PATCH api/title/[id]
-async function handlePATCH(titleId: string, boxId: string,  res: NextApiResponse) {
+async function handlePATCH(titleId: string, box: Box,  res: NextApiResponse) {
   await prisma.title.update({
     where: { id: +titleId },
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    data: { last_box: boxId }
+    data: { last_box: box.boxId, last_box_from: box.startDate }
   }).catch(e => {
     return res.status(500).json({error: `Failed to update title: ${e}`});
   });
 
-  return res.status(204).json({});
+  return res.status(204).end();
 }

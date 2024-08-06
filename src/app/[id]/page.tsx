@@ -42,10 +42,19 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params]);
 
-  function updateBox(newBoxId: string) {
-    setLocalTitle(
-      {...localTitle as title, ['last_box']: newBoxId}
+  function updateBox(newBoxId: string, newBoxStart: Date) {
+    setTitleFromDb(
+      {...titleFromDb as title, ['last_box']: newBoxId, ['last_box_from']: newBoxStart}
     );
+  }
+
+  function boxToString(t: title) : string {
+    let dateString = '';
+    if (t.last_box_from) {
+      const dateObject = new Date(t.last_box_from);
+      dateString = ` (fra ${dateObject.toLocaleDateString('no-NB')})`;
+    }
+    return t.last_box + dateString;
   }
 
   return (
@@ -65,7 +74,7 @@ export default function Page({params}: { params: { id: string } }) {
           {titleFromDb.last_box ? (
             <div className="flex flex-row items-center mb-2">
               <p className="text-lg font-bold" >Eske til registrering: </p>
-              <p className="text-lg ml-2">{titleFromDb.last_box}</p>
+              <p className="text-lg ml-2">{boxToString(titleFromDb)}</p>
             </div>
           ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
           }
