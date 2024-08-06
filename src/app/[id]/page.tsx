@@ -5,31 +5,36 @@ import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {getLocalTitle} from '@/services/local.data';
 import {title} from '@prisma/client';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
 
 export default function Page({params}: { params: { id: string } }) {
-  const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
-  const [localTitle, setLocalTitle] = useState<title>();
+  const [titleString, setTitleString] = useState<string>();
+  const [titleFromDb, setTitleFromDb] = useState<title>();
+  const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
   const router = useRouter();
-  const [localTitleNotFound, setLocalTitleNotFound] = useState<boolean>(false);
+  const titleFromQueryParams = useSearchParams()?.get('title');
 
   useEffect(() => {
-    void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setCatalogTitle(data));
-  }, [params]);
+    if (titleFromQueryParams) {
+      setTitleString(titleFromQueryParams);
+    } else {
+      void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setTitleString(data.name));
+    }
+  }, [params, titleFromQueryParams]);
 
   useEffect(() => {
     void getLocalTitle(params.id)
       .then((data: title) => {
-        setLocalTitle(data);
-        setLocalTitleNotFound(false);
+        setTitleFromDb(data);
+        setTitleFromDbNotFound(false);
       })
       .catch((e: Error) => {
-        setLocalTitle(undefined);
+        setTitleFromDb(undefined);
         if (e instanceof NotFoundError) {
-          setLocalTitleNotFound(true);
+          setTitleFromDbNotFound(true);
         } else {
           alert('Kunne ikke se etter kontakt- og utgivelsesinformasjon. Kontakt tekst-teamet om problemet vedvarer.');
         }
@@ -38,9 +43,9 @@ export default function Page({params}: { params: { id: string } }) {
 
   return (
     <div>
-      {catalogTitle ? (
+      {titleString ? (
         <div>
-          <h1 className="text-4xl font-bold mb-4">{catalogTitle.name}</h1>
+          <h1 className="text-4xl font-bold mb-4">{titleString}</h1>
         </div>
       ) : (
         <div className="mb-4">Henter tittel ...</div>
@@ -50,12 +55,12 @@ export default function Page({params}: { params: { id: string } }) {
 
       <br></br>
 
-      {localTitle ? (
+      {titleFromDb ? (
         <div className="flex flex-col">
-          {localTitle.last_box ? (
+          {titleFromDb.last_box ? (
             <div className="flex flex-row items-center mb-2">
               <p className="text-lg font-bold" >Eske til registrering: </p>
-              <p className="text-lg ml-2">{localTitle.last_box}</p>
+              <p className="text-lg ml-2">{titleFromDb.last_box}</p>
             </div>
           ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
           }
@@ -74,38 +79,38 @@ export default function Page({params}: { params: { id: string } }) {
 
           <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 
-          {localTitle.vendor &&
+          {titleFromDb.vendor &&
             <div className="self-start flex flex-row">
               <p className="text-lg font-bold" >Avleverer: </p>
-              <p className="text-lg ml-2">{localTitle.vendor}</p>
+              <p className="text-lg ml-2">{titleFromDb.vendor}</p>
             </div>
           }
 
-          {localTitle.contact_name &&
+          {titleFromDb.contact_name &&
             <div className="self-start flex flex-row">
               <p className="text-lg font-bold" >Kontaktperson: </p>
-              <p className="text-lg ml-2">{localTitle.contact_name}</p>
+              <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
             </div>
           }
 
-          {localTitle.contact_email &&
+          {titleFromDb.contact_email &&
             <div className="self-start flex flex-row">
               <p className="text-lg font-bold" >E-post: </p>
-              <p className="text-lg ml-2">{localTitle.contact_email}</p>
+              <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
             </div>
           }
 
-          {localTitle.contact_phone &&
+          {titleFromDb.contact_phone &&
             <div className="self-start flex flex-row">
               <p className="text-lg font-bold" >Telefon: </p>
-              <p className="text-lg ml-2">{localTitle.contact_phone}</p>
+              <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
             </div>
           }
 
           <br></br>
           <br></br>
 
-          {localTitle.release_pattern &&
+          {titleFromDb.release_pattern &&
             <div className="self-start">
               <h2 className="font-bold text-xl mb-3">Utgivelsesmønster:</h2>
 
@@ -113,31 +118,31 @@ export default function Page({params}: { params: { id: string } }) {
                 <tbody className="text-left">
                   <tr>
                     <td className="pr-3 font-bold">Mandag:</td>
-                    <td>{localTitle.release_pattern[0]}</td>
+                    <td>{titleFromDb.release_pattern[0]}</td>
                   </tr>
                   <tr>
                     <td className="font-bold">Tirsdag:</td>
-                    <td>{localTitle.release_pattern[1]}</td>
+                    <td>{titleFromDb.release_pattern[1]}</td>
                   </tr>
                   <tr>
                     <td className="font-bold">Onsdag:</td>
-                    <td>{localTitle.release_pattern[2]}</td>
+                    <td>{titleFromDb.release_pattern[2]}</td>
                   </tr>
                   <tr>
                     <td className="font-bold">Torsdag:</td>
-                    <td>{localTitle.release_pattern[3]}</td>
+                    <td>{titleFromDb.release_pattern[3]}</td>
                   </tr>
                   <tr>
                     <td className="font-bold">Fredag:</td>
-                    <td>{localTitle.release_pattern[4]}</td>
+                    <td>{titleFromDb.release_pattern[4]}</td>
                   </tr>
                   <tr>
                     <td className="font-bold">Lørdag:</td>
-                    <td>{localTitle.release_pattern[5]}</td>
+                    <td>{titleFromDb.release_pattern[5]}</td>
                   </tr>
                   <tr>
                     <td className="font-bold">Søndag:</td>
-                    <td>{localTitle.release_pattern[6]}</td>
+                    <td>{titleFromDb.release_pattern[6]}</td>
                   </tr>
 
 
@@ -153,7 +158,7 @@ export default function Page({params}: { params: { id: string } }) {
             size="lg"
             className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4 text-lg"
             endContent={<FaEdit size={25}/>}
-            onClick={() => router.push(`/${params.id}/edit`)}
+            onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
           >
               Rediger
           </Button>
@@ -161,12 +166,12 @@ export default function Page({params}: { params: { id: string } }) {
         </div>
       ) : (
         <>
-          { !localTitleNotFound && <p> Henter kontakt- og utgivelsesinformasjon... </p> }
+          { !titleFromDbNotFound && <p> Henter kontakt- og utgivelsesinformasjon... </p> }
         </>
       )
       }
 
-      {localTitleNotFound &&
+      {titleFromDbNotFound &&
           <>
             <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å legge til? </p>
             <div className="mt-10 flex justify-between">

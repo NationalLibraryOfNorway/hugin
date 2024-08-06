@@ -5,7 +5,7 @@ import {useAsyncList} from '@react-stately/data';
 import {useRouter} from 'next/navigation';
 import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
-import {CatalogTitle} from '@/models/CatalogTitle';
+import {CatalogTitle, SimpleTitle, toSimpleTitle} from '@/models/CatalogTitle';
 
 export default function SearchBar() {
   const router = useRouter();
@@ -17,13 +17,14 @@ export default function SearchBar() {
       }
       const data = await searchNewspaperTitlesInCatalog(filterText, signal);
       return {
-        items: data.map(title => ({id: title.catalogueId, name: title.name})),
+        items: data.map(title => toSimpleTitle(title)),
       };
     }
   });
 
   const onSelectionChange = (key: Key | null) => {
-    key && router.push(`/${key.toString()}`);
+    const selectedTitle = (titles.items as SimpleTitle[]).find(title => title.id === key)?.name;
+    key && router.push(`/${key.toString()}/?title=${selectedTitle}`);
   };
 
   return (
