@@ -6,26 +6,31 @@ import {getLocalTitle, postLocalTitle} from '@/services/local.data';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {Field, Form, Formik} from 'formik';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {Button} from '@nextui-org/button';
 import { NotFoundError } from '@/models/Errors';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
-  const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
-  const [localTitle, setLocalTitle] = useState<title>();
+  const [titleString, setTitleString] = useState<string>();
+  const [titleFromDb, setTitleFromDb] = useState<title>();
   const [saveMessageIsVisible, setSaveMessageIsVisible] = useState<boolean>(false);
+  const titleFromQueryParams = useSearchParams()?.get('title');
 
   useEffect(() => {
-    void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setCatalogTitle(data));
-  }, [params]);
+    if (titleFromQueryParams) {
+      setTitleString(titleFromQueryParams);
+    } else {
+      void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setTitleString(data.name));
+    }
+  }, [params, titleFromQueryParams]);
 
   useEffect(() => {
     void getLocalTitle(params.id)
-      .then((data: title) => setLocalTitle(data))
+      .then((data: title) => setTitleFromDb(data))
       .catch((e: Error) => {
         if (e instanceof NotFoundError) {
-          setLocalTitle({
+          setTitleFromDb({
             id: +params.id,
             vendor: '',
             /* eslint-disable @typescript-eslint/naming-convention */
@@ -57,16 +62,16 @@ export default function Page({params}: { params: { id: string } }) {
   return (
     <div className="flex w-10/12 flex-col max-w-screen-lg">
       <div className="mb-7">
-        {catalogTitle ? (<h1>{catalogTitle?.name} ({params.id})</h1>)
+        {titleString ? (<h1>{titleString} ({params.id})</h1>)
           : (<p>Henter navn fra katalogen...</p>)
         }
       </div>
-      {localTitle ? (
+      {titleFromDb ? (
         <div>
           <h2 className="mb-5">Rediger tittelinformasjon</h2>
           <Formik
             enableReinitialize
-            initialValues={localTitle}
+            initialValues={titleFromDb}
             onSubmit={(values, {setSubmitting}) => {
               void postLocalTitle(values).then(res => {
                 setSubmitting(false);
@@ -257,7 +262,7 @@ export default function Page({params}: { params: { id: string } }) {
                   <button
                     type="button"
                     className="bg-green-400 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => router.push(`/${params.id}`)}
+                    onClick={() => router.push(`/${params.id}?title=${titleString}`)}
                   >
                     Tilbake
                   </button>
