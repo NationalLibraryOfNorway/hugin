@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
 import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaBoxOpen} from 'react-icons/fa';
-import {Field, Form, Formik} from 'formik';
+import {Field, Form, Formik, useField} from 'formik';
 import {updateLocalTitle} from '@/services/local.data';
 import {Box} from '@/models/Box';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
 
 
-export default function BoxRegistration(props: {titleId: string; sendNewId: (a: string, d: Date) => void}) {
+export default function BoxRegistration(props: {titleId: string; sendNewId: (box: Box) => void}) {
 
   const [showForm, setShowForm] = useState<boolean>(false);
 
@@ -19,7 +21,7 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
       {showForm ? (
         <div>
           <Formik
-            initialValues={{boxId: '', startDate: ''}}
+            initialValues={{boxId: '', startDate: new Date()}}
             onSubmit={(values, {setSubmitting}) => {
               const box = new Box(values.boxId, values.startDate);
               setTimeout(() => {
@@ -27,7 +29,7 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
                   setSubmitting(false);
                   setShowForm(false);
                   if (res.ok) {
-                    props.sendNewId(values.boxId, box.startDate);
+                    props.sendNewId(box);
                   } else {
                     alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
                   }
@@ -44,10 +46,7 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
               <br/>
 
               <label className="block text-gray-700 text-sm mb-1" htmlFor="startDate">Fra dato</label>
-              <Field
-                className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
-                name="startDate" type="date" placeholder="dd-mm-yyyy" required/>
-              <br/>
+              <DatePickerField fieldName="startDate"/>
 
               <Button type="submit"
                 className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4 text-lg mb-6">
@@ -79,3 +78,17 @@ export default function BoxRegistration(props: {titleId: string; sendNewId: (a: 
   );
 }
 
+
+const DatePickerField = (props: { fieldName: string }) => {
+  const [field, , {setValue}] = useField(props.fieldName);
+  return (
+    <Calendar
+      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+      {...field}
+      onChange={val => {
+        void setValue(val);
+      }}
+      locale='no-NB'
+    />
+  );
+};

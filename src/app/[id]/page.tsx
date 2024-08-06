@@ -10,6 +10,7 @@ import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaEdit} from 'react-icons/fa';
 import BoxRegistration from '@/components/BoxRegistration';
+import {Box} from '@/models/Box';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -42,9 +43,9 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params]);
 
-  function updateBox(newBoxId: string, newBoxStart: Date) {
+  function updateBox(newBox: Box) {
     setTitleFromDb(
-      {...titleFromDb as title, ['last_box']: newBoxId, ['last_box_from']: newBoxStart}
+      {...titleFromDb as title, ['last_box']: newBox.boxId, ['last_box_from']: newBox.startDate}
     );
   }
 
