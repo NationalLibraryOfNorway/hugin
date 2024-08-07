@@ -5,12 +5,12 @@ import {useAsyncList} from '@react-stately/data';
 import {useRouter} from 'next/navigation';
 import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
-import {CatalogTitle, SimpleTitle, toSimpleTitle} from '@/models/CatalogTitle';
+import {SimpleTitle, toSimpleTitle} from '@/models/CatalogTitle';
 
 export default function SearchBar() {
   const router = useRouter();
 
-  const titles = useAsyncList({
+  const titles = useAsyncList<SimpleTitle>({
     async load({signal, filterText}) {
       if (!filterText) {
         return {items: []};
@@ -23,7 +23,7 @@ export default function SearchBar() {
   });
 
   const onSelectionChange = (key: Key | null) => {
-    const selectedTitle = (titles.items as SimpleTitle[]).find(title => title.id === key)?.name;
+    const selectedTitle = titles.items.find(title => title.id === key)?.name;
     key && router.push(`/${key.toString()}/?title=${selectedTitle}`);
   };
 
@@ -35,7 +35,7 @@ export default function SearchBar() {
       radius="full"
       inputValue={titles.filterText}
       isLoading={titles.isLoading}
-      items={titles.items as CatalogTitle[]}
+      items={titles.items}
       variant="bordered"
       label="Søk etter avistittel"
       onSelectionChange={key => onSelectionChange(key)}
@@ -45,14 +45,15 @@ export default function SearchBar() {
         hideEmptyContent: true
       }}
       allowsEmptyCollection={false}
+      allowsCustomValue={true}
       onKeyDown={e => {
         if ('continuePropagation' in e) {
           e.continuePropagation();
         }
       }}
     >
-      {(title: CatalogTitle) =>
-        <AutocompleteItem key={title.catalogueId} textValue={title.name}>
+      {(title: SimpleTitle) =>
+        <AutocompleteItem key={title.id} textValue={title.name}>
           {title.name}
         </AutocompleteItem>}
     </Autocomplete>
