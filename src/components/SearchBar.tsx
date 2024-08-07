@@ -24,11 +24,16 @@ export default function SearchBar(props: {inHeader: boolean}) {
 
   const onSelectionChange = (key: Key | null) => {
     const selectedTitle = titles.items.find(title => title.id === key)?.name;
-    key && router.push(`/${key.toString()}/?title=${selectedTitle}`);
+    if (key) {
+      document.getElementById('searchBarField')?.blur();
+      titles.setFilterText('');
+      router.push(`/${key.toString()}/?title=${selectedTitle}`);
+    }
   };
 
   return (
     <Autocomplete
+      id='searchBarField'
       size={props.inHeader ? 'md' : 'lg'}
       autoFocus={!props.inHeader}
       menuTrigger="focus"
