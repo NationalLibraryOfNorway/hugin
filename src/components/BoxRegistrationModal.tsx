@@ -1,12 +1,12 @@
-import React from 'react';
-import {Button} from '@nextui-org/button';
+import React, {FC} from 'react';
 import {Field, Form, Formik, useField} from 'formik';
 import {updateLocalTitle} from '@/services/local.data';
 import {Box} from '@/models/Box';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import {FC} from 'react';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
+import {FiSave} from 'react-icons/fi';
+import {Button} from '@nextui-org/button';
 
 
 interface BoxRegistrationModalProps {
@@ -52,7 +52,9 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 
               <Button type="submit"
                 size={'lg'}
-                className="bg-green-400 hover:bg-green-600 font-bold my-2 px-4 text-lg">
+                endContent={<FiSave/>}
+                className="save-button-style my-2"
+              >
                 Lagre ny eske
               </Button>
             </Form>
@@ -61,7 +63,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           <Button
             startContent={<FaArrowAltCircleLeft/>}
             size={'lg'}
-            className="font-bold text-lg mt-4"
+            className="abort-button-style mt-4"
             onClick={() => props.closeModal()}>
             Avbryt
           </Button>

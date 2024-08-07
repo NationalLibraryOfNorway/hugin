@@ -79,7 +79,7 @@ export default function Page({params}: { params: { id: string } }) {
     <div className='flex w-7/12 flex-col max-w-screen-lg items-start'>
       <Button
         type='button'
-        className='bg-green-400 hover:bg-green-600 font-bold py-2 px-4 rounded w-fit mb-5'
+        className='abort-button-style mb-5'
         startContent={<FaArrowAltCircleLeft/>}
         onClick={() => router.push(`/${params.id}?title=${titleString}`)}
       >
@@ -303,7 +303,7 @@ export default function Page({params}: { params: { id: string } }) {
                     disabled={isSubmitting || !isValid}
                     size='lg'
                     endContent={<FiSave/>}
-                    className='bg-blue-400 enabled:hover:bg-blue-600 text-white text-xl font-bold py-2 px-4 rounded disabled:bg-red-400'
+                    className='save-button-style'
                   >
                     Lagre
                   </Button>

@@ -21,7 +21,7 @@ const SuccessModal: FC<SuccessModalProps> = ({
             <Button
               type='button'
               size='lg'
-              className="bg-green-400 hover:bg-green-600 font-bold py-2 px-4 text-lg mt-5"
+              className="abort-button-style mt-5"
               onClick={() => {buttonOnClick && buttonOnClick();}}
             >
               {buttonText}
