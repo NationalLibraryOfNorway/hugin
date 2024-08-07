@@ -23,7 +23,7 @@ export default function SearchBar() {
   });
 
   const onSelectionChange = (key: Key | null) => {
-    const selectedTitle = (titles.items).find(title => title.id === key)?.name;
+    const selectedTitle = titles.items.find(title => title.id === key)?.name;
     key && router.push(`/${key.toString()}/?title=${selectedTitle}`);
   };
 
