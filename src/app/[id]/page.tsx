@@ -92,7 +92,7 @@ export default function Page({params}: { params: { id: string } }) {
           <Button
             endContent={<FaBoxOpen size={25}/>}
             size={'lg'}
-            className="edit-button-colors my-4"
+            className="edit-button-style my-4"
             onClick={() => setShowBoxRegistrationModal(true)}>
               Ny eske
           </Button>
@@ -171,7 +171,7 @@ export default function Page({params}: { params: { id: string } }) {
           <Button
             type="button"
             size="lg"
-            className="edit-button-colors mt-5"
+            className="edit-button-style mt-5"
             endContent={<FaEdit size={25}/>}
             onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
           >
@@ -194,7 +194,7 @@ export default function Page({params}: { params: { id: string } }) {
                 type="button"
                 size={'lg'}
                 startContent={<FaArrowAltCircleLeft/>}
-                className="abort-button-colors mr-5"
+                className="abort-button-style mr-5"
                 onClick={() => router.push('/')}
               >
                 Tilbake
@@ -202,7 +202,7 @@ export default function Page({params}: { params: { id: string } }) {
               <Button
                 type="button"
                 size={'lg'}
-                className="edit-button-colors"
+                className="edit-button-style"
                 endContent={<FaEdit/>}
                 onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
               >

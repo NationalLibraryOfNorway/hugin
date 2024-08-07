@@ -52,7 +52,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 
               <Button type="submit"
                 size={'lg'}
-                className="save-button-colors my-2">
+                className="save-button-style my-2">
                 Lagre ny eske
               </Button>
             </Form>
@@ -61,7 +61,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           <Button
             startContent={<FaArrowAltCircleLeft/>}
             size={'lg'}
-            className="abort-button-colors text-lg mt-4"
+            className="abort-button-style text-lg mt-4"
             onClick={() => props.closeModal()}>
             Avbryt
           </Button>
