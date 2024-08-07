@@ -3,10 +3,14 @@
 import {Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from '@nextui-org/react';
 import React from 'react';
 import {Button} from '@nextui-org/button';
-import {useRouter} from 'next/navigation';
+import {usePathname, useRouter} from 'next/navigation';
+import SearchBar from '@/components/SearchBar';
 
 export default function Header() {
   const router = useRouter();
+
+  const pathname = usePathname() || '';
+  const titlepageRegex = /^\/\d+$/;
 
   return (
     <Navbar>
@@ -19,6 +23,12 @@ export default function Header() {
             Hugin
         </Link>
       </NavbarBrand>
+      { titlepageRegex.test(pathname) &&
+      <NavbarContent justify="center">
+        <NavbarItem className="hidden lg:flex">
+          <SearchBar inHeader={true}/>
+        </NavbarItem>
+      </NavbarContent> }
       <NavbarContent justify="end">
         <NavbarItem className="hidden lg:flex">
           <Button

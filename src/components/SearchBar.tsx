@@ -7,7 +7,7 @@ import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
 import {SimpleTitle, toSimpleTitle} from '@/models/CatalogTitle';
 
-export default function SearchBar() {
+export default function SearchBar(props: {inHeader: boolean}) {
   const router = useRouter();
 
   const titles = useAsyncList<SimpleTitle>({
@@ -24,13 +24,18 @@ export default function SearchBar() {
 
   const onSelectionChange = (key: Key | null) => {
     const selectedTitle = titles.items.find(title => title.id === key)?.name;
-    key && router.push(`/${key.toString()}/?title=${selectedTitle}`);
+    if (key) {
+      document.getElementById('searchBarField')?.blur();
+      titles.setFilterText('');
+      router.push(`/${key.toString()}/?title=${selectedTitle}`);
+    }
   };
 
   return (
     <Autocomplete
-      size={'lg'}
-      autoFocus={true}
+      id='searchBarField'
+      size={props.inHeader ? 'md' : 'lg'}
+      autoFocus={!props.inHeader}
       menuTrigger="focus"
       radius="full"
       inputValue={titles.filterText}
