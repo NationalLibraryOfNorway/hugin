@@ -41,13 +41,13 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             }}
           >
             <Form>
-              <label className="block text-gray-700 text-lg mb-1" htmlFor="boxId">Eske id</label>
+              <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="boxId">Eske id</label>
               <Field
                 className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
                 name="boxId" type="text" required/>
               <br/>
 
-              <label className="block text-gray-700 text-lg mb-1" htmlFor="startDate">Fra dato</label>
+              <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="startDate">Fra dato</label>
               <DatePickerField fieldName="startDate"/>
 
               <Button type="submit"
