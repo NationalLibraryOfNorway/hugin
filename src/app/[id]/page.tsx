@@ -67,14 +67,12 @@ export default function Page({params}: { params: { id: string } }) {
   return (
     <div className='w-11/12 flex flex-col content-center'>
       {titleString ? (
-        <div>
-          <h1 className="text-4xl font-bold mb-4">{titleString}</h1>
-        </div>
+        <h1 className="text-4xl font-bold">{titleString}</h1>
       ) : (
-        <div className="mb-4">Henter tittel ...</div>
+        <div>Henter tittel ...</div>
       )}
 
-      <p className="text-xl mb-6">Serie-ID: {params.id}</p>
+      <p className="text-xl mb-10 mt-1">Serie-ID: {params.id}</p>
 
       {titleFromDb ? (
         <div className='flex flex-row flex-wrap self-center max-w-full'>
@@ -82,7 +80,7 @@ export default function Page({params}: { params: { id: string } }) {
             Denne plassen er reservert til avisregistrering,
             så teksten her er bare for å se hvordan bredden blir.
           </p>
-          <div className='flex flex-col mx-10 items-start'>
+          <div className='flex flex-col mx-14 items-start'>
             {titleFromDb.shelf &&
                 <div className="flex flex-row mb-10">
                   <p className="text-lg font-bold"> Hyllesignatur: </p>
@@ -109,18 +107,18 @@ export default function Page({params}: { params: { id: string } }) {
             <Button
               endContent={<FaBoxOpen size={25}/>}
               size={'lg'}
-              className="edit-button-style my-4"
+              className="edit-button-style my-2"
               onClick={() => setShowBoxRegistrationModal(true)}>
               Ny eske
             </Button>
 
-            <p className="text-lg font-bold mt-6"> Merknad/kommentar på tittel </p>
+            <p className="text-lg font-bold mt-8 mb-2"> Merknad/kommentar på tittel: </p>
             <NotesComponent notes={titleFromDb.notes ?? ''} onSubmit={submitNotes}/>
 
           </div>
 
           <div className="flex flex-col">
-            <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
+            <h1 className="self-start font-bold text-xl mb-2"> Kontaktinformasjon: </h1>
 
             {titleFromDb.vendor &&
                 <div className="self-start flex flex-row">
@@ -152,7 +150,7 @@ export default function Page({params}: { params: { id: string } }) {
 
             {titleFromDb.release_pattern &&
                   <div className="self-start mt-12">
-                    <h2 className="font-bold text-xl mb-3">Utgivelsesmønster:</h2>
+                    <h2 className="font-bold text-xl mb-2">Utgivelsesmønster:</h2>
 
                     <table className="table-fixed">
                       <tbody className="text-left">
