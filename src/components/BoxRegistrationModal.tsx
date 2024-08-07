@@ -52,7 +52,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 
               <Button type="submit"
                 size={'lg'}
-                className="save-button-colors my-2 px-4 text-lg">
+                className="save-button-colors my-2">
                 Lagre ny eske
               </Button>
             </Form>

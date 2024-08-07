@@ -74,7 +74,7 @@ export default function Page({params}: { params: { id: string } }) {
       {titleFromDb ? (
         <div className="flex flex-col">
           {titleFromDb.last_box ? (
-            <div className="flex flex-row items-center mb-2">
+            <div className="flex flex-row items-center">
               <p className="text-lg font-bold" >Eske til registrering: </p>
               <p className="text-lg ml-2">{boxToString(titleFromDb)}</p>
             </div>
@@ -92,12 +92,12 @@ export default function Page({params}: { params: { id: string } }) {
           <Button
             endContent={<FaBoxOpen size={25}/>}
             size={'lg'}
-            className="edit-button-colors text-lg my-4"
+            className="edit-button-colors my-4"
             onClick={() => setShowBoxRegistrationModal(true)}>
               Ny eske
           </Button>
 
-          <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
+          <h1 className="self-start font-bold text-xl mb-3 mt-4"> Kontaktinformasjon: </h1>
 
           {titleFromDb.vendor &&
             <div className="self-start flex flex-row">
@@ -171,7 +171,7 @@ export default function Page({params}: { params: { id: string } }) {
           <Button
             type="button"
             size="lg"
-            className="edit-button-colors py-2 px-4 text-lg mt-5"
+            className="edit-button-colors mt-5"
             endContent={<FaEdit size={25}/>}
             onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
           >
@@ -194,7 +194,7 @@ export default function Page({params}: { params: { id: string } }) {
                 type="button"
                 size={'lg'}
                 startContent={<FaArrowAltCircleLeft/>}
-                className="abort-button-colors py-2 px-4 mr-5"
+                className="abort-button-colors mr-5"
                 onClick={() => router.push('/')}
               >
                 Tilbake
@@ -202,7 +202,7 @@ export default function Page({params}: { params: { id: string } }) {
               <Button
                 type="button"
                 size={'lg'}
-                className="edit-button-colors py-2 px-4"
+                className="edit-button-colors"
                 endContent={<FaEdit/>}
                 onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
               >

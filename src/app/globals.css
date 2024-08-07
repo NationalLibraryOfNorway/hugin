@@ -19,6 +19,7 @@ input[type=number] {
     @apply enabled:hover:bg-blue-500;
     @apply text-black;
     @apply font-bold;
+    @apply text-xl;
 }
 
 .abort-button-colors {
@@ -26,6 +27,7 @@ input[type=number] {
     @apply enabled:hover:bg-yellow-500;
     @apply text-black;
     @apply font-bold;
+    @apply text-medium;
 }
 
 .save-button-colors {
@@ -33,5 +35,6 @@ input[type=number] {
     @apply enabled:hover:bg-green-500;
     @apply text-black;
     @apply font-bold;
+    @apply text-xl;
     @apply disabled:bg-gray-400;
 }

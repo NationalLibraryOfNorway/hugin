@@ -25,7 +25,7 @@ export default function Header() {
             as={Link}
             variant="light"
             color="primary"
-            className="text-medium edit-button-colors"
+            className="edit-button-colors"
           >
               Logg inn
           </Button>
