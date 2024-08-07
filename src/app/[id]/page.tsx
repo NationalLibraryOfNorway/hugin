@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
-import {getLocalTitle} from '@/services/local.data';
+import {getLocalTitle, updateNotesForTitle} from '@/services/local.data';
 import {title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
@@ -60,10 +60,8 @@ export default function Page({params}: { params: { id: string } }) {
     return t.last_box + dateString;
   }
 
-  function submitNotes(notes: string) {
-    // TODO: add actual submit
-    console.log('saving notes for real!');
-    console.log(notes);
+  function submitNotes(notes: string): Promise<Response> {
+    return updateNotesForTitle(params.id, notes);
   }
 
   return (

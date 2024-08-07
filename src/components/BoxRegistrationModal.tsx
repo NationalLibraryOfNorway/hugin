@@ -1,6 +1,6 @@
 import React, {FC} from 'react';
 import {Field, Form, Formik, useField} from 'formik';
-import {updateLocalTitle} from '@/services/local.data';
+import {updateBoxForTitle} from '@/services/local.data';
 import {Box} from '@/models/Box';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -27,7 +27,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             onSubmit={(values, {setSubmitting}) => {
               const box = new Box(values.boxId, values.startDate);
               setTimeout(() => {
-                void updateLocalTitle(props.titleId, box).then(res => {
+                void updateBoxForTitle(props.titleId, box).then(res => {
                   setSubmitting(false);
                   if (res.ok) {
                     props.updateBoxInfo(box);
