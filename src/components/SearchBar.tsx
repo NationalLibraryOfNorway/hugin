@@ -7,7 +7,7 @@ import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
 import {SimpleTitle, toSimpleTitle} from '@/models/CatalogTitle';
 
-export default function SearchBar() {
+export default function SearchBar(props: {inHeader: boolean}) {
   const router = useRouter();
 
   const titles = useAsyncList<SimpleTitle>({
@@ -29,8 +29,8 @@ export default function SearchBar() {
 
   return (
     <Autocomplete
-      size={'lg'}
-      autoFocus={true}
+      size={props.inHeader ? 'md' : 'lg'}
+      autoFocus={!props.inHeader}
       menuTrigger="focus"
       radius="full"
       inputValue={titles.filterText}
