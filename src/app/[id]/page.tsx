@@ -11,6 +11,7 @@ import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
 import {Box} from '@/models/Box';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
+import NotesComponent from '@/components/NotesComponent';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -59,8 +60,14 @@ export default function Page({params}: { params: { id: string } }) {
     return t.last_box + dateString;
   }
 
+  function submitNotes(notes: string) {
+    // TODO: add actual submit
+    console.log('saving notes for real!');
+    console.log(notes);
+  }
+
   return (
-    <div>
+    <div className='w-11/12 flex flex-col content-center'>
       {titleString ? (
         <div>
           <h1 className="text-4xl font-bold mb-4">{titleString}</h1>
@@ -72,111 +79,130 @@ export default function Page({params}: { params: { id: string } }) {
       <p className="text-xl mb-6">Serie-ID: {params.id}</p>
 
       {titleFromDb ? (
-        <div className="flex flex-col">
-          {titleFromDb.last_box ? (
-            <div className="flex flex-row items-center">
-              <p className="text-lg font-bold" >Eske til registrering: </p>
-              <p className="text-lg ml-2">{boxToString(titleFromDb)}</p>
-            </div>
-          ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
-          }
+        <div className='flex flex-row flex-wrap self-center max-w-full'>
+          <p className='mb-6 py-40 border-5 border-blue-200'>
+            Denne plassen er reservert til avisregistrering,
+            så teksten her er bare for å se hvordan bredden blir.
+          </p>
+          <div className='flex flex-col mx-10 items-start'>
+            {titleFromDb.shelf &&
+                <div className="flex flex-row mb-10">
+                  <p className="text-lg font-bold"> Hyllesignatur: </p>
+                  <p className="text-lg ml-2">{titleFromDb.shelf}</p>
+                </div>
+            }
 
-          {showBoxRegistrationModal &&
-            <BoxRegistrationModal
-              text='Registrer en ny eske'
-              closeModal={() => setShowBoxRegistrationModal(false)}
-              updateBoxInfo={updateBox}
-              titleId={params.id}/>
-          }
+            {titleFromDb.last_box ? (
+              <>
+                <p className="text-lg font-bold">Eske til registrering: </p>
+                <p className="text-lg">{boxToString(titleFromDb)}</p>
+              </>
+            ) : (<p className="text-lg mb-2"> Ingen eske registrert </p>)
+            }
 
-          <Button
-            endContent={<FaBoxOpen size={25}/>}
-            size={'lg'}
-            className="edit-button-style my-4"
-            onClick={() => setShowBoxRegistrationModal(true)}>
+            {showBoxRegistrationModal &&
+                <BoxRegistrationModal
+                  text='Registrer en ny eske'
+                  closeModal={() => setShowBoxRegistrationModal(false)}
+                  updateBoxInfo={updateBox}
+                  titleId={params.id}/>
+            }
+
+            <Button
+              endContent={<FaBoxOpen size={25}/>}
+              size={'lg'}
+              className="edit-button-style my-4"
+              onClick={() => setShowBoxRegistrationModal(true)}>
               Ny eske
-          </Button>
+            </Button>
 
-          <h1 className="self-start font-bold text-xl mb-3 mt-4"> Kontaktinformasjon: </h1>
+            <p className="text-lg font-bold mt-6"> Merknad/kommentar på tittel </p>
+            <NotesComponent notes={titleFromDb.notes ?? ''} onSubmit={submitNotes}/>
 
-          {titleFromDb.vendor &&
-            <div className="self-start flex flex-row">
-              <p className="text-lg font-bold" >Avleverer: </p>
-              <p className="text-lg ml-2">{titleFromDb.vendor}</p>
-            </div>
-          }
+          </div>
 
-          {titleFromDb.contact_name &&
-            <div className="self-start flex flex-row">
-              <p className="text-lg font-bold" >Kontaktperson: </p>
-              <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
-            </div>
-          }
+          <div className="flex flex-col">
+            <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
 
-          {titleFromDb.contact_email &&
-            <div className="self-start flex flex-row">
-              <p className="text-lg font-bold" >E-post: </p>
-              <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
-            </div>
-          }
+            {titleFromDb.vendor &&
+                <div className="self-start flex flex-row">
+                  <p className="text-lg font-bold" >Avleverer: </p>
+                  <p className="text-lg ml-2">{titleFromDb.vendor}</p>
+                </div>
+            }
 
-          {titleFromDb.contact_phone &&
-            <div className="self-start flex flex-row">
-              <p className="text-lg font-bold" >Telefon: </p>
-              <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
-            </div>
-          }
+            {titleFromDb.contact_name &&
+                  <div className="self-start flex flex-row">
+                    <p className="text-lg font-bold" >Kontaktperson: </p>
+                    <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
+                  </div>
+            }
 
-          {titleFromDb.release_pattern &&
-            <div className="self-start mt-12">
-              <h2 className="font-bold text-xl mb-3">Utgivelsesmønster:</h2>
+            {titleFromDb.contact_email &&
+                  <div className="self-start flex flex-row">
+                    <p className="text-lg font-bold" >E-post: </p>
+                    <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
+                  </div>
+            }
 
-              <table className="table-fixed">
-                <tbody className="text-left">
-                  <tr>
-                    <td className="pr-3 font-bold">Mandag:</td>
-                    <td>{titleFromDb.release_pattern[0]}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">Tirsdag:</td>
-                    <td>{titleFromDb.release_pattern[1]}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">Onsdag:</td>
-                    <td>{titleFromDb.release_pattern[2]}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">Torsdag:</td>
-                    <td>{titleFromDb.release_pattern[3]}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">Fredag:</td>
-                    <td>{titleFromDb.release_pattern[4]}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">Lørdag:</td>
-                    <td>{titleFromDb.release_pattern[5]}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-bold">Søndag:</td>
-                    <td>{titleFromDb.release_pattern[6]}</td>
-                  </tr>
+            {titleFromDb.contact_phone &&
+                  <div className="self-start flex flex-row">
+                    <p className="text-lg font-bold" >Telefon: </p>
+                    <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
+                  </div>
+            }
+
+            {titleFromDb.release_pattern &&
+                  <div className="self-start mt-12">
+                    <h2 className="font-bold text-xl mb-3">Utgivelsesmønster:</h2>
+
+                    <table className="table-fixed">
+                      <tbody className="text-left">
+                        <tr>
+                          <td className="pr-3 font-bold">Mandag:</td>
+                          <td>{titleFromDb.release_pattern[0]}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Tirsdag:</td>
+                          <td>{titleFromDb.release_pattern[1]}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Onsdag:</td>
+                          <td>{titleFromDb.release_pattern[2]}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Torsdag:</td>
+                          <td>{titleFromDb.release_pattern[3]}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Fredag:</td>
+                          <td>{titleFromDb.release_pattern[4]}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Lørdag:</td>
+                          <td>{titleFromDb.release_pattern[5]}</td>
+                        </tr>
+                        <tr>
+                          <td className="font-bold">Søndag:</td>
+                          <td>{titleFromDb.release_pattern[6]}</td>
+                        </tr>
 
 
-                </tbody>
-              </table>
-            </div>
-          }
+                      </tbody>
+                    </table>
+                  </div>
+            }
 
-          <Button
-            type="button"
-            size="lg"
-            className="edit-button-style mt-5"
-            endContent={<FaEdit size={25}/>}
-            onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
-          >
-              Rediger
-          </Button>
+            <Button
+              type="button"
+              size="lg"
+              className="edit-button-style mt-5"
+              endContent={<FaEdit size={25}/>}
+              onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
+            >
+                Rediger
+            </Button>
+          </div>
 
         </div>
       ) : (

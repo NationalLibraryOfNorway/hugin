@@ -8,12 +8,14 @@ datasource db {
 }
 
 model title {
-  id              Int     @id
-  last_box        String? @db.VarChar
-  contact_email   String? @db.VarChar
-  contact_name    String? @db.VarChar
-  contact_phone   String? @db.VarChar
-  vendor          String? @db.VarChar
-  release_pattern Int[]
-  last_box_from   DateTime?
+  id              Int       @id
+  last_box        String?   @db.VarChar
+  contact_email   String?   @db.VarChar
+  contact_name    String?   @db.VarChar
+  contact_phone   String?   @db.VarChar
+  vendor          String?   @db.VarChar
+  release_pattern Int[]     @default([0, 0, 0, 0, 0, 0, 0])
+  last_box_from   DateTime? @db.Date
+  shelf           String?   @db.VarChar
+  notes           String?   @db.VarChar
 }

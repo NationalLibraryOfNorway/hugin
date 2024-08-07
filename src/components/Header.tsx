@@ -30,7 +30,7 @@ export default function Header() {
         </NavbarItem>
       </NavbarContent> }
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
+        <NavbarItem className="lg:flex">
           <Button
             as={Link}
             variant="light"
