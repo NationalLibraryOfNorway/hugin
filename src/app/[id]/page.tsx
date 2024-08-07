@@ -9,11 +9,14 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
+import {Box} from '@/models/Box';
+import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
   const [titleFromDb, setTitleFromDb] = useState<title>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
+  const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
   const router = useRouter();
   const titleFromQueryParams = useSearchParams()?.get('title');
 
@@ -41,6 +44,21 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params]);
 
+  function updateBox(newBox: Box) {
+    setTitleFromDb(
+      {...titleFromDb as title, ['last_box']: newBox.boxId, ['last_box_from']: newBox.startDate}
+    );
+  }
+
+  function boxToString(t: title) : string {
+    let dateString = '';
+    if (t.last_box_from) {
+      const dateObject = new Date(t.last_box_from);
+      dateString = ` (fra ${dateObject.toLocaleDateString('no-NB')})`;
+    }
+    return t.last_box + dateString;
+  }
+
   return (
     <div>
       {titleString ? (
@@ -58,18 +76,25 @@ export default function Page({params}: { params: { id: string } }) {
           {titleFromDb.last_box ? (
             <div className="flex flex-row items-center mb-2">
               <p className="text-lg font-bold" >Eske til registrering: </p>
-              <p className="text-lg ml-2">{titleFromDb.last_box}</p>
+              <p className="text-lg ml-2">{boxToString(titleFromDb)}</p>
             </div>
           ) : (<p className="text-lg mb-2" > Ingen eske registrert </p>)
+          }
+
+          {showBoxRegistrationModal &&
+            <BoxRegistrationModal
+              text='Registrer en ny eske'
+              closeModal={() => setShowBoxRegistrationModal(false)}
+              updateBoxInfo={updateBox}
+              titleId={params.id}/>
           }
 
           <Button
             endContent={<FaBoxOpen size={25}/>}
             size={'lg'}
-            className="font-bold text-lg mb-12"
-            // TODO Add form for barcode (?) and/or link to box creation here (related to TT-1559)
-          >
-            Ny eske
+            className="font-bold text-lg my-4"
+            onClick={() => setShowBoxRegistrationModal(true)}>
+              Ny eske
           </Button>
 
           <h1 className="self-start font-bold text-xl mb-3"> Kontaktinformasjon: </h1>
