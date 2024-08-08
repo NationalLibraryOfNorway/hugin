@@ -133,37 +133,38 @@ export default function Page({params}: { params: { id: string } }) {
             </div>
 
 
-            <h1 className="self-start font-bold text-xl mb-1"> Kontaktinformasjon: </h1>
+            <div className='flex flex-col outline outline-2 outline-blue-300 p-2 rounded-xl'>
+              <h1 className="self-start font-bold text-xl mb-1"> Kontaktinformasjon: </h1>
 
-            {titleFromDb.vendor &&
+              {titleFromDb.vendor &&
                 <div className="self-start flex flex-row">
                   <p className="text-lg font-bold">Avleverer: </p>
                   <p className="text-lg ml-2">{titleFromDb.vendor}</p>
                 </div>
-            }
+              }
 
-            {titleFromDb.contact_name &&
+              {titleFromDb.contact_name &&
                 <div className="self-start flex flex-row">
                   <p className="text-lg font-bold">Kontaktperson: </p>
                   <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
                 </div>
-            }
+              }
 
-            {titleFromDb.contact_email &&
+              {titleFromDb.contact_email &&
                 <div className="self-start flex flex-row">
                   <p className="text-lg font-bold">E-post: </p>
                   <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
                 </div>
-            }
+              }
 
-            {titleFromDb.contact_phone &&
+              {titleFromDb.contact_phone &&
                 <div className="self-start flex flex-row">
                   <p className="text-lg font-bold">Telefon: </p>
                   <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
                 </div>
-            }
+              }
 
-            {titleFromDb.release_pattern &&
+              {titleFromDb.release_pattern &&
                 <div className="self-start mt-12">
                   <h2 className="font-bold text-xl mb-1">Utgivelsesmønster:</h2>
 
@@ -202,17 +203,18 @@ export default function Page({params}: { params: { id: string } }) {
                     </tbody>
                   </table>
                 </div>
-            }
+              }
 
-            <Button
-              type="button"
-              size="lg"
-              className="edit-button-style mt-5"
-              endContent={<FaEdit size={25}/>}
-              onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
-            >
+              <Button
+                type="button"
+                size="lg"
+                className="edit-button-style mt-5"
+                endContent={<FaEdit size={25}/>}
+                onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
+              >
               Rediger
-            </Button>
+              </Button>
+            </div>
           </div>
         </div>
       </>
