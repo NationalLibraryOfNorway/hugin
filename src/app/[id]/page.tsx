@@ -66,34 +66,21 @@ export default function Page({params}: { params: { id: string } }) {
 
   return (
     <div className='w-11/12 flex flex-col content-center'>
-      <div className='flex flex-row justify-between w-full self-center'>
-        <div className='w-full'>
-          {titleString ? (
-            <h1 className="text-4xl font-bold">{titleString}</h1>
-          ) : (
-            <div>Henter tittel ...</div>
-          )}
-          {titleFromDb && titleFromDb.shelf &&
-              <p className="text-2xl mb-10 mt-1">Hyllesignatur: {titleFromDb.shelf}</p>
-          }
-        </div>
-
-        <div className='items-start mx-2 w-72'>
-          {titleFromDb && titleFromDb.notes &&
-              <NotesComponent
-                notes={titleFromDb.notes ?? ''}
-                onSubmit={submitNotes}
-                maxRows={2}
-                notesTitle='Merknad/kommentar på tittel:'
-              />
-          }
-        </div>
-      </div>
-
       {titleFromDb ? (<>
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div>
             <div className='flex flex-col'>
+              <div className='w-full mb-10'>
+                {titleString ? (
+                  <h1 className="text-4xl font-bold">{titleString}</h1>
+                ) : (
+                  <div>Henter tittel ...</div>
+                )}
+                {titleFromDb && titleFromDb.shelf &&
+                    <p className="text-2xl mt-1">Hyllesignatur: {titleFromDb.shelf}</p>
+                }
+              </div>
+
               <div className='flex flex-row flex-wrap items-center'>
                 {titleFromDb.last_box ? (
                   <>
@@ -129,6 +116,17 @@ export default function Page({params}: { params: { id: string } }) {
           </div>
 
           <div className="flex flex-col">
+            <div className='items-start mx-2 w-72 mb-6'>
+              {titleFromDb &&
+                  <NotesComponent
+                    notes={titleFromDb.notes ?? ''}
+                    onSubmit={submitNotes}
+                    maxRows={2}
+                    notesTitle='Merknad/kommentar på tittel:'
+                  />
+              }
+            </div>
+
             <div className="flex flex-row mb-10 mt-5">
               <p className="text-xl font-bold"> Serie ID: </p>
               <p className="text-xl ml-2">{params.id}</p>
@@ -227,13 +225,14 @@ export default function Page({params}: { params: { id: string } }) {
 
       {titleFromDbNotFound &&
           <>
-            <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å legge til? </p>
-            <div className="mt-10 flex justify-between">
+            <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å
+              legge til? </p>
+            <div className="mt-12 flex justify-between max-w-3xl w-full self-center">
               <Button
                 type="button"
                 size={'lg'}
                 startContent={<FaArrowAltCircleLeft/>}
-                className="abort-button-style mr-5"
+                className="abort-button-style"
                 onClick={() => router.push('/')}
               >
                 Tilbake
