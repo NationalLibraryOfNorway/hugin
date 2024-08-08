@@ -7,6 +7,9 @@ import {FiSave} from 'react-icons/fi';
 interface NotesProps {
   notes: string;
   onSubmit: (notes: string) => Promise<Response>;
+  minRows?: number;
+  maxRows?: number;
+  notesTitle?: string;
 }
 
 const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
@@ -14,12 +17,16 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
 
   return (
     <div className='flex flex-col w-full'>
+      <label
+        htmlFor='notes'
+        className="text-lg font-bold mb-1 text-start"
+      > { props.notesTitle ?? 'Merknad/kommentar' } </label>
+
       <Formik
         initialValues={{notes: props.notes}}
-        onSubmit={(values, {setSubmitting}) => {
+        onSubmit={(values, {setSubmitting, resetForm}) => {
           void props.onSubmit(values.notes)
             .then(res => {
-              setSubmitting(false);
               if (res.ok) {
                 setShowSuccess(true);
                 setTimeout(() => {
@@ -28,6 +35,10 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               } else {
                 alert('Noe gikk galt ved lagring av kommentar. Kontakt tekst-teamet om problemet vedvarer.');
               }
+            })
+            .finally(() => {
+              setSubmitting(false);
+              resetForm({values});
             });
           setSubmitting(false);
         }}
@@ -35,7 +46,8 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
         {({
           values,
           handleChange,
-          isSubmitting
+          isSubmitting,
+          dirty
         }) => (
           <Form>
             <Textarea
@@ -44,12 +56,12 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               value={values.notes}
               onChange={handleChange}
               className='mb-2'
-              minRows={1}
-              maxRows={9}
+              minRows={props.minRows ?? 1}
+              maxRows={props.maxRows ?? 5}
             />
             <Button
               type='submit'
-              disabled={isSubmitting}
+              disabled={isSubmitting || !dirty}
               endContent={<FiSave/>}
               size={'sm'}
               className='save-button-style [&]:text-small w-full'
@@ -60,7 +72,7 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
 
       <div>
         {showSuccess &&
-            <p className='mt-1'> Kommentar lagret!</p>
+          <p className='mt-1'> Kommentar lagret!</p>
         }
       </div>
     </div>

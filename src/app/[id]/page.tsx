@@ -66,127 +66,144 @@ export default function Page({params}: { params: { id: string } }) {
 
   return (
     <div className='w-11/12 flex flex-col content-center'>
-      {titleString ? (
-        <h1 className="text-4xl font-bold">{titleString}</h1>
-      ) : (
-        <div>Henter tittel ...</div>
-      )}
+      <div className='flex flex-row justify-between w-full self-center'>
+        <div className='w-full'>
+          {titleString ? (
+            <h1 className="text-4xl font-bold">{titleString}</h1>
+          ) : (
+            <div>Henter tittel ...</div>
+          )}
+          {titleFromDb && titleFromDb.shelf &&
+              <p className="text-2xl mb-10 mt-1">Hyllesignatur: {titleFromDb.shelf}</p>
+          }
+        </div>
 
-      <p className="text-xl mb-10 mt-1">Serie-ID: {params.id}</p>
+        <div className='items-start mx-2 w-72'>
+          {titleFromDb && titleFromDb.notes &&
+              <NotesComponent
+                notes={titleFromDb.notes ?? ''}
+                onSubmit={submitNotes}
+                maxRows={2}
+                notesTitle='Merknad/kommentar på tittel:'
+              />
+          }
+        </div>
+      </div>
 
-      {titleFromDb ? (
-        <div className='flex flex-row flex-wrap self-center max-w-full'>
-          <p className='mb-6 py-40 border-5 border-blue-200'>
-            Denne plassen er reservert til avisregistrering,
-            så teksten her er bare for å se hvordan bredden blir.
-          </p>
-          <div className='flex flex-col mx-14 items-start'>
-            {titleFromDb.shelf &&
-                <div className="flex flex-row mb-10">
-                  <p className="text-lg font-bold"> Hyllesignatur: </p>
-                  <p className="text-lg ml-2">{titleFromDb.shelf}</p>
-                </div>
-            }
+      {titleFromDb ? (<>
+        <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
+          <div>
+            <div className='flex flex-col'>
+              <div className='flex flex-row flex-wrap items-center'>
+                {titleFromDb.last_box ? (
+                  <>
+                    <p className="text-lg font-bold">Eske til registrering: </p>
+                    <p className="text-lg ml-2">{boxToString(titleFromDb)}</p>
+                  </>
+                ) : (<p className="text-lg"> Ingen eske registrert </p>)
+                }
 
-            {titleFromDb.last_box ? (
-              <>
-                <p className="text-lg font-bold">Eske til registrering: </p>
-                <p className="text-lg">{boxToString(titleFromDb)}</p>
-              </>
-            ) : (<p className="text-lg mb-2"> Ingen eske registrert </p>)
-            }
+                {showBoxRegistrationModal &&
+                    <BoxRegistrationModal
+                      text='Registrer en ny eske'
+                      closeModal={() => setShowBoxRegistrationModal(false)}
+                      updateBoxInfo={updateBox}
+                      titleId={params.id}/>
+                }
 
-            {showBoxRegistrationModal &&
-                <BoxRegistrationModal
-                  text='Registrer en ny eske'
-                  closeModal={() => setShowBoxRegistrationModal(false)}
-                  updateBoxInfo={updateBox}
-                  titleId={params.id}/>
-            }
+                <Button
+                  endContent={<FaBoxOpen size={25}/>}
+                  size={'md'}
+                  className="edit-button-style ml-4 [&]:text-medium"
+                  onClick={() => setShowBoxRegistrationModal(true)}>
+                  Ny eske
+                </Button>
+              </div>
 
-            <Button
-              endContent={<FaBoxOpen size={25}/>}
-              size={'lg'}
-              className="edit-button-style my-2"
-              onClick={() => setShowBoxRegistrationModal(true)}>
-              Ny eske
-            </Button>
-
-            <p className="text-lg font-bold mt-8 mb-2"> Merknad/kommentar på tittel: </p>
-            <NotesComponent notes={titleFromDb.notes ?? ''} onSubmit={submitNotes}/>
-
+              <p className='mb-6 mt-4 py-64 border-5 border-blue-200'>
+                Denne plassen er reservert til avisregistrering,
+                så teksten her er bare for å se hvordan bredden blir.
+                Til og med når komponenten er veldig veldig veldig veldig bred!
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col">
-            <h1 className="self-start font-bold text-xl mb-2"> Kontaktinformasjon: </h1>
+            <div className="flex flex-row mb-10 mt-5">
+              <p className="text-xl font-bold"> Serie ID: </p>
+              <p className="text-xl ml-2">{params.id}</p>
+            </div>
+
+
+            <h1 className="self-start font-bold text-xl mb-1"> Kontaktinformasjon: </h1>
 
             {titleFromDb.vendor &&
                 <div className="self-start flex flex-row">
-                  <p className="text-lg font-bold" >Avleverer: </p>
+                  <p className="text-lg font-bold">Avleverer: </p>
                   <p className="text-lg ml-2">{titleFromDb.vendor}</p>
                 </div>
             }
 
             {titleFromDb.contact_name &&
-                  <div className="self-start flex flex-row">
-                    <p className="text-lg font-bold" >Kontaktperson: </p>
-                    <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
-                  </div>
+                <div className="self-start flex flex-row">
+                  <p className="text-lg font-bold">Kontaktperson: </p>
+                  <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
+                </div>
             }
 
             {titleFromDb.contact_email &&
-                  <div className="self-start flex flex-row">
-                    <p className="text-lg font-bold" >E-post: </p>
-                    <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
-                  </div>
+                <div className="self-start flex flex-row">
+                  <p className="text-lg font-bold">E-post: </p>
+                  <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
+                </div>
             }
 
             {titleFromDb.contact_phone &&
-                  <div className="self-start flex flex-row">
-                    <p className="text-lg font-bold" >Telefon: </p>
-                    <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
-                  </div>
+                <div className="self-start flex flex-row">
+                  <p className="text-lg font-bold">Telefon: </p>
+                  <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
+                </div>
             }
 
             {titleFromDb.release_pattern &&
-                  <div className="self-start mt-12">
-                    <h2 className="font-bold text-xl mb-2">Utgivelsesmønster:</h2>
+                <div className="self-start mt-12">
+                  <h2 className="font-bold text-xl mb-1">Utgivelsesmønster:</h2>
 
-                    <table className="table-fixed">
-                      <tbody className="text-left">
-                        <tr>
-                          <td className="pr-3 font-bold">Mandag:</td>
-                          <td>{titleFromDb.release_pattern[0]}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold">Tirsdag:</td>
-                          <td>{titleFromDb.release_pattern[1]}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold">Onsdag:</td>
-                          <td>{titleFromDb.release_pattern[2]}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold">Torsdag:</td>
-                          <td>{titleFromDb.release_pattern[3]}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold">Fredag:</td>
-                          <td>{titleFromDb.release_pattern[4]}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold">Lørdag:</td>
-                          <td>{titleFromDb.release_pattern[5]}</td>
-                        </tr>
-                        <tr>
-                          <td className="font-bold">Søndag:</td>
-                          <td>{titleFromDb.release_pattern[6]}</td>
-                        </tr>
+                  <table className="table-fixed">
+                    <tbody className="text-left">
+                      <tr>
+                        <td className="pr-3 font-bold">Mandag:</td>
+                        <td>{titleFromDb.release_pattern[0]}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-bold">Tirsdag:</td>
+                        <td>{titleFromDb.release_pattern[1]}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-bold">Onsdag:</td>
+                        <td>{titleFromDb.release_pattern[2]}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-bold">Torsdag:</td>
+                        <td>{titleFromDb.release_pattern[3]}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-bold">Fredag:</td>
+                        <td>{titleFromDb.release_pattern[4]}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-bold">Lørdag:</td>
+                        <td>{titleFromDb.release_pattern[5]}</td>
+                      </tr>
+                      <tr>
+                        <td className="font-bold">Søndag:</td>
+                        <td>{titleFromDb.release_pattern[6]}</td>
+                      </tr>
 
 
-                      </tbody>
-                    </table>
-                  </div>
+                    </tbody>
+                  </table>
+                </div>
             }
 
             <Button
@@ -196,14 +213,14 @@ export default function Page({params}: { params: { id: string } }) {
               endContent={<FaEdit size={25}/>}
               onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
             >
-                Rediger
+              Rediger
             </Button>
           </div>
-
         </div>
+      </>
       ) : (
         <>
-          { !titleFromDbNotFound && <p> Henter kontakt- og utgivelsesinformasjon... </p> }
+          {!titleFromDbNotFound && <p> Henter kontakt- og utgivelsesinformasjon... </p>}
         </>
       )
       }
