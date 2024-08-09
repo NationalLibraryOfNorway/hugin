@@ -8,14 +8,29 @@ datasource db {
 }
 
 model title {
-  id              Int       @id
-  last_box        String?   @db.VarChar
-  contact_email   String?   @db.VarChar
-  contact_name    String?   @db.VarChar
-  contact_phone   String?   @db.VarChar
-  vendor          String?   @db.VarChar
-  release_pattern Int[]     @default([0, 0, 0, 0, 0, 0, 0])
-  last_box_from   DateTime? @db.Date
-  shelf           String?   @db.VarChar
-  notes           String?   @db.VarChar
+  id              Int         @id
+  last_box        String?     @db.VarChar
+  contact_email   String?     @db.VarChar
+  contact_name    String?     @db.VarChar
+  contact_phone   String?     @db.VarChar
+  vendor          String?     @db.VarChar
+  release_pattern Int[]       @default([0, 0, 0, 0, 0, 0, 0])
+  last_box_from   DateTime?   @db.Date
+  shelf           String?     @db.VarChar
+  notes           String?     @db.VarChar
+  newspaper       newspaper[]
+}
+
+model newspaper {
+  title_id      Int
+  edition       String    @db.VarChar
+  date          DateTime? @db.Date
+  not_published Boolean?
+  received      Boolean?
+  username      String?   @db.VarChar
+  box           String    @db.VarChar
+  notes         String?   @db.VarChar
+  title         title     @relation(fields: [title_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([title_id, box, edition])
 }
