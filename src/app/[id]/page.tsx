@@ -137,7 +137,7 @@ export default function Page({params}: { params: { id: string } }) {
                 </Button>
               </div>
 
-              <IssueList forTitle={titleFromDb}/>
+              <IssueList title={titleFromDb}/>
 
               <p className='mb-6 mt-4 py-64 border-5 border-blue-200'>
                 Denne plassen er reservert til avisregistrering,

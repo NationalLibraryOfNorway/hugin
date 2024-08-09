@@ -1,6 +1,9 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '@/lib/prisma';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import {newspaper} from '@prisma/client';
 
 export default async function handle(
   req: NextApiRequest,
@@ -11,6 +14,8 @@ export default async function handle(
   switch (req.method) {
   case 'GET':
     return handleGET(titleId as string, res);
+  case 'POST':
+    return handlePOST(titleId as string, req.body as newspaper[], res);
   default:
     throw new Error('Method not supported');
   }
@@ -19,7 +24,6 @@ export default async function handle(
 // GET api/newspaper/[title_id]
 async function handleGET(titleId: string, res: NextApiResponse) {
   const issuesForTitle = await prisma.newspaper.findMany({
-    // eslint-disable-next-line @typescript-eslint/naming-convention
     where: { title_id: +titleId },
     orderBy: { date: 'asc' }
   }).catch((e: Error) => {
@@ -30,4 +34,26 @@ async function handleGET(titleId: string, res: NextApiResponse) {
   });
 
   return res.status(200).json(issuesForTitle);
+}
+
+async function handlePOST(titleId: string, issues: newspaper[], res: NextApiResponse) {
+  await prisma.$transaction(
+    issues.map(issue =>
+      prisma.newspaper.upsert({
+        where: {
+          title_id_box_edition: {
+            title_id: issue.title_id,
+            box: issue.box,
+            edition: issue.edition
+          }
+        },
+        update: {...issue},
+        create: {...issue}
+      })
+    )
+  ).catch(e => {
+    return res.status(500).json({error: `Failed to create or update newspapers: ${e}`});
+  });
+
+  return res.status(200).json(issues);
 }

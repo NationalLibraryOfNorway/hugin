@@ -86,3 +86,13 @@ export async function getIssuesForTitle(id: number): Promise<newspaper[]> {
     return Promise.reject(new Error('Failed to fetch title'));
   }
 }
+
+export async function postNewIssuesForTitle(id: number, issues: newspaper[]): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(issues)
+  });
+}
