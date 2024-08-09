@@ -7,9 +7,9 @@ export default function AppShell({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="h-screen flex flex-col text-center">
+    <div className="min-h-screen flex flex-col text-center">
       <Header />
-      <div className="flex-grow h-screen flex justify-center pt-10">
+      <div className="flex-grow flex justify-center pt-10">
         {children}
       </div>
       <footer className="py-3">

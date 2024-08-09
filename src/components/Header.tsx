@@ -25,12 +25,12 @@ export default function Header() {
       </NavbarBrand>
       { titlepageRegex.test(pathname) &&
       <NavbarContent justify="center">
-        <NavbarItem className="hidden lg:flex">
+        <NavbarItem className="lg:flex">
           <SearchBar inHeader={true}/>
         </NavbarItem>
       </NavbarContent> }
       <NavbarContent justify="end">
-        <NavbarItem className="hidden lg:flex">
+        <NavbarItem className="lg:flex">
           <Button
             as={Link}
             variant="light"

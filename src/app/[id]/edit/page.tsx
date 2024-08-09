@@ -14,6 +14,7 @@ import NumberInputWithButtons from '@/components/NumberInput';
 import SuccessModal from '@/components/SuccessModal';
 import {FiSave} from 'react-icons/fi';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
+import {Textarea} from '@nextui-org/input';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -76,7 +77,7 @@ export default function Page({params}: { params: { id: string } }) {
   }
 
   return (
-    <div className='flex w-7/12 flex-col max-w-screen-lg items-start'>
+    <div className='flex w-9/12 flex-col max-w-screen-lg items-start'>
       <Button
         type='button'
         className='abort-button-style mb-5'
@@ -90,7 +91,7 @@ export default function Page({params}: { params: { id: string } }) {
         <div>
           {titleString ? (
             <div className='flex flex-row items-center'>
-              <h1 className='text-4xl font-bold'> {titleString} </h1>
+              <h1 className='top-title-style'> {titleString} </h1>
               <p className='ml-4 text-2xl'> ({params.id}) </p>
             </div>
           )
@@ -122,52 +123,52 @@ export default function Page({params}: { params: { id: string } }) {
               isValid
             }) => (
               <Form className='flex flex-col items-start' onSubmit={handleSubmit}>
-                <div className='flex flex-row'>
-                  <div className='w-60 mr-20 flex flex-col'>
-                    <p className='text-gray-700 text-xl font-bold mb-4 text-left'>Kontaktinformasjon</p>
-                    <label htmlFor='vendor' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Avleverer </label>
+                <div className='flex flex-row flex-wrap'>
+                  <div className='w-60 mr-20 flex flex-col mb-6'>
+                    <p className='group-title-style mb-4 text-left'>Kontaktinformasjon</p>
+                    <label htmlFor='vendor' className='group-subtitle-style mb-1 self-start'> Avleverer </label>
                     <Field
                       type='text'
                       id='vendor'
-                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.vendor ?? ''}
                     />
 
-                    <label htmlFor='contact_name' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Navn </label>
+                    <label htmlFor='contact_name' className='group-subtitle-style mb-1 self-start'> Navn </label>
                     <Field
                       type='text'
                       id='contact_name'
-                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_name ?? ''}
                     />
 
-                    <label htmlFor='contact_email' className='block text-gray-700 text-medium font-bold mb-1 self-start'> E-post </label>
+                    <label htmlFor='contact_email' className='group-subtitle-style mb-1 self-start'> E-post </label>
                     <Field
                       type='text'
                       id='contact_email'
-                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_email ?? ''}
                     />
 
-                    <label htmlFor='contact_phone' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Telefon </label>
+                    <label htmlFor='contact_phone' className='group-subtitle-style mb-1 self-start'> Telefon </label>
                     <Field
                       type='text'
                       id='contact_phone'
-                      className='border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_phone ?? ''}
                     />
                   </div>
 
-                  <div className='w-60 overflow-auto flex flex-col'>
-                    <p className='text-gray-700 text-xl font-bold mb-4 text-left'> Utgivelsesmønster </p>
+                  <div className='w-60 overflow-auto flex flex-col mb-6'>
+                    <p className='group-title-style mb-4 text-left'> Utgivelsesmønster </p>
                     <Table hideHeader removeWrapper className='table-fixed text-left' aria-labelledby='releaseTable'>
                       <TableHeader>
                         <TableColumn>Dag</TableColumn>
@@ -181,7 +182,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[0]'}
                               value={+values.release_pattern[0]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -192,13 +193,13 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className='text-lg p-0' >Tirsdag</TableCell>
+                          <TableCell className='text-lg p-0'>Tirsdag</TableCell>
                           <TableCell className='py-0 pr-0'>
                             <Field
                               name={'release_pattern[1]'}
                               value={+values.release_pattern[1]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -209,13 +210,13 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className='text-lg p-0' >Onsdag</TableCell>
+                          <TableCell className='text-lg p-0'>Onsdag</TableCell>
                           <TableCell className='py-0 pr-0'>
                             <Field
                               name={'release_pattern[2]'}
                               value={+values.release_pattern[2]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -226,13 +227,13 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className='text-lg p-0' >Torsdag</TableCell>
+                          <TableCell className='text-lg p-0'>Torsdag</TableCell>
                           <TableCell className='py-0 pr-0'>
                             <Field
                               name={'release_pattern[3]'}
                               value={+values.release_pattern[3]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -243,13 +244,13 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className='text-lg p-0' >Fredag</TableCell>
+                          <TableCell className='text-lg p-0'>Fredag</TableCell>
                           <TableCell className='py-0 pr-0'>
                             <Field
                               name={'release_pattern[4]'}
                               value={+values.release_pattern[4]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -260,13 +261,13 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className='text-lg p-0' >Lørdag</TableCell>
+                          <TableCell className='text-lg p-0'>Lørdag</TableCell>
                           <TableCell className='py-0 pr-0'>
                             <Field
                               name={'release_pattern[5]'}
                               value={+values.release_pattern[5]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -277,13 +278,13 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
 
                         <TableRow>
-                          <TableCell className='text-lg p-0' >Søndag</TableCell>
+                          <TableCell className='text-lg p-0'>Søndag</TableCell>
                           <TableCell className='py-0 pr-0'>
                             <Field
                               name={'release_pattern[6]'}
                               value={+values.release_pattern[6]}
                               component={NumberInputWithButtons}
-                              className='border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200'
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -294,6 +295,28 @@ export default function Page({params}: { params: { id: string } }) {
                         </TableRow>
                       </TableBody>
                     </Table>
+                  </div>
+
+                  <div>
+                    <p className='group-title-style text-left mb-2'> Hyllesignatur </p>
+                    <Field
+                      type='text'
+                      id='shelf'
+                      className='input-text-style'
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.shelf ?? ''}
+                    />
+
+                    <p className='group-title-style text-left mt-6'> Merknad/kommentar </p>
+                    <Textarea
+                      id='notes'
+                      className='w-80 mt-3 input-textarea-style'
+                      maxRows={10}
+                      onChange={handleChange}
+                      onBlur={handleBlur}
+                      value={values.notes ?? ''}
+                    />
                   </div>
                 </div>
 

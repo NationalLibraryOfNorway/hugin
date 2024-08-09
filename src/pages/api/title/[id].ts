@@ -4,6 +4,11 @@ import {title} from '@prisma/client';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
 import {Box} from '@/models/Box';
 
+type PatchData = {
+  box?: Box;
+  notes?: string;
+};
+
 
 // ANY api/title/[id]
 export default async function handle(
@@ -18,7 +23,7 @@ export default async function handle(
   case 'POST':
     return handlePOST(req.body as title, res);
   case 'PATCH':
-    return handlePATCH(titleId as string, req.body as Box, res);
+    return handlePATCH(titleId as string, req.body as PatchData, res);
   default:
     throw new Error('Method not supported');
   }
@@ -54,14 +59,25 @@ async function handlePOST(localTitle: title, res: NextApiResponse) {
 }
 
 // PATCH api/title/[id]
-async function handlePATCH(titleId: string, box: Box,  res: NextApiResponse) {
-  await prisma.title.update({
-    where: { id: +titleId },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    data: { last_box: box.boxId, last_box_from: box.startDate }
-  }).catch(e => {
-    return res.status(500).json({error: `Failed to update title: ${e}`});
-  });
+async function handlePATCH(titleId: string, data: PatchData, res: NextApiResponse) {
+  if (data.box) {
+    await prisma.title.update({
+      where: { id: +titleId },
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      data: { last_box: data.box.boxId, last_box_from: data.box.startDate }
+    }).catch(e => {
+      return res.status(500).json({error: `Failed to update box for title: ${e}`});
+    });
+  }
+
+  if (data.notes) {
+    await prisma.title.update({
+      where: { id: +titleId },
+      data: { notes: data.notes }
+    }).catch(e => {
+      return res.status(500).json({error: `Failed to update notes for title: ${e}`});
+    });
+  }
 
   return res.status(204).end();
 }

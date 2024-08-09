@@ -25,7 +25,7 @@ export async function postLocalTitle(localTitle: title): Promise<Response> {
   });
 }
 
-export async function updateLocalTitle(
+export async function updateBoxForTitle(
   titleId: string,
   box: Box
 ): Promise<Response> {
@@ -34,6 +34,19 @@ export async function updateLocalTitle(
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(box)
+    body: JSON.stringify({box})
+  });
+}
+
+export async function updateNotesForTitle(
+  titleId: string,
+  notes: string
+): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({notes})
   });
 }
