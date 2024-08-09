@@ -47,9 +47,13 @@ input[type=number] {
 }
 
 .input-text-style {
-    @apply border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200;
+    @apply border rounded mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200;
 }
 
 .input-number-style {
-    @apply border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200;
+    @apply border rounded w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200;
+}
+
+.input-textarea-style {
+    @apply border rounded-xl text-gray-700 focus:outline-secondary-200;
 }
