@@ -94,7 +94,7 @@ export default function Page({params}: { params: { id: string } }) {
         <div>
           {titleString ? (
             <div className='flex flex-row items-center'>
-              <h1 className='text-4xl font-bold'> {titleString} </h1>
+              <h1 className='top-title-style'> {titleString} </h1>
               <p className='ml-4 text-2xl'> ({params.id}) </p>
             </div>
           )
@@ -128,8 +128,8 @@ export default function Page({params}: { params: { id: string } }) {
               <Form className='flex flex-col items-start' onSubmit={handleSubmit}>
                 <div className='flex flex-row flex-wrap'>
                   <div className='w-60 mr-20 flex flex-col mb-6'>
-                    <p className='text-gray-700 text-xl font-bold mb-4 text-left'>Kontaktinformasjon</p>
-                    <label htmlFor='vendor' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Avleverer </label>
+                    <p className='group-title-style mb-4 text-left'>Kontaktinformasjon</p>
+                    <label htmlFor='vendor' className='group-subtitle-style mb-1 self-start'> Avleverer </label>
                     <Field
                       type='text'
                       id='vendor'
@@ -139,7 +139,7 @@ export default function Page({params}: { params: { id: string } }) {
                       value={values.vendor ?? ''}
                     />
 
-                    <label htmlFor='contact_name' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Navn </label>
+                    <label htmlFor='contact_name' className='group-subtitle-style mb-1 self-start'> Navn </label>
                     <Field
                       type='text'
                       id='contact_name'
@@ -149,7 +149,7 @@ export default function Page({params}: { params: { id: string } }) {
                       value={values.contact_name ?? ''}
                     />
 
-                    <label htmlFor='contact_email' className='block text-gray-700 text-medium font-bold mb-1 self-start'> E-post </label>
+                    <label htmlFor='contact_email' className='group-subtitle-style mb-1 self-start'> E-post </label>
                     <Field
                       type='text'
                       id='contact_email'
@@ -159,7 +159,7 @@ export default function Page({params}: { params: { id: string } }) {
                       value={values.contact_email ?? ''}
                     />
 
-                    <label htmlFor='contact_phone' className='block text-gray-700 text-medium font-bold mb-1 self-start'> Telefon </label>
+                    <label htmlFor='contact_phone' className='group-subtitle-style mb-1 self-start'> Telefon </label>
                     <Field
                       type='text'
                       id='contact_phone'
@@ -171,7 +171,7 @@ export default function Page({params}: { params: { id: string } }) {
                   </div>
 
                   <div className='w-60 overflow-auto flex flex-col mb-6'>
-                    <p className='text-gray-700 text-xl font-bold mb-4 text-left'> Utgivelsesmønster </p>
+                    <p className='group-title-style mb-4 text-left'> Utgivelsesmønster </p>
                     <Table hideHeader removeWrapper className='table-fixed text-left' aria-labelledby='releaseTable'>
                       <TableHeader>
                         <TableColumn>Dag</TableColumn>
@@ -301,7 +301,7 @@ export default function Page({params}: { params: { id: string } }) {
                   </div>
 
                   <div>
-                    <p className='text-gray-700 text-xl font-bold text-left mb-2'> Hyllesignatur </p>
+                    <p className='group-title-style text-left mb-2'> Hyllesignatur </p>
                     <Field
                       type='text'
                       id='shelf'
@@ -311,7 +311,7 @@ export default function Page({params}: { params: { id: string } }) {
                       value={values.shelf ?? ''}
                     />
 
-                    <p className='text-gray-700 text-xl font-bold text-left mt-6'> Merknad/kommentar </p>
+                    <p className='group-title-style text-left mt-6'> Merknad/kommentar </p>
                     <Textarea
                       id='notes'
                       className='border mt-3 py-2 px-3 w-80 text-gray-700 focus:outline-secondary-200'
