@@ -23,9 +23,6 @@ export default function Page({params}: { params: { id: string } }) {
   const [saveMessageIsVisible, setSaveMessageIsVisible] = useState<boolean>(false);
   const titleFromQueryParams = useSearchParams()?.get('title');
 
-  const textFieldCss: string = 'border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200';
-  const numberFieldCss: string = 'border w-12 py-2 px-3 text-gray-700 focus:outline-secondary-200';
-
   useEffect(() => {
     if (titleFromQueryParams) {
       setTitleString(titleFromQueryParams);
@@ -133,7 +130,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='vendor'
-                      className={textFieldCss}
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.vendor ?? ''}
@@ -143,7 +140,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='contact_name'
-                      className={textFieldCss}
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_name ?? ''}
@@ -153,7 +150,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='contact_email'
-                      className={textFieldCss}
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_email ?? ''}
@@ -163,7 +160,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='contact_phone'
-                      className={textFieldCss}
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_phone ?? ''}
@@ -185,7 +182,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[0]'}
                               value={+values.release_pattern[0]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -202,7 +199,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[1]'}
                               value={+values.release_pattern[1]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -219,7 +216,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[2]'}
                               value={+values.release_pattern[2]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -236,7 +233,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[3]'}
                               value={+values.release_pattern[3]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -253,7 +250,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[4]'}
                               value={+values.release_pattern[4]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -270,7 +267,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[5]'}
                               value={+values.release_pattern[5]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -287,7 +284,7 @@ export default function Page({params}: { params: { id: string } }) {
                               name={'release_pattern[6]'}
                               value={+values.release_pattern[6]}
                               component={NumberInputWithButtons}
-                              className={numberFieldCss}
+                              className='input-number-style'
                               onChange={handleChange}
                               validate={validateBetweenZeroAndFive}
                               onBlur={handleBlur}
@@ -305,7 +302,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='shelf'
-                      className={textFieldCss}
+                      className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.shelf ?? ''}
