@@ -48,7 +48,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
               <br/>
 
               <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="startDate">Fra dato</label>
-              <DatePickerField fieldName="startDate"/>
+              <CalendarField fieldName="startDate"/>
 
               <Button type="submit"
                 size={'lg'}
@@ -75,7 +75,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 
 export default BoxRegistrationModal;
 
-const DatePickerField = (props: { fieldName: string }) => {
+const CalendarField = (props: { fieldName: string }) => {
   const [field, , {setValue}] = useField(props.fieldName);
   return (
     <Calendar
