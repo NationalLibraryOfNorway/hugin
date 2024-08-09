@@ -72,7 +72,7 @@ export default function Page({params}: { params: { id: string } }) {
             <div className='flex flex-col'>
               <div className='w-full mb-10'>
                 {titleString ? (
-                  <h1 className="text-4xl font-bold">{titleString}</h1>
+                  <h1 className="top-title-style">{titleString}</h1>
                 ) : (
                   <div>Henter tittel ...</div>
                 )}
@@ -84,10 +84,10 @@ export default function Page({params}: { params: { id: string } }) {
               <div className='flex flex-row flex-wrap items-center'>
                 {titleFromDb.last_box ? (
                   <>
-                    <p className="text-lg font-bold">Eske til registrering: </p>
-                    <p className="text-lg ml-2">{boxToString(titleFromDb)}</p>
+                    <p className="group-title-style">Eske til registrering: </p>
+                    <p className="group-content-style ml-2">{boxToString(titleFromDb)}</p>
                   </>
-                ) : (<p className="text-lg"> Ingen eske registrert </p>)
+                ) : (<p className="group-content-style"> Ingen eske registrert </p>)
                 }
 
                 {showBoxRegistrationModal &&
@@ -110,7 +110,7 @@ export default function Page({params}: { params: { id: string } }) {
               <p className='mb-6 mt-4 py-64 border-5 border-blue-200'>
                 Denne plassen er reservert til avisregistrering,
                 så teksten her er bare for å se hvordan bredden blir.
-                Til og med når komponenten er veldig veldig veldig veldig bred!
+                Til og med når komponenten er veldig veldig bred!
               </p>
             </div>
           </div>
@@ -128,75 +128,75 @@ export default function Page({params}: { params: { id: string } }) {
             </div>
 
             <div className="flex flex-row mb-10 mt-5">
-              <p className="text-xl font-bold"> Serie ID: </p>
-              <p className="text-xl ml-2">{params.id}</p>
+              <p className="group-title-style"> Serie ID: </p>
+              <p className="group-content-style ml-2">{params.id}</p>
             </div>
 
 
             <div className='flex flex-col outline outline-2 outline-blue-300 p-2 rounded-xl'>
-              <h1 className="self-start font-bold text-xl mb-1"> Kontaktinformasjon: </h1>
+              <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
 
               {titleFromDb.vendor &&
                 <div className="self-start flex flex-row">
-                  <p className="text-lg font-bold">Avleverer: </p>
-                  <p className="text-lg ml-2">{titleFromDb.vendor}</p>
+                  <p className="group-subtitle-style">Avleverer: </p>
+                  <p className="group-content-style ml-2">{titleFromDb.vendor}</p>
                 </div>
               }
 
               {titleFromDb.contact_name &&
                 <div className="self-start flex flex-row">
-                  <p className="text-lg font-bold">Kontaktperson: </p>
-                  <p className="text-lg ml-2">{titleFromDb.contact_name}</p>
+                  <p className="group-subtitle-style">Kontaktperson: </p>
+                  <p className="group-content-style ml-2">{titleFromDb.contact_name}</p>
                 </div>
               }
 
               {titleFromDb.contact_email &&
                 <div className="self-start flex flex-row">
-                  <p className="text-lg font-bold">E-post: </p>
-                  <p className="text-lg ml-2">{titleFromDb.contact_email}</p>
+                  <p className="group-subtitle-style">E-post: </p>
+                  <p className="group-content-style ml-2">{titleFromDb.contact_email}</p>
                 </div>
               }
 
               {titleFromDb.contact_phone &&
                 <div className="self-start flex flex-row">
-                  <p className="text-lg font-bold">Telefon: </p>
-                  <p className="text-lg ml-2">{titleFromDb.contact_phone}</p>
+                  <p className="group-subtitle-style">Telefon: </p>
+                  <p className="group-content-style ml-2">{titleFromDb.contact_phone}</p>
                 </div>
               }
 
               {titleFromDb.release_pattern &&
                 <div className="self-start mt-12">
-                  <h2 className="font-bold text-xl mb-1">Utgivelsesmønster:</h2>
+                  <h2 className="group-title-style mb-2">Utgivelsesmønster:</h2>
 
                   <table className="table-fixed">
                     <tbody className="text-left">
                       <tr>
                         <td className="pr-3 font-bold">Mandag:</td>
-                        <td>{titleFromDb.release_pattern[0]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[0]}</td>
                       </tr>
                       <tr>
                         <td className="font-bold">Tirsdag:</td>
-                        <td>{titleFromDb.release_pattern[1]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[1]}</td>
                       </tr>
                       <tr>
                         <td className="font-bold">Onsdag:</td>
-                        <td>{titleFromDb.release_pattern[2]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[2]}</td>
                       </tr>
                       <tr>
                         <td className="font-bold">Torsdag:</td>
-                        <td>{titleFromDb.release_pattern[3]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[3]}</td>
                       </tr>
                       <tr>
                         <td className="font-bold">Fredag:</td>
-                        <td>{titleFromDb.release_pattern[4]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[4]}</td>
                       </tr>
                       <tr>
                         <td className="font-bold">Lørdag:</td>
-                        <td>{titleFromDb.release_pattern[5]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[5]}</td>
                       </tr>
                       <tr>
                         <td className="font-bold">Søndag:</td>
-                        <td>{titleFromDb.release_pattern[6]}</td>
+                        <td className='group-content-style'>{titleFromDb.release_pattern[6]}</td>
                       </tr>
 
 

@@ -19,7 +19,7 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
     <div className='flex flex-col w-full'>
       <label
         htmlFor='notes'
-        className="text-lg font-bold mb-1 text-start"
+        className="group-title-style mb-1 text-start"
       > { props.notesTitle ?? 'Merknad/kommentar' } </label>
 
       <Formik
