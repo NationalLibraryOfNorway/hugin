@@ -14,6 +14,7 @@ import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
 import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
+import IssueList from '@/components/IssueList';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -136,11 +137,14 @@ export default function Page({params}: { params: { id: string } }) {
                 </Button>
               </div>
 
+              <IssueList forTitle={titleFromDb}/>
+
               <p className='mb-6 mt-4 py-64 border-5 border-blue-200'>
                 Denne plassen er reservert til avisregistrering,
                 så teksten her er bare for å se hvordan bredden blir.
                 Til og med når komponenten er veldig veldig bred!
               </p>
+
             </div>
           </div>
 
