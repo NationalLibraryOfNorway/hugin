@@ -64,7 +64,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                   <Field
                     type='text'
                     id='vendor'
-                    className='input-text-style'
+                    className='input-text-style mb-3'
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.vendor ?? ''}
@@ -74,7 +74,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                   <Field
                     type='text'
                     id='contact_name'
-                    className='input-text-style'
+                    className='input-text-style mb-3'
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.contact_name ?? ''}
@@ -84,7 +84,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                   <Field
                     type='text'
                     id='contact_email'
-                    className='input-text-style'
+                    className='input-text-style mb-3'
                     onChange={handleChange}
                     onBlur={handleBlur}
                     value={values.contact_email ?? ''}

@@ -124,7 +124,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='vendor'
-                      className='input-text-style'
+                      className='input-text-style mb-3'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.vendor ?? ''}
@@ -134,7 +134,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='contact_name'
-                      className='input-text-style'
+                      className='input-text-style mb-3'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_name ?? ''}
@@ -144,7 +144,7 @@ export default function Page({params}: { params: { id: string } }) {
                     <Field
                       type='text'
                       id='contact_email'
-                      className='input-text-style'
+                      className='input-text-style mb-3'
                       onChange={handleChange}
                       onBlur={handleBlur}
                       value={values.contact_email ?? ''}
@@ -161,7 +161,7 @@ export default function Page({params}: { params: { id: string } }) {
                     />
                   </div>
 
-                  <div className='w-60 overflow-auto flex flex-col mb-6'>
+                  <div className='w-60 overflow-auto flex flex-col mb-6 my-4'>
                     <p className='group-title-style mb-4 text-left'> Utgivelsesmønster </p>
                     <Table hideHeader removeWrapper className='table-fixed text-left' aria-labelledby='releaseTable'>
                       <TableHeader>

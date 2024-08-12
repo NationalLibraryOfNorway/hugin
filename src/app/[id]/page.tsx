@@ -92,7 +92,7 @@ export default function Page({params}: { params: { id: string } }) {
                 {titleString ? (
                   <h1 className="top-title-style">{titleString}</h1>
                 ) : (
-                  <div>Henter tittel ...</div>
+                  <p>Henter tittel ...</p>
                 )}
                 <div className='flex flex-row justify-between items-center mt-4'>
                   <EditTextInput
@@ -176,7 +176,7 @@ export default function Page({params}: { params: { id: string } }) {
             {titleString ? (
               <h1 className="top-title-style">{titleString}</h1>
             ) : (
-              <div>Henter tittel ...</div>
+              <p>Henter tittel ...</p>
             )}
 
             <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å
