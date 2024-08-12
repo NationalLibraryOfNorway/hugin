@@ -10,10 +10,11 @@ export default async function handle(
   res: NextApiResponse
 ) {
   const titleId = req.query.title_id;
+  const box = req.query.box;
 
   switch (req.method) {
   case 'GET':
-    return handleGET(titleId as string, res);
+    return handleGET(titleId as string, box as string, res);
   case 'POST':
     return handlePOST(titleId as string, req.body as newspaper[], res);
   default:
@@ -21,10 +22,13 @@ export default async function handle(
   }
 }
 
-// GET api/newspaper/[title_id]
-async function handleGET(titleId: string, res: NextApiResponse) {
+// GET api/newspaper/[title_id]?box=[box]
+async function handleGET(titleId: string, box: string, res: NextApiResponse) {
   const issuesForTitle = await prisma.newspaper.findMany({
-    where: { title_id: +titleId },
+    where: {
+      title_id: +titleId,
+      box
+    },
     orderBy: { date: 'asc' }
   }).catch((e: Error) => {
     if (e instanceof PrismaClientKnownRequestError) { // Error returned from prisma when not found (but request is OK)
@@ -36,6 +40,7 @@ async function handleGET(titleId: string, res: NextApiResponse) {
   return res.status(200).json(issuesForTitle);
 }
 
+// POST api/newspaper/[title_id]
 async function handlePOST(titleId: string, issues: newspaper[], res: NextApiResponse) {
   await prisma.$transaction(
     issues.map(issue =>

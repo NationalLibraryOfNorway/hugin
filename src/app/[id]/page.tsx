@@ -84,7 +84,7 @@ export default function Page({params}: { params: { id: string } }) {
   }
 
   return (
-    <div className='w-11/12 flex flex-col content-center'>
+    <div className='w-9/12 flex flex-col content-center'>
       {titleFromDb ? (<>
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div>
@@ -146,6 +146,34 @@ export default function Page({params}: { params: { id: string } }) {
               </p>
 
             </div>
+
+            <div className='flex flex-row flex-wrap items-center'>
+              {titleFromDb.last_box ? (
+                <>
+                  <p className="group-title-style">Eske til registrering: </p>
+                  <p className="group-content-style ml-2">{boxToString(titleFromDb)}</p>
+                </>
+              ) : (<p className="group-content-style"> Ingen eske registrert </p>)
+              }
+
+              {showBoxRegistrationModal &&
+                  <BoxRegistrationModal
+                    text='Registrer en ny eske'
+                    closeModal={() => setShowBoxRegistrationModal(false)}
+                    updateBoxInfo={updateBox}
+                    titleId={params.id}/>
+              }
+
+              <Button
+                endContent={<FaBoxOpen size={25}/>}
+                size={'md'}
+                className="edit-button-style ml-4 [&]:text-medium"
+                onClick={() => setShowBoxRegistrationModal(true)}>
+                Ny eske
+              </Button>
+            </div>
+
+            <IssueList title={titleFromDb}/>
           </div>
 
           <div className="flex flex-col">

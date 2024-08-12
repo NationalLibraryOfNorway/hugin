@@ -74,8 +74,8 @@ export async function updateShelfForTitle(
   });
 }
 
-export async function getIssuesForTitle(id: number): Promise<newspaper[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${id}`);
+export async function getIssuesForTitle(id: number, box: string): Promise<newspaper[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${id}?box=${box}`);
 
   switch (response.status) {
   case 200:

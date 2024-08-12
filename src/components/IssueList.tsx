@@ -6,6 +6,7 @@ import {FaEdit, FaTrash} from 'react-icons/fa';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
+import { Button } from '@nextui-org/react';
 
 
 export default function IssueList(props: {title: title}) {
@@ -33,7 +34,7 @@ export default function IssueList(props: {title: title}) {
       });
       return formTitles;
     }
-    void getIssuesForTitle(props.title.id)
+    void getIssuesForTitle(props.title.id, props.title.last_box ?? '')
       .then((data: newspaper[]) => {
         setNIssuesInDb(data.length);
         const editableIndices = new Array<boolean>(data.length);
@@ -52,9 +53,7 @@ export default function IssueList(props: {title: title}) {
   }
 
   return (
-    <div>
-      <p>Form:</p>
-
+    <div className='w-full mb-6 mt-4 py-10 pl-50 pr-50 border-5 border-blue-200 m-30'>
       <Formik
         initialValues={initialValues}
         enableReinitialize
@@ -82,7 +81,7 @@ export default function IssueList(props: {title: title}) {
             <FieldArray name="issues">
               {({push, remove}) => (
                 <div>
-                  <table>
+                  <table className="w-full">
                     <thead>
                       <tr>
                         <th>Dag</th>
@@ -120,7 +119,7 @@ export default function IssueList(props: {title: title}) {
                               className="max-w-16 border text-center"
                               type="text"
                               width='40'
-                              disabled={!editableIssues[index]}
+                              disabled={!editableIssues[index] || index < nIssuesInDb}
                             />
                             <ErrorMessage
                               name={`issues.${index}.edition`}
@@ -181,9 +180,9 @@ export default function IssueList(props: {title: title}) {
                       ))}
                     </tbody>
                   </table>
-                  <button
+                  <Button
                     type="button"
-                    className="secondary"
+                    className="secondary edit-button-style my-4"
                     onClick={() => {
                       push({
                         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -200,12 +199,12 @@ export default function IssueList(props: {title: title}) {
                       setEditableIssues(editableIssues.toSpliced(editableIssues.length, 0, true));
                     }}
                   >
-                    Add issue
-                  </button>
+                    Legg til ny utgave
+                  </Button>
                 </div>
               )}
             </FieldArray>
-            <button type="submit">Save</button>
+            <Button className="save-button-style" type="submit">Lagre</Button>
           </Form>
         )}
       </Formik>
