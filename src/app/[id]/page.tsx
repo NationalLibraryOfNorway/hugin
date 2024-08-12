@@ -24,10 +24,15 @@ export default function Page({params}: { params: { id: string } }) {
   useEffect(() => {
     if (titleFromQueryParams) {
       setTitleString(titleFromQueryParams);
+      document.title = titleString ?? 'Hugin';
     } else {
-      void fetchNewspaperTitleFromCatalog(params.id).then((data: CatalogTitle) => setTitleString(data.name));
+      void fetchNewspaperTitleFromCatalog(params.id)
+        .then((data: CatalogTitle) => {
+          setTitleString(data.name);
+          document.title = titleString ?? 'Hugin';
+        });
     }
-  }, [params, titleFromQueryParams]);
+  }, [params, titleFromQueryParams, titleString]);
 
   useEffect(() => {
     void getLocalTitle(params.id)
