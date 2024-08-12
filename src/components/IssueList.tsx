@@ -1,12 +1,13 @@
 import {newspaper, title} from '@prisma/client';
 import React, {useEffect, useState} from 'react';
 import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
-import {Field, FieldArray, Form, Formik, useField} from 'formik';
+import {ErrorMessage, Field, FieldArray, Form, Formik, useField} from 'formik';
 import {FaEdit, FaTrash} from 'react-icons/fa';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { Button, Spinner } from '@nextui-org/react';
+import * as Yup from 'yup';
 
 
 export default function IssueList(props: {title: title}) {
@@ -54,6 +55,36 @@ export default function IssueList(props: {title: title}) {
     } else return '';
   }
 
+  const NewIssueSchema = Yup.object().shape({
+    issues: Yup.array().of(
+      Yup.object().shape({
+        date: Yup.date().required('Dato er påkrevd'),
+        edition: Yup.string().required('Utgave nr. er påkrevd'),
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        not_published: Yup.boolean().nullable(),
+        received: Yup.boolean().nullable()
+      }).test(
+        'only-one-choice',
+        'Bare én boks må være krysset av',
+        issue => !(!!issue.not_published && !!issue.received)
+      )
+    ).test(
+      'no-duplicate-edition',
+      'Kan ikke bruke samme nummer flere ganger',
+      formIssues => {
+        const seenEditions: string[] = [];
+        let duplicates = false;
+        formIssues?.forEach(issue => {
+          if (seenEditions.includes(issue.edition))
+            duplicates = true;
+          seenEditions.push(issue.edition);
+        });
+        console.log(duplicates);
+        return !duplicates;
+      }
+    )
+  });
+
   return (
     <div className='w-full mb-6 mt-4 py-10 pl-50 pr-50 border-5 border-blue-200 m-30'>
       {loading ? (
@@ -62,28 +93,26 @@ export default function IssueList(props: {title: title}) {
         <Formik
           initialValues={initialValues}
           enableReinitialize
+          validationSchema={NewIssueSchema}
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
-            const newIssues = values.issues;
-            setTimeout(() => {
-              void postNewIssuesForTitle(props.title.id, newIssues).then(res => {
-                setSubmitting(false);
-                if (res.ok) {
-                  const editableIndices = new Array<boolean>(values.issues.length);
-                  editableIndices.fill(false);
-                  setEditableIssues(editableIndices);
-                  setIssues(values.issues);
-                  setNIssuesInDb(values.issues.length);
-                } else {
-                  alert('Noe gikk galt...');
-                }
-              });
+            void postNewIssuesForTitle(props.title.id, values.issues).then(res => {
               setSubmitting(false);
-            }, 400);
+              if (res.ok) {
+                const editableIndices = new Array<boolean>(values.issues.length);
+                editableIndices.fill(false);
+                setEditableIssues(editableIndices);
+                setIssues(values.issues);
+                setNIssuesInDb(values.issues.length);
+              } else {
+                alert('Noe gikk galt...');
+              }
+            });
+            setSubmitting(false);
           }}
         >
-          {({ values }) => (
+          {({ values, isSubmitting }) => (
             <Form>
               <FieldArray name="issues">
                 {({push, remove}) => (
@@ -97,8 +126,7 @@ export default function IssueList(props: {title: title}) {
                           <th className="min-w-16">Ikke utgitt</th>
                           <th className="min-w-16">Mottatt</th>
                           <th>Kommentar</th>
-                          <th></th>
-                          <th></th>
+                          <th className="min-w-8"></th>
                         </tr>
                       </thead>
                       <tbody>
@@ -113,7 +141,11 @@ export default function IssueList(props: {title: title}) {
                                 value={issue.date}
                                 fieldName={`issues.${index}.date`}
                                 disabled={!editableIssues[index]}
-                                required={true}
+                              />
+                              <ErrorMessage
+                                name={`issues.${index}.date`}
+                                component="div"
+                                className="field-error"
                               />
                             </td>
                             <td>
@@ -123,7 +155,11 @@ export default function IssueList(props: {title: title}) {
                                 type="text"
                                 width='40'
                                 disabled={!editableIssues[index] || index < nIssuesInDb}
-                                required
+                              />
+                              <ErrorMessage
+                                name={`issues.${index}.edition`}
+                                component="div"
+                                className="field-error"
                               />
                             </td>
                             <td>
@@ -131,8 +167,8 @@ export default function IssueList(props: {title: title}) {
                                 name={`issues.${index}.not_published`}
                                 type="checkbox"
                                 disabled={!editableIssues[index]}
-                                value={issue.not_published || false}
-                                checked={issue.not_published || false}
+                                value={Boolean(issue.not_published)}
+                                checked={Boolean(issue.not_published)}
                               />
                             </td>
                             <td>
@@ -140,8 +176,13 @@ export default function IssueList(props: {title: title}) {
                                 name={`issues.${index}.received`}
                                 type="checkbox"
                                 disabled={!editableIssues[index]}
-                                value={issue.received || false}
-                                checked={issue.received || false}
+                                value={Boolean(issue.received)}
+                                checked={Boolean(issue.received)}
+                              />
+                              <ErrorMessage
+                                name={`issues.${index}.only-one-choice`}
+                                component="div"
+                                className="field-error"
                               />
                             </td>
                             <td>
@@ -164,8 +205,6 @@ export default function IssueList(props: {title: title}) {
                                     <FaEdit/>
                                   </button>
                               }
-                            </td>
-                            <td>
                               { index > nIssuesInDb - 1 &&
                                 <button
                                   type="button"
@@ -203,7 +242,7 @@ export default function IssueList(props: {title: title}) {
                   </div>
                 )}
               </FieldArray>
-              <Button className="save-button-style" type="submit">Lagre</Button>
+              <Button className="save-button-style" type="submit" disabled={isSubmitting}>Lagre</Button>
             </Form>
           )}
         </Formik>
@@ -213,13 +252,11 @@ export default function IssueList(props: {title: title}) {
   );
 }
 
-
-const DatePickerField = (props: { fieldName: string; value: Date | null; id?: string; disabled?: boolean; required: boolean }) => {
+const DatePickerField = (props: { fieldName: string; value: Date | null; id?: string; disabled?: boolean }) => {
   const [field, , {setValue}] = useField(props.fieldName);
   return (
     <DatePicker
       id={props.fieldName}
-      // className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
       {...field}
       {...props}
       onChange={val => {
