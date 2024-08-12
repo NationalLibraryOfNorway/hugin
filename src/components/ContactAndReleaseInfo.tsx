@@ -344,14 +344,13 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
         </>
       )}
 
-      {showSuccess &&
-        <SuccessModal
-          text={'Lagret!'}
-          onExit={() => setShowSuccess(false)}
-          buttonText='Lukk'
-          buttonOnClick={() => setShowSuccess(false)}
-        />
-      }
+      <SuccessModal
+        text={'Lagret!'}
+        onExit={() => setShowSuccess(false)}
+        buttonText='Lukk'
+        buttonOnClick={() => setShowSuccess(false)}
+        showModal={showSuccess}
+      />
     </div>
   );
 };

@@ -15,6 +15,7 @@ const SuccessModal: FC<SuccessModalProps> = ({
   buttonText,
   buttonOnClick,
   onExit,
+  showModal
 }) => {
   const ref = useOutsideClick(() => handleExit());
 
@@ -34,6 +35,8 @@ const SuccessModal: FC<SuccessModalProps> = ({
 
     return () => document.removeEventListener('keydown', handleEscapeKeyDown);
   }, [handleExit]);
+
+  if (showModal === false) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center">
