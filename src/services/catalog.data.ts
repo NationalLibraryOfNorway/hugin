@@ -10,5 +10,9 @@ export async function searchNewspaperTitlesInCatalog(searchTerm: string, signal:
 
 export async function fetchNewspaperTitleFromCatalog(id: string): Promise<CatalogTitle> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/catalog/title?catalogueId=${id}&materialType=NEWSPAPER`);
-  return await response.json() as Promise<CatalogTitle>;
+  if (response.ok) {
+    return await response.json() as Promise<CatalogTitle>;
+  } else {
+    throw new Error('Failed to fetch title');
+  }
 }

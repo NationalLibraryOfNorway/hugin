@@ -12,9 +12,9 @@ import {NotFoundError} from '@/models/Errors';
 import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import NumberInputWithButtons from '@/components/NumberInput';
 import SuccessModal from '@/components/SuccessModal';
-import {FiSave} from 'react-icons/fi';
-import {FaArrowAltCircleLeft} from 'react-icons/fa';
+import {FaArrowAltCircleLeft, FaSave} from 'react-icons/fa';
 import {Textarea} from '@nextui-org/input';
+import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -26,19 +26,21 @@ export default function Page({params}: { params: { id: string } }) {
   useEffect(() => {
     if (titleFromQueryParams) {
       setTitleString(titleFromQueryParams);
-      document.title = titleString ? 'Rediger ' + titleString : 'Hugin';
-    } else {
-      void fetchNewspaperTitleFromCatalog(params.id)
-        .then((data: CatalogTitle) => {
-          setTitleString(data.name);
-          document.title = titleString ? 'Rediger ' + titleString : 'Hugin';
-        });
+      document.title = titleString ? 'Opprett ' + titleString : 'Hugin';
     }
+
+    void fetchNewspaperTitleFromCatalog(params.id)
+      .then((data: CatalogTitle) => {
+        setTitleString(data.name);
+        document.title = titleString ? 'Opprett ' + titleString : 'Hugin';
+      });
   }, [params, titleFromQueryParams, titleString]);
 
   useEffect(() => {
     void getLocalTitle(params.id)
-      .then((data: title) => setTitleFromDb(data))
+      .then(() => {
+        router.push(`/${params.id}?title=${titleString}`);
+      })
       .catch((e: Error) => {
         if (e instanceof NotFoundError) {
           setTitleFromDb({
@@ -55,27 +57,18 @@ export default function Page({params}: { params: { id: string } }) {
           alert('Noe gikk galt ved henting av tittelinformasjon. Kontakt tekst-teamet om problemet vedvarer.');
         }
       });
-  }, [params]);
+  }, [params, router, titleString]);
 
   function showSavedMessage() {
     setSaveMessageIsVisible(true);
     setTimeout(() => setSaveMessageIsVisible(false), 5000);
   }
 
-  function validateBetweenZeroAndFive(value: number) {
-    let error;
-    if (value < 0) {
-      error = 'Tallet kan ikke være negativt';
-    } else if (value > 5) {
-      error = 'Tallet kan ikke være større enn 5';
-    }
-    return error;
-  }
-
   async function submitForm(values: title) {
     const res = await postLocalTitle(values);
     if (res.ok) {
       showSavedMessage();
+      setTimeout(() => router.push(`/${params.id}?title=${titleString}`), 5000);
     } else {
       alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
     }
@@ -85,14 +78,14 @@ export default function Page({params}: { params: { id: string } }) {
     <div className='flex w-9/12 flex-col max-w-screen-lg items-start'>
       <Button
         type='button'
-        className='abort-button-style mb-5'
+        className='abort-button-style'
         startContent={<FaArrowAltCircleLeft/>}
         onClick={() => router.push(`/${params.id}?title=${titleString}`)}
       >
         Tilbake til titteloversikt
       </Button>
 
-      <div className='flex flex-row justify-between mb-12'>
+      <div className='flex flex-row justify-between mt-6 mb-10'>
         <div>
           {titleString ? (
             <div className='flex flex-row items-center'>
@@ -102,10 +95,6 @@ export default function Page({params}: { params: { id: string } }) {
           )
             : (<p>Henter navn fra katalogen...</p>)
           }
-        </div>
-
-        <div>
-
         </div>
       </div>
 
@@ -330,7 +319,7 @@ export default function Page({params}: { params: { id: string } }) {
                     type='submit'
                     disabled={isSubmitting || !isValid}
                     size='lg'
-                    endContent={<FiSave/>}
+                    endContent={<FaSave/>}
                     className='save-button-style'
                   >
                     Lagre
@@ -346,6 +335,7 @@ export default function Page({params}: { params: { id: string } }) {
                   text='Lagret!'
                   buttonText='Til titteloversikt'
                   buttonOnClick={() => router.push(`/${params.id}?title=${titleString}`)}
+                  onExit={() => router.push(`/${params.id}?title=${titleString}`)}
                 />}
           </div>
         </div>

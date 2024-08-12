@@ -3,7 +3,7 @@
 import React, {useEffect, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
-import {getLocalTitle, updateNotesForTitle} from '@/services/local.data';
+import {getLocalTitle, putLocalTitle, updateNotesForTitle, updateShelfForTitle} from '@/services/local.data';
 import {title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
@@ -12,6 +12,8 @@ import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
 import {Box} from '@/models/Box';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
+import EditTextInput from '@/components/EditTextInput';
+import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -25,13 +27,16 @@ export default function Page({params}: { params: { id: string } }) {
     if (titleFromQueryParams) {
       setTitleString(titleFromQueryParams);
       document.title = titleString ?? 'Hugin';
-    } else {
-      void fetchNewspaperTitleFromCatalog(params.id)
-        .then((data: CatalogTitle) => {
-          setTitleString(data.name);
-          document.title = titleString ?? 'Hugin';
-        });
     }
+
+    void fetchNewspaperTitleFromCatalog(params.id)
+      .then((data: CatalogTitle) => {
+        setTitleString(data.name);
+        document.title = titleString ?? 'Hugin';
+      })
+      .catch(() => {
+        alert('Fant ikke tittel på denne ID i katalogen. Se om ID er korrekt.');
+      });
   }, [params, titleFromQueryParams, titleString]);
 
   useEffect(() => {
@@ -69,21 +74,40 @@ export default function Page({params}: { params: { id: string } }) {
     return updateNotesForTitle(params.id, notes);
   }
 
+  function submitShelf(shelf: string): Promise<Response> {
+    return updateShelfForTitle(params.id, shelf);
+  }
+
+  function updateShelf(shelf: string): void {
+    setTitleFromDb({...titleFromDb as title, ['shelf']: shelf});
+  }
+
   return (
     <div className='w-11/12 flex flex-col content-center'>
       {titleFromDb ? (<>
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div>
             <div className='flex flex-col'>
-              <div className='w-full mb-10'>
+              <div className='w-full mb-3'>
                 {titleString ? (
                   <h1 className="top-title-style">{titleString}</h1>
                 ) : (
                   <div>Henter tittel ...</div>
                 )}
-                {titleFromDb && titleFromDb.shelf &&
-                    <p className="text-2xl mt-1">Hyllesignatur: {titleFromDb.shelf}</p>
-                }
+                <div className='flex flex-row justify-between items-center mt-4'>
+                  <EditTextInput
+                    name='Hyllesignatur'
+                    value={titleFromDb.shelf ?? ''}
+                    onSubmit={submitShelf}
+                    onSuccess={updateShelf}
+                    className='w-96'
+                  />
+
+                  <div className="flex flex-row">
+                    <p className="group-title-style"> Serie ID: </p>
+                    <p className="group-content-style ml-2">{params.id}</p>
+                  </div>
+                </div>
               </div>
 
               <div className='flex flex-row flex-wrap items-center'>
@@ -132,94 +156,11 @@ export default function Page({params}: { params: { id: string } }) {
               }
             </div>
 
-            <div className="flex flex-row mb-10 mt-5">
-              <p className="group-title-style"> Serie ID: </p>
-              <p className="group-content-style ml-2">{params.id}</p>
-            </div>
+            <ContactAndReleaseInfo
+              titleFromDb={titleFromDb}
+              onSubmit={putLocalTitle}
+            />
 
-
-            <div className='flex flex-col outline outline-2 outline-blue-300 p-2 rounded-xl'>
-              <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
-
-              {titleFromDb.vendor &&
-                <div className="self-start flex flex-row">
-                  <p className="group-subtitle-style">Avleverer: </p>
-                  <p className="group-content-style ml-2">{titleFromDb.vendor}</p>
-                </div>
-              }
-
-              {titleFromDb.contact_name &&
-                <div className="self-start flex flex-row">
-                  <p className="group-subtitle-style">Kontaktperson: </p>
-                  <p className="group-content-style ml-2">{titleFromDb.contact_name}</p>
-                </div>
-              }
-
-              {titleFromDb.contact_email &&
-                <div className="self-start flex flex-row">
-                  <p className="group-subtitle-style">E-post: </p>
-                  <p className="group-content-style ml-2">{titleFromDb.contact_email}</p>
-                </div>
-              }
-
-              {titleFromDb.contact_phone &&
-                <div className="self-start flex flex-row">
-                  <p className="group-subtitle-style">Telefon: </p>
-                  <p className="group-content-style ml-2">{titleFromDb.contact_phone}</p>
-                </div>
-              }
-
-              {titleFromDb.release_pattern &&
-                <div className="self-start mt-12">
-                  <h2 className="group-title-style mb-2">Utgivelsesmønster:</h2>
-
-                  <table className="table-fixed">
-                    <tbody className="text-left">
-                      <tr>
-                        <td className="pr-3 font-bold">Mandag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[0]}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold">Tirsdag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[1]}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold">Onsdag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[2]}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold">Torsdag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[3]}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold">Fredag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[4]}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold">Lørdag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[5]}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-bold">Søndag:</td>
-                        <td className='group-content-style'>{titleFromDb.release_pattern[6]}</td>
-                      </tr>
-
-
-                    </tbody>
-                  </table>
-                </div>
-              }
-
-              <Button
-                type="button"
-                size="lg"
-                className="edit-button-style mt-5"
-                endContent={<FaEdit size={25}/>}
-                onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
-              >
-              Rediger
-              </Button>
-            </div>
           </div>
         </div>
       </>
@@ -232,6 +173,12 @@ export default function Page({params}: { params: { id: string } }) {
 
       {titleFromDbNotFound &&
           <>
+            {titleString ? (
+              <h1 className="top-title-style">{titleString}</h1>
+            ) : (
+              <div>Henter tittel ...</div>
+            )}
+
             <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å
               legge til? </p>
             <div className="mt-12 flex justify-between max-w-3xl w-full self-center">
@@ -249,7 +196,7 @@ export default function Page({params}: { params: { id: string } }) {
                 size={'lg'}
                 className="edit-button-style"
                 endContent={<FaEdit/>}
-                onClick={() => router.push(`/${params.id}/edit?title=${titleString}`)}
+                onClick={() => router.push(`/${params.id}/create?title=${titleString}`)}
               >
                 Legg til informasjon
               </Button>

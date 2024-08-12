@@ -2,7 +2,7 @@ import {Form, Formik} from 'formik';
 import React, {FC, useState} from 'react';
 import {Textarea} from '@nextui-org/input';
 import {Button} from '@nextui-org/button';
-import {FiSave} from 'react-icons/fi';
+import {FaSave} from 'react-icons/fa';
 
 interface NotesProps {
   notes: string;
@@ -40,7 +40,6 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               setSubmitting(false);
               resetForm({values});
             });
-          setSubmitting(false);
         }}
       >
         {({
@@ -62,7 +61,7 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
             <Button
               type='submit'
               disabled={isSubmitting || !dirty}
-              endContent={<FiSave/>}
+              endContent={<FaSave/>}
               size={'sm'}
               className='save-button-style [&]:text-small w-full'
             >Lagre kommentar</Button>
