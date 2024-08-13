@@ -6,7 +6,8 @@ import {FaEdit, FaTrash} from 'react-icons/fa';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { Button, Spinner } from '@nextui-org/react';
+import { Button, Spinner, Table } from '@nextui-org/react';
+import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 
 
 export default function IssueList(props: {title: title}) {
@@ -126,26 +127,24 @@ export default function IssueList(props: {title: title}) {
             <Form>
               <FieldArray name="issues">
                 {({push, remove}) => (
-                  <div>
-                    <table className="w-full">
-                      <thead>
-                        <tr>
-                          <th>Dag</th>
-                          <th>Dato</th>
-                          <th>Nummer</th>
-                          <th className="min-w-16">Ikke utgitt</th>
-                          <th className="min-w-16">Mottatt</th>
-                          <th>Kommentar</th>
-                          <th className="min-w-8"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
+                  <div className="mx-6">
+                    <Table aria-label="list of issues in current box">
+                      <TableHeader>
+                        <TableColumn align='center'>Dag</TableColumn>
+                        <TableColumn align='center'>Dato</TableColumn>
+                        <TableColumn align='center'>Nummer</TableColumn>
+                        <TableColumn align='center'>Ikke utgitt</TableColumn>
+                        <TableColumn align='center'>Mottatt</TableColumn>
+                        <TableColumn align='center'>Kommentar</TableColumn>
+                        <TableColumn align='center' hideHeader={true}>Action</TableColumn>
+                      </TableHeader>
+                      <TableBody>
                         {values.issues.map((issue, index) => (
-                          <tr key={index}>
-                            <td>
+                          <TableRow key={index}>
+                            <TableCell>
                               {dayOfWeek(issue.date)}
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                               <DatePickerField
                                 id={`issues.${index}.date`}
                                 value={issue.date}
@@ -157,8 +156,8 @@ export default function IssueList(props: {title: title}) {
                                 component="div"
                                 className="field-error"
                               />
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                               <Field
                                 name={`issues.${index}.edition`}
                                 className="max-w-16 border text-center"
@@ -171,8 +170,8 @@ export default function IssueList(props: {title: title}) {
                                 component="div"
                                 className="field-error"
                               />
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                               <Field
                                 name={`issues.${index}.not_published`}
                                 type="checkbox"
@@ -185,8 +184,8 @@ export default function IssueList(props: {title: title}) {
                                 component="div"
                                 className="field-error"
                               />
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                               <Field
                                 name={`issues.${index}.received`}
                                 type="checkbox"
@@ -199,8 +198,8 @@ export default function IssueList(props: {title: title}) {
                                 component="div"
                                 className="field-error"
                               />
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                               <Field
                                 name={`issues.${index}.notes`}
                                 className="border"
@@ -208,12 +207,11 @@ export default function IssueList(props: {title: title}) {
                                 disabled={!editableIssues[index]}
                                 value={issue.notes || ''}
                               />
-                            </td>
-                            <td>
+                            </TableCell>
+                            <TableCell>
                               {!editableIssues[index] &&
                                   <button
                                     type="button"
-                                    className="secondary"
                                     onClick={() => {
                                       setEditableIssues(editableIssues.with(index, true));
                                     }}>
@@ -223,19 +221,18 @@ export default function IssueList(props: {title: title}) {
                               { index > nIssuesInDb - 1 &&
                                 <button
                                   type="button"
-                                  className="secondary"
                                   onClick={() => remove(index)}>
                                   <FaTrash/>
                                 </button>
                               }
-                            </td>
-                          </tr>
+                            </TableCell>
+                          </TableRow>
                         ))}
-                      </tbody>
-                    </table>
+                      </TableBody>
+                    </Table>
                     <Button
                       type="button"
-                      className="secondary edit-button-style my-4"
+                      className="edit-button-style my-4"
                       onClick={() => {
                         push({
                           // eslint-disable-next-line @typescript-eslint/naming-convention
