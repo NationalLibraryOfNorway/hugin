@@ -55,7 +55,8 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
               handleChange,
               isSubmitting,
               handleBlur,
-              isValid
+              isValid,
+              resetForm
             }) => (
               <div>
                 <Form className='flex flex-col items-start'>
@@ -246,7 +247,10 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                       size="lg"
                       className="abort-button-style"
                       endContent={<ImCross size={25}/>}
-                      onClick={() => setIsEditing(false)}
+                      onClick={() => {
+                        resetForm();
+                        setIsEditing(false);
+                      }}
                     >
                       Avbryt
                     </Button>
