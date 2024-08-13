@@ -84,6 +84,10 @@ export default function IssueList(props: {title: title}) {
         isValid = false;
         issueError.date = 'Dato er påkrevd';
       }
+      if (!issue.edition) {
+        isValid = false;
+        issueError.edition = 'Utgavenummer er påkrevd';
+      }
       if (issue.not_published && issue.received) {
         isValid = false;
         issueError.not_published = '!';
@@ -128,23 +132,23 @@ export default function IssueList(props: {title: title}) {
               <FieldArray name="issues">
                 {({push, remove}) => (
                   <div className="mx-6">
-                    <Table aria-label="list of issues in current box">
+                    <Table aria-label="list of issues in current box" className="text-lg">
                       <TableHeader>
-                        <TableColumn align='center'>Dag</TableColumn>
-                        <TableColumn align='center'>Dato</TableColumn>
-                        <TableColumn align='center'>Nummer</TableColumn>
-                        <TableColumn align='center'>Ikke utgitt</TableColumn>
-                        <TableColumn align='center'>Mottatt</TableColumn>
-                        <TableColumn align='center'>Kommentar</TableColumn>
-                        <TableColumn align='center' hideHeader={true}>Action</TableColumn>
+                        <TableColumn align='center' className="text-lg">Dag</TableColumn>
+                        <TableColumn align='center' className="text-lg">Dato</TableColumn>
+                        <TableColumn align='center' className="text-lg">Nummer</TableColumn>
+                        <TableColumn align='center' className="text-lg">Ikke utgitt</TableColumn>
+                        <TableColumn align='center' className="text-lg">Mottatt</TableColumn>
+                        <TableColumn align='center' className="text-lg">Kommentar</TableColumn>
+                        <TableColumn align='center' hideHeader={true} className="text-lg">Action</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {values.issues.map((issue, index) => (
                           <TableRow key={index}>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               {dayOfWeek(issue.date)}
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               <DatePickerField
                                 id={`issues.${index}.date`}
                                 value={issue.date}
@@ -154,10 +158,10 @@ export default function IssueList(props: {title: title}) {
                               <ErrorMessage
                                 name={`issues.${index}.date`}
                                 component="div"
-                                className="field-error"
+                                className="field-error text-lg"
                               />
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               <Field
                                 name={`issues.${index}.edition`}
                                 className="max-w-16 border text-center"
@@ -168,10 +172,10 @@ export default function IssueList(props: {title: title}) {
                               <ErrorMessage
                                 name={`issues.${index}.edition`}
                                 component="div"
-                                className="field-error"
+                                className="field-error text-lg"
                               />
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               <Field
                                 name={`issues.${index}.not_published`}
                                 type="checkbox"
@@ -182,10 +186,10 @@ export default function IssueList(props: {title: title}) {
                               <ErrorMessage
                                 name={`issues.${index}.not_published`}
                                 component="div"
-                                className="field-error"
+                                className="field-error text-lg"
                               />
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               <Field
                                 name={`issues.${index}.received`}
                                 type="checkbox"
@@ -196,10 +200,10 @@ export default function IssueList(props: {title: title}) {
                               <ErrorMessage
                                 name={`issues.${index}.received`}
                                 component="div"
-                                className="field-error"
+                                className="field-error text-lg"
                               />
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               <Field
                                 name={`issues.${index}.notes`}
                                 className="border"
@@ -208,7 +212,7 @@ export default function IssueList(props: {title: title}) {
                                 value={issue.notes || ''}
                               />
                             </TableCell>
-                            <TableCell>
+                            <TableCell className="text-lg">
                               {!editableIssues[index] &&
                                   <button
                                     type="button"

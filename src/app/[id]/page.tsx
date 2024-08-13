@@ -87,8 +87,8 @@ export default function Page({params}: { params: { id: string } }) {
     <div className='w-9/12 flex flex-col content-center'>
       {titleFromDb ? (<>
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
-          <div>
-            <div className='flex flex-col'>
+          <div className='flex flex-col grow mx-10'>
+            <div>
               <div className='w-full mb-3'>
                 {titleString ? (
                   <h1 className="top-title-style">{titleString}</h1>
@@ -139,41 +139,7 @@ export default function Page({params}: { params: { id: string } }) {
 
               <IssueList title={titleFromDb}/>
 
-              <p className='mb-6 mt-4 py-64 border-5 border-blue-200'>
-                Denne plassen er reservert til avisregistrering,
-                så teksten her er bare for å se hvordan bredden blir.
-                Til og med når komponenten er veldig veldig bred!
-              </p>
-
             </div>
-
-            <div className='flex flex-row flex-wrap items-center'>
-              {titleFromDb.last_box ? (
-                <>
-                  <p className="group-title-style">Eske til registrering: </p>
-                  <p className="group-content-style ml-2">{boxToString(titleFromDb)}</p>
-                </>
-              ) : (<p className="group-content-style"> Ingen eske registrert </p>)
-              }
-
-              {showBoxRegistrationModal &&
-                  <BoxRegistrationModal
-                    text='Registrer en ny eske'
-                    closeModal={() => setShowBoxRegistrationModal(false)}
-                    updateBoxInfo={updateBox}
-                    titleId={params.id}/>
-              }
-
-              <Button
-                endContent={<FaBoxOpen size={25}/>}
-                size={'md'}
-                className="edit-button-style ml-4 [&]:text-medium"
-                onClick={() => setShowBoxRegistrationModal(true)}>
-                Ny eske
-              </Button>
-            </div>
-
-            <IssueList title={titleFromDb}/>
           </div>
 
           <div className="flex flex-col">
