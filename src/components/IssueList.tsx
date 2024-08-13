@@ -1,13 +1,12 @@
 import {newspaper, title} from '@prisma/client';
 import React, {useEffect, useState} from 'react';
 import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
-import {ErrorMessage, Field, FieldArray, Form, Formik, useField} from 'formik';
+import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues, useField} from 'formik';
 import {FaEdit, FaTrash} from 'react-icons/fa';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { Button, Spinner } from '@nextui-org/react';
-import * as Yup from 'yup';
 
 
 export default function IssueList(props: {title: title}) {
@@ -48,42 +47,53 @@ export default function IssueList(props: {title: title}) {
       });
   }, [props]);
 
-  function safeDate(date: Date | null) : string {
+  function dayOfWeek(date: Date | null) : string {
     if (date) {
       const dateObject = new Date(date);
       return `${dateObject.toLocaleDateString('no-NB', { weekday: 'long' })}`;
     } else return '';
   }
 
-  const NewIssueSchema = Yup.object().shape({
-    issues: Yup.array().of(
-      Yup.object().shape({
-        date: Yup.date().required('Dato er påkrevd'),
-        edition: Yup.string().required('Utgave nr. er påkrevd'),
+  interface errorType {
+    date: string | null;
+    edition: string | null;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    not_published: string | null;
+    received: string | null;
+  }
+
+  function validate(values: FormikValues): FormikErrors<newspaper> {
+    const errors: errorType[] = [];
+    const formIssues = values.issues as newspaper[];
+    let isValid = true;
+    formIssues.forEach((issue: newspaper) => {
+      const issueError: errorType = {
+        date: null,
+        edition: null,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        not_published: Yup.boolean().nullable(),
-        received: Yup.boolean().nullable()
-      }).test(
-        'only-one-choice',
-        'Bare én boks må være krysset av',
-        issue => !(!!issue.not_published && !!issue.received)
-      )
-    ).test(
-      'no-duplicate-edition',
-      'Kan ikke bruke samme nummer flere ganger',
-      formIssues => {
-        const seenEditions: string[] = [];
-        let duplicates = false;
-        formIssues?.forEach(issue => {
-          if (seenEditions.includes(issue.edition))
-            duplicates = true;
-          seenEditions.push(issue.edition);
-        });
-        console.log(duplicates);
-        return !duplicates;
+        not_published: null,
+        received: null
+      };
+      const identicalEditionNumbers = formIssues.filter(i => i.edition === issue.edition).length;
+      if (identicalEditionNumbers > 1) {
+        isValid = false;
+        issueError.edition = 'Duplikat!';
       }
-    )
-  });
+      if (!issue.date) {
+        isValid = false;
+        issueError.date = 'Dato er påkrevd';
+      }
+      if (issue.not_published && issue.received) {
+        isValid = false;
+        issueError.not_published = '!';
+        issueError.received = '!';
+      }
+      errors.push(issueError);
+    });
+    if (isValid)
+      return {};
+    return {issues: errors} as FormikErrors<newspaper>;
+  }
 
   return (
     <div className='w-full mb-6 mt-4 py-10 pl-50 pr-50 border-5 border-blue-200 m-30'>
@@ -93,7 +103,7 @@ export default function IssueList(props: {title: title}) {
         <Formik
           initialValues={initialValues}
           enableReinitialize
-          validationSchema={NewIssueSchema}
+          validate={validate}
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
@@ -133,7 +143,7 @@ export default function IssueList(props: {title: title}) {
                         {values.issues.map((issue, index) => (
                           <tr key={index}>
                             <td>
-                              {safeDate(issue.date)}
+                              {dayOfWeek(issue.date)}
                             </td>
                             <td>
                               <DatePickerField
@@ -170,6 +180,11 @@ export default function IssueList(props: {title: title}) {
                                 value={Boolean(issue.not_published)}
                                 checked={Boolean(issue.not_published)}
                               />
+                              <ErrorMessage
+                                name={`issues.${index}.not_published`}
+                                component="div"
+                                className="field-error"
+                              />
                             </td>
                             <td>
                               <Field
@@ -180,7 +195,7 @@ export default function IssueList(props: {title: title}) {
                                 checked={Boolean(issue.received)}
                               />
                               <ErrorMessage
-                                name={`issues.${index}.only-one-choice`}
+                                name={`issues.${index}.received`}
                                 component="div"
                                 className="field-error"
                               />
