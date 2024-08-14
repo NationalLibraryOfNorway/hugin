@@ -12,6 +12,7 @@ export const authOptions: AuthOptions = {
     })
   ],
   session: {
+    // Set session max age to 5 minutes
     maxAge: 5 * 60
   },
   callbacks: {
@@ -23,7 +24,8 @@ export const authOptions: AuthOptions = {
         token.expiresAt = account.expires_at!;
         return token;
       }
-      if (Date.now() < token.expiresAt * 1000 - 10 * 1000) {
+      // If token is at least 30 seconds from expiring, return it as is
+      if (Date.now() < token.expiresAt * 1000 - 30 * 1000) {
         return token;
       }
       try {
@@ -35,6 +37,7 @@ export const authOptions: AuthOptions = {
         return {
           ...token,
           accessToken: tokens.access_token!,
+          // Calculate the new expiration time in seconds
           expiresAt: Math.floor(Date.now() / 1000 + (tokens.expires_in as number)),
           refreshToken: tokens.refresh_token ?? token.refreshToken,
         };
