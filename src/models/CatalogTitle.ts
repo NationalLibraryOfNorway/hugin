@@ -7,15 +7,3 @@ export interface CatalogTitle {
   publisherPlace?: string;
   language?: string;
 }
-
-export interface SimpleTitle {
-  id: string;
-  name: string;
-}
-
-export const toSimpleTitle = (title: CatalogTitle): SimpleTitle => {
-  return {
-    id: title.catalogueId,
-    name: title.name,
-  };
-};

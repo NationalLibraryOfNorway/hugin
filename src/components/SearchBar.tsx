@@ -5,25 +5,23 @@ import {useAsyncList} from '@react-stately/data';
 import {useRouter} from 'next/navigation';
 import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
-import {SimpleTitle, toSimpleTitle} from '@/models/CatalogTitle';
+import {CatalogTitle} from '@/models/CatalogTitle';
 
 export default function SearchBar(props: {inHeader: boolean}) {
   const router = useRouter();
 
-  const titles = useAsyncList<SimpleTitle>({
+  const titles = useAsyncList<CatalogTitle>({
     async load({signal, filterText}) {
       if (!filterText) {
         return {items: []};
       }
       const data = await searchNewspaperTitlesInCatalog(filterText, signal);
-      return {
-        items: data.map(title => toSimpleTitle(title)),
-      };
+      return { items: data };
     }
   });
 
   const onSelectionChange = (key: Key | null) => {
-    const selectedTitle = titles.items.find(title => title.id === key)?.name;
+    const selectedTitle = titles.items.find(title => title.catalogueId === key)?.name;
     if (key) {
       document.getElementById('searchBarField')?.blur();
       titles.setFilterText('');
@@ -57,9 +55,11 @@ export default function SearchBar(props: {inHeader: boolean}) {
         }
       }}
     >
-      {(title: SimpleTitle) =>
-        <AutocompleteItem key={title.id} textValue={title.name}>
-          {title.name}
+      {(title: CatalogTitle) =>
+        <AutocompleteItem key={title.catalogueId} textValue={title.name}>
+          <div className={(!title.endDate) ? 'text-green-600 font-extrabold' : 'text-orange-400'}>
+            {title.name}
+          </div>
         </AutocompleteItem>}
     </Autocomplete>
   );
