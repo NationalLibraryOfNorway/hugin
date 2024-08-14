@@ -124,7 +124,8 @@ export default function IssueList(props: {title: title}) {
               <FieldArray name="issues">
                 {({push, remove}) => (
                   <div className="mx-6">
-                    <Table aria-label="list of issues in current box" className="text-lg">
+                    <Table aria-label="list of issues in current box" className="text-lg"
+                      classNames={{table: 'min-h-80'}}>
                       <TableHeader>
                         <TableColumn align='center' className="text-lg">Dag</TableColumn>
                         <TableColumn align='center' className="text-lg">Dato</TableColumn>
