@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {NextAuth} from 'next-auth';
+// JWT import is used although your IDE may complain that it is not.
+// Please do not remove it.
 import { JWT  } from 'next-auth/jwt';
 
 declare module 'next-auth' {
