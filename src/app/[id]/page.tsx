@@ -14,6 +14,7 @@ import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
 import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
+import IssueList from '@/components/IssueList';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -83,11 +84,11 @@ export default function Page({params}: { params: { id: string } }) {
   }
 
   return (
-    <div className='w-11/12 flex flex-col content-center'>
+    <div className='w-9/12 flex flex-col content-center'>
       {titleFromDb ? (<>
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
-          <div>
-            <div className='flex flex-col'>
+          <div className='flex flex-col grow mx-10'>
+            <div>
               <div className='w-full mb-3'>
                 {titleString ? (
                   <h1 className="top-title-style">{titleString}</h1>
@@ -136,11 +137,8 @@ export default function Page({params}: { params: { id: string } }) {
                 </Button>
               </div>
 
-              <p className='mb-6 mt-4 py-64 border-5 border-blue-200'>
-                Denne plassen er reservert til avisregistrering,
-                så teksten her er bare for å se hvordan bredden blir.
-                Til og med når komponenten er veldig veldig bred!
-              </p>
+              <IssueList title={titleFromDb}/>
+
             </div>
           </div>
 

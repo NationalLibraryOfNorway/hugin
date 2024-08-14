@@ -1,6 +1,6 @@
 import { NotFoundError } from '@/models/Errors';
-import { title } from '@prisma/client';
-import {Box} from '@/models/Box';
+import { newspaper, title } from '@prisma/client';
+import { Box } from '@/models/Box';
 
 export async function getLocalTitle(id: string): Promise<title> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}`);
@@ -71,5 +71,28 @@ export async function updateShelfForTitle(
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({shelf})
+  });
+}
+
+export async function getIssuesForTitle(id: number, box: string): Promise<newspaper[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${id}?box=${box}`);
+
+  switch (response.status) {
+  case 200:
+    return await response.json() as Promise<newspaper[]>;
+  case 404:
+    return Promise.reject(new NotFoundError('Title not found'));
+  default:
+    return Promise.reject(new Error('Failed to fetch title'));
+  }
+}
+
+export async function postNewIssuesForTitle(id: number, issues: newspaper[]): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${id}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(issues)
   });
 }
