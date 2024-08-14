@@ -2,7 +2,7 @@ import {newspaper, title} from '@prisma/client';
 import React, {useEffect, useState} from 'react';
 import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues, useField} from 'formik';
-import {FaEdit, FaTrash} from 'react-icons/fa';
+import {FaTrash} from 'react-icons/fa';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
@@ -13,7 +13,6 @@ import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-
 export default function IssueList(props: {title: title}) {
 
   const [issues, setIssues] = useState<newspaper[]>([]);
-  const [editableIssues, setEditableIssues] = useState<boolean[]>([]);
   const [nIssuesInDb, setNIssuesInDb] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -39,10 +38,6 @@ export default function IssueList(props: {title: title}) {
     void getIssuesForTitle(props.title.id, props.title.last_box ?? '')
       .then((data: newspaper[]) => {
         setNIssuesInDb(data.length);
-        const editableIndices = new Array<boolean>(data.length);
-        editableIndices.fill(false);
-        editableIndices.push(true);
-        setEditableIssues(editableIndices);
         setIssues(prepareTitles(data));
         setLoading(false);
       });
@@ -86,7 +81,7 @@ export default function IssueList(props: {title: title}) {
       }
       if (!issue.edition) {
         isValid = false;
-        issueError.edition = 'Utgavenummer er påkrevd';
+        issueError.edition = 'Påkrevd';
       }
       if (issue.not_published && issue.received) {
         isValid = false;
@@ -112,12 +107,10 @@ export default function IssueList(props: {title: title}) {
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
-            void postNewIssuesForTitle(props.title.id, values.issues).then(res => {
+            const newIssues = values.issues.slice(nIssuesInDb);
+            void postNewIssuesForTitle(props.title.id, newIssues).then(res => {
               setSubmitting(false);
               if (res.ok) {
-                const editableIndices = new Array<boolean>(values.issues.length);
-                editableIndices.fill(false);
-                setEditableIssues(editableIndices);
                 setIssues(values.issues);
                 setNIssuesInDb(values.issues.length);
               } else {
@@ -140,7 +133,7 @@ export default function IssueList(props: {title: title}) {
                         <TableColumn align='center' className="text-lg">Ikke utgitt</TableColumn>
                         <TableColumn align='center' className="text-lg">Mottatt</TableColumn>
                         <TableColumn align='center' className="text-lg">Kommentar</TableColumn>
-                        <TableColumn align='center' hideHeader={true} className="text-lg">Action</TableColumn>
+                        <TableColumn align='center' hideHeader={true} className="text-lg">Slett</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {values.issues.map((issue, index) => (
@@ -153,7 +146,7 @@ export default function IssueList(props: {title: title}) {
                                 id={`issues.${index}.date`}
                                 value={issue.date}
                                 fieldName={`issues.${index}.date`}
-                                disabled={!editableIssues[index]}
+                                disabled={index < nIssuesInDb}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.date`}
@@ -167,7 +160,7 @@ export default function IssueList(props: {title: title}) {
                                 className="max-w-16 border text-center"
                                 type="text"
                                 width='40'
-                                disabled={!editableIssues[index] || index < nIssuesInDb}
+                                disabled={index < nIssuesInDb}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.edition`}
@@ -179,7 +172,7 @@ export default function IssueList(props: {title: title}) {
                               <Field
                                 name={`issues.${index}.not_published`}
                                 type="checkbox"
-                                disabled={!editableIssues[index]}
+                                disabled={index < nIssuesInDb}
                                 value={Boolean(issue.not_published)}
                                 checked={Boolean(issue.not_published)}
                               />
@@ -193,7 +186,7 @@ export default function IssueList(props: {title: title}) {
                               <Field
                                 name={`issues.${index}.received`}
                                 type="checkbox"
-                                disabled={!editableIssues[index]}
+                                disabled={index < nIssuesInDb}
                                 value={Boolean(issue.received)}
                                 checked={Boolean(issue.received)}
                               />
@@ -208,20 +201,11 @@ export default function IssueList(props: {title: title}) {
                                 name={`issues.${index}.notes`}
                                 className="border"
                                 type="text"
-                                disabled={!editableIssues[index]}
+                                disabled={index < nIssuesInDb}
                                 value={issue.notes || ''}
                               />
                             </TableCell>
                             <TableCell className="text-lg">
-                              {!editableIssues[index] &&
-                                  <button
-                                    type="button"
-                                    onClick={() => {
-                                      setEditableIssues(editableIssues.with(index, true));
-                                    }}>
-                                    <FaEdit/>
-                                  </button>
-                              }
                               { index > nIssuesInDb - 1 &&
                                 <button
                                   type="button"
@@ -250,7 +234,6 @@ export default function IssueList(props: {title: title}) {
                           notes: null,
                           box: props.title.last_box
                         });
-                        setEditableIssues(editableIssues.toSpliced(editableIssues.length, 0, true));
                       }}
                     >
                       Legg til ny utgave

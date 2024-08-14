@@ -16,7 +16,7 @@ export default async function handle(
   case 'GET':
     return handleGET(titleId as string, box as string, res);
   case 'POST':
-    return handlePOST(titleId as string, req.body as newspaper[], res);
+    return handlePOST(req.body as newspaper[], res);
   default:
     throw new Error('Method not supported');
   }
@@ -41,22 +41,10 @@ async function handleGET(titleId: string, box: string, res: NextApiResponse) {
 }
 
 // POST api/newspaper/[title_id]
-async function handlePOST(titleId: string, issues: newspaper[], res: NextApiResponse) {
-  await prisma.$transaction(
-    issues.map(issue =>
-      prisma.newspaper.upsert({
-        where: {
-          title_id_box_edition: {
-            title_id: issue.title_id,
-            box: issue.box,
-            edition: issue.edition
-          }
-        },
-        update: {...issue},
-        create: {...issue}
-      })
-    )
-  ).catch(e => {
+async function handlePOST(issues: newspaper[], res: NextApiResponse) {
+  await prisma.newspaper.createMany({
+    data: issues
+  }).catch(e => {
     return res.status(500).json({error: `Failed to create or update newspapers: ${e}`});
   });
 
