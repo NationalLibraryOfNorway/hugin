@@ -16,7 +16,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ name, email }) => {
       description={email}
       avatarProps={{
         name: initials,
-        isBordered: true,
+        isBordered: false,
       }}
     />
   );

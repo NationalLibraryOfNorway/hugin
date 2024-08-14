@@ -8,8 +8,7 @@ export default function Logout() {
   return (
     <Button
       onClick={() => void federatedLogout()}
-      variant="bordered"
-      color="primary"
+      className="edit-button-style"
     >
       Logg ut
     </Button>
