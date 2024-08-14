@@ -41,7 +41,7 @@ export default function IssueList(props: {title: title}) {
         setIssues(prepareTitles(data));
         setLoading(false);
       });
-  }, [props]);
+  }, [props, nIssuesInDb]);
 
   function dayOfWeek(date: Date | null) : string {
     if (date) {
@@ -111,7 +111,6 @@ export default function IssueList(props: {title: title}) {
             void postNewIssuesForTitle(props.title.id, newIssues).then(res => {
               setSubmitting(false);
               if (res.ok) {
-                setIssues(values.issues);
                 setNIssuesInDb(values.issues.length);
               } else {
                 alert('Noe gikk galt...');
