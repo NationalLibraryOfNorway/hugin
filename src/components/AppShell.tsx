@@ -2,7 +2,6 @@ import React from 'react';
 import Header from '@/components/Header';
 import {getServerSession} from 'next-auth';
 import {authOptions} from '@/app/auth';
-import Login from '@/components/Login';
 import Logout from '@/components/Logout';
 import {UserDetails} from '@/components/UserDetails';
 
@@ -17,7 +16,7 @@ export default async function AppShell({
       <UserDetails name={session.user.name} email={session.user.email} />
       <Logout />
     </div>
-  ) : <Login />;
+  ) : <div />;
 
   return (
     <div className="min-h-screen flex flex-col text-center">
