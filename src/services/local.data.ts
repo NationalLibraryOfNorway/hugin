@@ -11,7 +11,7 @@ export async function getLocalTitle(id: string): Promise<title> {
   case 404:
     return Promise.reject(new NotFoundError('Title not found'));
   default:
-    return Promise.reject(new Error('Failed to fetch title'));
+    return Promise.reject(new Error(`Failed to fetch title: ${await response.json()}`));
   }
 }
 
@@ -22,6 +22,8 @@ export async function postLocalTitle(localTitle: title): Promise<Response> {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(localTitle)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to post title: ${e.message}`));
   });
 }
 
@@ -32,6 +34,8 @@ export async function putLocalTitle(localTitle: title): Promise<Response> {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(localTitle)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to put title: ${e.message}`));
   });
 }
 
@@ -45,6 +49,8 @@ export async function updateBoxForTitle(
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({box})
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to update box: ${e.message}`));
   });
 }
 
@@ -58,6 +64,8 @@ export async function updateNotesForTitle(
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({notes})
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to update notes: ${e.message}`));
   });
 }
 
@@ -71,6 +79,8 @@ export async function updateShelfForTitle(
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({shelf})
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to update shelf: ${e.message}`));
   });
 }
 
@@ -94,5 +104,7 @@ export async function postNewIssuesForTitle(id: number, issues: newspaper[]): Pr
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(issues)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to post newspaper issues: ${e.message}`));
   });
 }

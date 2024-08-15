@@ -15,6 +15,7 @@ import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
 import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
 import IssueList from '@/components/IssueList';
+import ErrorModal from '@/components/ErrorModal';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -23,6 +24,8 @@ export default function Page({params}: { params: { id: string } }) {
   const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
   const router = useRouter();
   const titleFromQueryParams = useSearchParams()?.get('title');
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>('Noe gikk galt.');
 
   useEffect(() => {
     if (titleFromQueryParams) {
@@ -35,8 +38,14 @@ export default function Page({params}: { params: { id: string } }) {
         setTitleString(data.name);
         document.title = titleString ?? 'Hugin';
       })
-      .catch(() => {
-        alert('Fant ikke tittel på denne ID i katalogen. Se om ID er korrekt.');
+      .catch((e: Error) => {
+        if (e instanceof NotFoundError) {
+          setErrorMessage('Fant ikke tittel på denne ID i katalogen. Se om ID er korrekt.');
+          setShowError(true);
+        } else {
+          setErrorMessage('Kunne ikke se etter tittel i katalogen.');
+          setShowError(true);
+        }
       });
   }, [params, titleFromQueryParams, titleString]);
 
@@ -51,7 +60,8 @@ export default function Page({params}: { params: { id: string } }) {
         if (e instanceof NotFoundError) {
           setTitleFromDbNotFound(true);
         } else {
-          alert('Kunne ikke se etter kontakt- og utgivelsesinformasjon. Kontakt tekst-teamet om problemet vedvarer.');
+          setErrorMessage('Kunne ikke se etter kontakt- og utgivelsesinformasjon.');
+          setShowError(true);
         }
       });
   }, [params]);
@@ -79,7 +89,7 @@ export default function Page({params}: { params: { id: string } }) {
     return updateShelfForTitle(params.id, shelf);
   }
 
-  function updateShelf(shelf: string): void {
+  function updateShelfLocally(shelf: string): void {
     setTitleFromDb({...titleFromDb as title, ['shelf']: shelf});
   }
 
@@ -100,7 +110,7 @@ export default function Page({params}: { params: { id: string } }) {
                     name='Hyllesignatur'
                     value={titleFromDb.shelf ?? ''}
                     onSubmit={submitShelf}
-                    onSuccess={updateShelf}
+                    onSuccess={updateShelfLocally}
                     className='w-96'
                   />
 
@@ -202,6 +212,12 @@ export default function Page({params}: { params: { id: string } }) {
 
           </>
       }
+
+      <ErrorModal
+        text={errorMessage}
+        showModal={showError}
+        onExit={() => setShowError(false)}
+      />
     </div>
   );
 }

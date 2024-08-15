@@ -10,7 +10,6 @@ type PatchData = {
   shelf?: string;
 };
 
-
 // ANY api/title/[id]
 export default async function handle(
   req: NextApiRequest,
@@ -28,9 +27,8 @@ export default async function handle(
   case 'PATCH':
     return handlePATCH(titleId as string, req.body as PatchData, res);
   default:
-    throw new Error('Method not supported');
+    return res.status(405).end();
   }
-
 }
 
 // GET api/title/[id]
@@ -39,10 +37,12 @@ async function handleGET(titleId: string, res: NextApiResponse) {
   const localTitle = await prisma.title.findUniqueOrThrow({
     where: { id }
   }).catch((e: Error) => {
-    if (e instanceof PrismaClientKnownRequestError) { // Error returned from prisma when not found (but request is OK)
-      return res.status(404).json({error: `Failed to find title: ${e.message}`});
+    // PrismaClientKnownRequestError is returned from Prisma when request is OK but something is wrong
+    // P2025 is code for record not found. See https://www.prisma.io/docs/orm/reference/error-reference
+    if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+      return res.status(404).json({error: `No title found with ID ${id}.`});
     }
-    return res.status(500).json({error: 'Could not look for titles'});
+    return res.status(500).json({error: `Error looking for title: ${e.name} - ${e.message}`});
   });
 
   return res.status(200).json(localTitle);
@@ -71,8 +71,8 @@ async function handlePUT(localTitle: title, res: NextApiResponse) {
   await prisma.title.update({
     where: { id: localTitle.id },
     data: { ...localTitle }
-  }).catch(e => {
-    return res.status(500).json({error: `Failed to update title: ${e}`});
+  }).catch((e: Error) => {
+    return res.status(500).json({error: `Failed to update title: ${e.name} - ${e.message}`});
   });
 
   return res.status(204).end();
@@ -85,8 +85,8 @@ async function handlePATCH(titleId: string, data: PatchData, res: NextApiRespons
       where: { id: +titleId },
       // eslint-disable-next-line @typescript-eslint/naming-convention
       data: { last_box: data.box.boxId, last_box_from: data.box.startDate }
-    }).catch(e => {
-      return res.status(500).json({error: `Failed to update box for title: ${e}`});
+    }).catch((e: Error) => {
+      return res.status(500).json({error: `Failed to update box for title: ${e.name} - ${e.message}`});
     });
   }
 
@@ -94,8 +94,8 @@ async function handlePATCH(titleId: string, data: PatchData, res: NextApiRespons
     await prisma.title.update({
       where: { id: +titleId },
       data: { notes: data.notes }
-    }).catch(e => {
-      return res.status(500).json({error: `Failed to update notes for title: ${e}`});
+    }).catch((e: Error) => {
+      return res.status(500).json({error: `Failed to update notes for title: ${e.name} - ${e.message}`});
     });
   }
 

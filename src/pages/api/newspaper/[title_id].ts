@@ -31,10 +31,12 @@ async function handleGET(titleId: string, box: string, res: NextApiResponse) {
     },
     orderBy: { date: 'asc' }
   }).catch((e: Error) => {
-    if (e instanceof PrismaClientKnownRequestError) { // Error returned from prisma when not found (but request is OK)
-      return res.status(404).json({error: `Failed to find title: ${e.message}`});
+    // PrismaClientKnownRequestError is returned from Prisma when request is OK but something is wrong
+    // P2025 is code for record not found. See https://www.prisma.io/docs/orm/reference/error-reference
+    if (e instanceof PrismaClientKnownRequestError && e.code === 'P2025') {
+      return res.status(404).json({error: `No title found with ID ${titleId}: ${e.message}`});
     }
-    return res.status(500).json({error: 'Could not look for titles'});
+    return res.status(500).json({error: `Error looking for title: ${e.name} - ${e.message}`});
   });
 
   return res.status(200).json(issuesForTitle);

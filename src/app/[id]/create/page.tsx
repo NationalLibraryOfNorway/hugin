@@ -15,6 +15,8 @@ import SuccessModal from '@/components/SuccessModal';
 import {FaArrowAltCircleLeft, FaSave} from 'react-icons/fa';
 import {Textarea} from '@nextui-org/input';
 import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
+import ErrorModal from '@/components/ErrorModal';
+import {Spinner} from '@nextui-org/react';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -22,18 +24,24 @@ export default function Page({params}: { params: { id: string } }) {
   const [titleFromDb, setTitleFromDb] = useState<title>();
   const [saveMessageIsVisible, setSaveMessageIsVisible] = useState<boolean>(false);
   const titleFromQueryParams = useSearchParams()?.get('title');
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorText, setErrorText] = useState<string>('Noe gikk galt.');
 
   useEffect(() => {
     if (titleFromQueryParams) {
       setTitleString(titleFromQueryParams);
       document.title = titleString ? 'Opprett ' + titleString : 'Hugin';
+    } else {
+      void fetchNewspaperTitleFromCatalog(params.id)
+        .then((data: CatalogTitle) => {
+          setTitleString(data.name);
+          document.title = titleString ? 'Opprett ' + titleString : 'Hugin';
+        })
+        .catch(() => {
+          setErrorText('Kunne ikke finne tittel i katalogen. Dobbeltsjekk at ID er korrekt.');
+          setShowError(true);
+        });
     }
-
-    void fetchNewspaperTitleFromCatalog(params.id)
-      .then((data: CatalogTitle) => {
-        setTitleString(data.name);
-        document.title = titleString ? 'Opprett ' + titleString : 'Hugin';
-      });
   }, [params, titleFromQueryParams, titleString]);
 
   useEffect(() => {
@@ -54,7 +62,8 @@ export default function Page({params}: { params: { id: string } }) {
             /* eslint-enable @typescript-eslint/naming-convention */
           } as title);
         } else {
-          alert('Noe gikk galt ved henting av tittelinformasjon. Kontakt tekst-teamet om problemet vedvarer.');
+          setErrorText('Noe gikk galt ved henting av tittelinformasjon.');
+          setShowError(true);
         }
       });
   }, [params, router, titleString]);
@@ -62,16 +71,6 @@ export default function Page({params}: { params: { id: string } }) {
   function showSavedMessage() {
     setSaveMessageIsVisible(true);
     setTimeout(() => setSaveMessageIsVisible(false), 5000);
-  }
-
-  async function submitForm(values: title) {
-    const res = await postLocalTitle(values);
-    if (res.ok) {
-      showSavedMessage();
-      setTimeout(() => router.push(`/${params.id}?title=${titleString}`), 5000);
-    } else {
-      alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
-    }
   }
 
   return (
@@ -104,8 +103,20 @@ export default function Page({params}: { params: { id: string } }) {
             enableReinitialize
             initialValues={titleFromDb}
             onSubmit={(values: title, {setSubmitting}) => {
-              void submitForm(values)
-                .then(() => setSubmitting(false));
+              void postLocalTitle(values)
+                .then(res => {
+                  if (res.ok) {
+                    showSavedMessage();
+                  } else {
+                    setErrorText('Noe gikk galt ved lagring.');
+                    setShowError(true);
+                  }
+                })
+                .catch(() => {
+                  setErrorText('Noe gikk galt ved lagring.');
+                  setShowError(true);
+                })
+                .finally(() => setSubmitting(false));
             }}
           >
             {({
@@ -161,7 +172,7 @@ export default function Page({params}: { params: { id: string } }) {
                     />
                   </div>
 
-                  <div className='w-60 overflow-auto flex flex-col mb-6 my-4'>
+                  <div className='w-60 overflow-auto flex flex-col mb-6'>
                     <p className='group-title-style mb-4 text-left'> Utgivelsesmønster </p>
                     <Table hideHeader removeWrapper className='table-fixed text-left' aria-labelledby='releaseTable'>
                       <TableHeader>
@@ -315,15 +326,19 @@ export default function Page({params}: { params: { id: string } }) {
                 </div>
 
                 <div className="mt-10">
-                  <Button
-                    type='submit'
-                    disabled={isSubmitting || !isValid}
-                    size='lg'
-                    endContent={<FaSave/>}
-                    className='save-button-style'
-                  >
-                    Lagre
-                  </Button>
+                  {isSubmitting ? (
+                    <Spinner size={'lg'} className='py-3'/>
+                  ) : (
+                    <Button
+                      type='submit'
+                      disabled={isSubmitting || !isValid}
+                      size='lg'
+                      endContent={<FaSave/>}
+                      className='save-button-style'
+                    >
+                      Lagre
+                    </Button>
+                  )}
                 </div>
               </Form>
 
@@ -340,6 +355,12 @@ export default function Page({params}: { params: { id: string } }) {
           </div>
         </div>
       ) : (<p className=''> Henter skjema...</p>)}
+
+      <ErrorModal
+        text={errorText}
+        onExit={() => setShowError(false)}
+        showModal={showError}
+      />
     </div>
   );
 }

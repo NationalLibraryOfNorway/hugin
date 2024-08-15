@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {Field, Form, Formik, useField} from 'formik';
 import {updateBoxForTitle} from '@/services/local.data';
 import {Box} from '@/models/Box';
@@ -7,6 +7,8 @@ import 'react-calendar/dist/Calendar.css';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
 import {FiSave} from 'react-icons/fi';
 import {Button} from '@nextui-org/button';
+import ErrorModal from '@/components/ErrorModal';
+import {Spinner} from '@nextui-org/react';
 
 
 interface BoxRegistrationModalProps {
@@ -17,6 +19,8 @@ interface BoxRegistrationModalProps {
 }
 
 const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrationModalProps) => {
+  const [showError, setShowError] = useState<boolean>(false);
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
       <div className="p-8 border w-96 rounded bg-white">
@@ -26,38 +30,48 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             initialValues={{boxId: '', startDate: new Date()}}
             onSubmit={(values, {setSubmitting}) => {
               const box = new Box(values.boxId, values.startDate);
+              setSubmitting(true);
               setTimeout(() => {
-                void updateBoxForTitle(props.titleId, box).then(res => {
-                  setSubmitting(false);
-                  if (res.ok) {
-                    props.updateBoxInfo(box);
-                    props.closeModal();
-                  } else {
-                    alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
-                  }
-                });
-                setSubmitting(false);
+                void updateBoxForTitle(props.titleId, box)
+                  .then(res => {
+                    if (res.ok) {
+                      props.updateBoxInfo(box);
+                      props.closeModal();
+                    } else {
+                      setShowError(true);
+                    }
+                  })
+                  .catch(() => setShowError(true))
+                  .finally(() => setSubmitting(false));
               }, 400);
             }}
           >
-            <Form>
-              <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="boxId">Eske id</label>
-              <Field
-                className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
-                name="boxId" type="text" required/>
-              <br/>
+            {({
+              isSubmitting
+            }) => (
+              <Form>
+                <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="boxId">Eske id</label>
+                <Field
+                  className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
+                  name="boxId" type="text" required/>
+                <br/>
 
-              <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="startDate">Fra dato</label>
-              <CalendarField fieldName="startDate"/>
+                <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="startDate">Fra dato</label>
+                <CalendarField fieldName="startDate"/>
 
-              <Button type="submit"
-                size={'lg'}
-                endContent={<FiSave/>}
-                className="save-button-style my-2"
-              >
-                Lagre ny eske
-              </Button>
-            </Form>
+                {isSubmitting ? (
+                  <Spinner size='lg' className='py-3'/>
+                ) : (
+                  <Button type="submit"
+                    size={'lg'}
+                    endContent={<FiSave/>}
+                    className="save-button-style my-2"
+                  >
+                    Lagre ny eske
+                  </Button>
+                )}
+              </Form>
+            )}
           </Formik>
 
           <Button
@@ -69,6 +83,12 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           </Button>
         </div>
       </div>
+
+      <ErrorModal
+        text='Noe gikk galt ved lagring av eske.'
+        onExit={() => setShowError(false)}
+        showModal={showError}
+      />
     </div>
   );
 };
