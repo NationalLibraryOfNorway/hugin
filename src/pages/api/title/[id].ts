@@ -90,7 +90,7 @@ async function handlePATCH(titleId: string, data: PatchData, res: NextApiRespons
     });
   }
 
-  if (data.notes) {
+  if (data.notes || data.notes === '') {
     await prisma.title.update({
       where: { id: +titleId },
       data: { notes: data.notes }
@@ -108,7 +108,7 @@ async function handlePATCH(titleId: string, data: PatchData, res: NextApiRespons
     });
   }
 
-  if (!data.box && !data.notes && !data.shelf) {
+  if (!data.box && !data.notes && data.notes !== '' && !data.shelf) {
     return res.status(400).json({error: 'No updatable data provided (can patch box, notes and shelf)'});
   }
 

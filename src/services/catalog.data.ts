@@ -23,8 +23,8 @@ export async function fetchNewspaperTitleFromCatalog(id: string): Promise<Catalo
   if (response.ok) {
     return await response.json() as Promise<CatalogTitle>;
   } else if (response.status === 404) {
-    throw new NotFoundError('Failed to fetch title');
+    return Promise.reject(new NotFoundError('Failed to fetch title'));
   } else {
-    throw new Error('Failed to fetch title');
+    return Promise.reject(new Error('Failed to fetch title'));
   }
 }

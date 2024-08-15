@@ -62,6 +62,7 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               className='mb-2'
               minRows={props.minRows ?? 1}
               maxRows={props.maxRows ?? 5}
+              endContent={showSuccess && <p className='italic text-sm'>Lagret!</p>}
             />
             <Button
               type='submit'
@@ -74,10 +75,6 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
           </Form>
         )}
       </Formik>
-
-      {showSuccess &&
-        <p className='mt-1'> Kommentar lagret!</p>
-      }
 
       <ErrorModal
         text='Noe gikk galt ved lagring av kommentar.'
