@@ -68,7 +68,7 @@ jobs:
           secretId: ${{ secrets.VAULT_SECRET_ID }}
           secrets: |
             kv/team/text/data/harbor * ;
-            kv/team/text/data/hugin-stage DATABASE_URL_STAGE
+            kv/team/text/data/hugin-stage *;
 
       - name: Log in to Harbor
         uses: docker/login-action@v3
@@ -92,6 +92,11 @@ jobs:
           touch .env.production
           echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_STAGE_API_PATH }}" >> .env.production
           echo "DATABASE_URL=${{ steps.import-secrets.outputs.DATABASE_URL_STAGE }}" >> .env.production
+          echo "KEYCLOAK_CLIENT_URL=${{ steps.import-secrets.outputs.KEYCLOAK_CLIENT_URL }}" >> .env.production
+          echo "KEYCLOAK_CLIENT_SECRET=${{ steps.import-secrets.outputs.KEYCLOAK_CLIENT_SECRET }}" >> .env.production
+          echo "KEYCLOAK_ISSUER=${{ steps.import-secrets.outputs.KEYCLOAK_ISSUER }}" >> .env.production
+          echo "NEXTAUTH_SECRET=${{ steps.import-secrets.outputs.NEXTAUTH_SECRET }}" >> .env.production
+          echo "NEXTAUTH_URL=${{ steps.import-secrets.outputs.NEXTAUTH_URL }}" >> .env.production
           echo "SENTRY_DSN=${{ secrets.SENTRY_DSN }}" >> .env.production
           echo "SENTRY_ORG=${{ secrets.SENTRY_ORG }}" >> .env.production
           echo "SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}" >> .env.production
