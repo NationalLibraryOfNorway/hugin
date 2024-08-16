@@ -44,7 +44,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
 
   return (
     <div className='fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-40'>
-      <div ref={ref} className='p-8 border border-red-600 w-1/3 rounded bg-red-300 z-50'>
+      <div ref={ref} className='p-8 border border-red-600 w-2/5 rounded bg-red-300 z-50'>
         <div className='text-center'>
           <h3 className='top-title-style'> Ojsann... </h3>
           <p className='group-content-style mt-3 whitespace-pre-wrap'>

@@ -43,7 +43,7 @@ export default function Page({params}: { params: { id: string } }) {
           setErrorMessage('Fant ikke tittel på denne ID i katalogen. Se om ID er korrekt.');
           setShowError(true);
         } else {
-          setErrorMessage('Kunne ikke se etter tittel i katalogen.');
+          setErrorMessage('Får ikke kontakt med katalogen.');
           setShowError(true);
         }
       });
@@ -60,7 +60,7 @@ export default function Page({params}: { params: { id: string } }) {
         if (e instanceof NotFoundError) {
           setTitleFromDbNotFound(true);
         } else {
-          setErrorMessage('Kunne ikke se etter kontakt- og utgivelsesinformasjon.');
+          setErrorMessage('Får ikke kontakt med databasen for å se etter kontakt- og utgivelsesinformasjon.');
           setShowError(true);
         }
       });
