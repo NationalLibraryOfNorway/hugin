@@ -6,7 +6,7 @@ import {FaTrash} from 'react-icons/fa';
 import DatePicker from 'react-date-picker';
 import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
-import { Button, Spinner, Table } from '@nextui-org/react';
+import {Button, Spinner, Table} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
 
@@ -268,13 +268,22 @@ export default function IssueList(props: {title: title}) {
 
 const DatePickerField = (props: { fieldName: string; value: Date | null; id?: string; disabled?: boolean }) => {
   const [field, , {setValue}] = useField(props.fieldName);
+
+  function convertLocalDateToUTCDateString(date: string) : Date {
+    const oldDate = new Date(date);
+    // Both prisma and DatePicker have bad support for timezones, causing a need for this workaround
+    // 1 min = 60s * 1000ms = 60000ms; timezoneOffset is in minutes from current to UTC, causing a subtraction
+    // E.g. getTimezoneOffset() returns -120 for CEST, so 2 hours are essentially added to the old date with the double negative
+    return new Date(oldDate.getTime() - oldDate.getTimezoneOffset() * 60000);
+  }
+
   return (
     <DatePicker
       id={props.fieldName}
       {...field}
       {...props}
       onChange={val => {
-        void setValue(val);
+        if (val) void setValue(convertLocalDateToUTCDateString(val.toString()));
       }}
       locale='no-NB'
     />
