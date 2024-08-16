@@ -57,7 +57,9 @@ export default function SearchBar(props: {inHeader: boolean}) {
     >
       {(title: CatalogTitle) =>
         <AutocompleteItem key={title.catalogueId} textValue={title.name}>
-          <div className={(!title.endDate) ? 'text-green-600 font-extrabold' : 'text-orange-400'}>
+          <div className={
+            (!title.endDate) ? 'font-extrabold bg-green-400 bg-opacity-45 w-fit py-1 px-2 rounded-lg' : 'text-gray-600 py-1 px-2'
+          }>
             {title.name}
           </div>
         </AutocompleteItem>}
