@@ -8,6 +8,8 @@ import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@
 import NumberInputWithButtons from '@/components/NumberInput';
 import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
 import SuccessModal from '@/components/SuccessModal';
+import ErrorModal from '@/components/ErrorModal';
+import {Spinner} from '@nextui-org/react';
 
 
 interface ContactAndReleaseInfoProps {
@@ -20,6 +22,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentValue, setCurrentValue] = useState<title>(props.titleFromDb);
+  const [showError, setShowError] = useState<boolean>(false);
 
   return (
     <div className={'flex flex-col outline outline-2 outline-blue-300 p-2 rounded-xl' + props.className}>
@@ -35,18 +38,18 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                     setTimeout(() => {
                       setShowSuccess(false);
                     }, 3000);
+                    resetForm({values});
+                    setCurrentValue(values);
                   } else {
-                    alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
+                    setShowError(true);
                   }
                 })
                 .catch(() =>  {
-                  alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
+                  setShowError(true);
                 })
                 .finally(() => {
                   setIsEditing(false);
-                  setCurrentValue(values);
                   setSubmitting(false);
-                  resetForm({values});
                 });
             }}
           >
@@ -103,7 +106,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
 
                   <p className='group-title-style mb-2 mt-6 text-left'> Utgivelsesmønster </p>
                   <Table hideHeader removeWrapper
-                    className='table-fixed text-left'
+                    className='table-fixed text-left mb-5'
                     aria-labelledby='releaseTable'
                   >
                     <TableHeader>
@@ -231,31 +234,34 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                       </TableRow>
                     </TableBody>
                   </Table>
-                  <div className='flex flex-row justify-between w-full mt-5'>
-                    <Button
-                      type="submit"
-                      size="lg"
-                      className="save-button-style"
-                      endContent={<FaSave size={25}/>}
-                      disabled={!isValid || isSubmitting}
-                    >
-                      Lagre
-                    </Button>
+                  {isSubmitting ? (
+                    <Spinner className='self-center p-1' size='lg'/>
+                  ) : (
+                    <div className='flex flex-row justify-between w-full'>
+                      <Button
+                        type="submit"
+                        size="lg"
+                        className="save-button-style"
+                        endContent={<FaSave size={25}/>}
+                        disabled={!isValid || isSubmitting}
+                      >
+                        Lagre
+                      </Button>
 
-                    <Button
-                      type="button"
-                      size="lg"
-                      className="abort-button-style"
-                      endContent={<ImCross size={25}/>}
-                      onClick={() => {
-                        resetForm();
-                        setIsEditing(false);
-                      }}
-                    >
-                      Avbryt
-                    </Button>
-                  </div>
-
+                      <Button
+                        type="button"
+                        size="lg"
+                        className="abort-button-style"
+                        endContent={<ImCross size={25}/>}
+                        onClick={() => {
+                          resetForm();
+                          setIsEditing(false);
+                        }}
+                      >
+                        Avbryt
+                      </Button>
+                    </div>
+                  )}
                 </Form>
               </div>
             )}
@@ -264,38 +270,38 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
       ) : (
         <>
           {currentValue &&
-                <div className='flex flex-col'>
-                  <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
+                  <div className='flex flex-col'>
+                    <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
 
-                  {currentValue.vendor &&
-                    <div className="self-start flex flex-row">
-                      <p className="group-subtitle-style">Avleverer: </p>
-                      <p className="group-content-style ml-2">{currentValue.vendor}</p>
-                    </div>
-                  }
+                    {currentValue.vendor &&
+                          <div className="self-start flex flex-row">
+                            <p className="group-subtitle-style">Avleverer: </p>
+                            <p className="group-content-style ml-2">{currentValue.vendor}</p>
+                          </div>
+                    }
 
-                  {currentValue.contact_name &&
-                    <div className="self-start flex flex-row">
-                      <p className="group-subtitle-style">Kontaktperson: </p>
-                      <p className="group-content-style ml-2">{currentValue.contact_name}</p>
-                    </div>
-                  }
+                    {currentValue.contact_name &&
+                          <div className="self-start flex flex-row">
+                            <p className="group-subtitle-style">Kontaktperson: </p>
+                            <p className="group-content-style ml-2">{currentValue.contact_name}</p>
+                          </div>
+                    }
 
-                  {currentValue.contact_email &&
+                    {currentValue.contact_email &&
                     <div className="self-start flex flex-row">
                       <p className="group-subtitle-style">E-post: </p>
                       <p className="group-content-style ml-2">{currentValue.contact_email}</p>
                     </div>
-                  }
+                    }
 
-                  {currentValue.contact_phone &&
+                    {currentValue.contact_phone &&
                     <div className="self-start flex flex-row">
                       <p className="group-subtitle-style">Telefon: </p>
                       <p className="group-content-style ml-2">{currentValue.contact_phone}</p>
                     </div>
-                  }
+                    }
 
-                  {currentValue.release_pattern &&
+                    {currentValue.release_pattern &&
                     <div className="self-start mt-12">
                       <h2 className="group-title-style mb-2">Utgivelsesmønster:</h2>
 
@@ -332,18 +338,18 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                         </tbody>
                       </table>
                     </div>
-                  }
+                    }
 
-                  <Button
-                    type="button"
-                    size="lg"
-                    className="edit-button-style mt-5"
-                    endContent={<FaEdit size={25}/>}
-                    onClick={() => setIsEditing(true)}
-                  >
+                    <Button
+                      type="button"
+                      size="lg"
+                      className="edit-button-style mt-5"
+                      endContent={<FaEdit size={25}/>}
+                      onClick={() => setIsEditing(true)}
+                    >
                     Rediger
-                  </Button>
-                </div>
+                    </Button>
+                  </div>
           }
         </>
       )}
@@ -354,6 +360,12 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
         buttonText='Lukk'
         buttonOnClick={() => setShowSuccess(false)}
         showModal={showSuccess}
+      />
+
+      <ErrorModal
+        text='Noe gikk galt ved lagring av kontakt- og utgivelsesinformasjonen.'
+        onExit={() => setShowError(false)}
+        showModal={showError}
       />
     </div>
   );

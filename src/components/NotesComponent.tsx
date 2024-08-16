@@ -3,6 +3,8 @@ import React, {FC, useState} from 'react';
 import {Textarea} from '@nextui-org/input';
 import {Button} from '@nextui-org/button';
 import {FaSave} from 'react-icons/fa';
+import ErrorModal from '@/components/ErrorModal';
+import {Spinner} from '@nextui-org/react';
 
 interface NotesProps {
   notes: string;
@@ -14,6 +16,7 @@ interface NotesProps {
 
 const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [showError, setShowError] = useState<boolean>(false);
 
   return (
     <div className='flex flex-col w-full'>
@@ -25,6 +28,7 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
       <Formik
         initialValues={{notes: props.notes}}
         onSubmit={(values, {setSubmitting, resetForm}) => {
+          setSubmitting(true);
           void props.onSubmit(values.notes)
             .then(res => {
               if (res.ok) {
@@ -32,13 +36,14 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
                 setTimeout(() => {
                   setShowSuccess(false);
                 }, 3000);
+                resetForm({values});
               } else {
-                alert('Noe gikk galt ved lagring av kommentar. Kontakt tekst-teamet om problemet vedvarer.');
+                setShowError(true);
               }
             })
+            .catch(() => setShowError(true))
             .finally(() => {
               setSubmitting(false);
-              resetForm({values});
             });
         }}
       >
@@ -57,23 +62,25 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               className='mb-2'
               minRows={props.minRows ?? 1}
               maxRows={props.maxRows ?? 5}
+              endContent={showSuccess && <p className='italic text-sm'>Lagret!</p>}
             />
             <Button
               type='submit'
               disabled={isSubmitting || !dirty}
+              startContent={isSubmitting && <Spinner size='sm'/>}
               endContent={<FaSave/>}
               size={'sm'}
-              className='save-button-style [&]:text-small w-full'
+              className='save-button-style [&]:text-small w-full min-h-9'
             >Lagre kommentar</Button>
           </Form>
         )}
       </Formik>
 
-      <div>
-        {showSuccess &&
-          <p className='mt-1'> Kommentar lagret!</p>
-        }
-      </div>
+      <ErrorModal
+        text='Noe gikk galt ved lagring av kommentar.'
+        showModal={showError}
+        onExit={() => setShowError(false)}
+      />
     </div>
   );
 };

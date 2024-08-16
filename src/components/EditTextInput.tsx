@@ -3,6 +3,8 @@ import {Field, Form, Formik} from 'formik';
 import {FaEdit, FaSave} from 'react-icons/fa';
 import {IconContext} from 'react-icons';
 import {ImCross} from 'react-icons/im';
+import ErrorModal from '@/components/ErrorModal';
+import {Spinner} from '@nextui-org/react';
 
 
 interface EditTextInputProps {
@@ -17,6 +19,7 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentValue, setCurrentValue] = useState<string>(props.value);
+  const [showError, setShowError] = useState<boolean>(false);
 
   return (
     <div className={'flex flex-row items-center min-h-11 ' + props.className}>
@@ -34,15 +37,16 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
                   setTimeout(() => {
                     setShowSuccess(false);
                   }, 3000);
+                  setCurrentValue(values.textInput);
+                  resetForm({values});
                 } else {
-                  alert('Noe gikk galt ved lagring. Kontakt tekst-teamet om problemet vedvarer.');
+                  setShowError(true);
                 }
               })
+              .catch(() => setShowError(true))
               .finally(() => {
                 setSubmitting(false);
                 setIsEditing(false);
-                setCurrentValue(values.textInput);
-                resetForm({values});
               });
           }}
         >
@@ -61,20 +65,23 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
                 value={values.textInput ?? ''}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className='input-text-style'
+                className='input-text-style mr-2'
               />
-              <button
-                type='submit'
-                disabled={isSubmitting || !dirty}
-                className='ml-2'
-              >
-                <IconContext.Provider value={{
-                  className: 'icon-style save-button-style',
-                  size: '1.5em'
-                }}>
-                  <FaSave/>
-                </IconContext.Provider>
-              </button>
+              {isSubmitting ? (
+                <Spinner size='sm' className='px-1' />
+              ) : (
+                <button
+                  type='submit'
+                  disabled={isSubmitting || !dirty}
+                >
+                  <IconContext.Provider value={{
+                    className: 'icon-style save-button-style',
+                    size: '1.5em'
+                  }}>
+                    <FaSave/>
+                  </IconContext.Provider>
+                </button>
+              )}
               <button className='ml-1'>
                 <IconContext.Provider value={{
                   className: 'icon-style abort-button-style [&]:text-xl',
@@ -103,6 +110,12 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
         </>
       )}
       {showSuccess && <p className='ml-2'>Lagret!</p>}
+
+      <ErrorModal
+        text={`Noe gikk galt ved lagring av ${props.name.toLowerCase()}.`}
+        showModal={showError}
+        onExit={() => setShowError(false)}
+      />
     </div>
   );
 };

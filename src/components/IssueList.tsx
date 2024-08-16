@@ -8,6 +8,7 @@ import 'react-date-picker/dist/DatePicker.css';
 import 'react-calendar/dist/Calendar.css';
 import { Button, Spinner, Table } from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
+import ErrorModal from '@/components/ErrorModal';
 
 
 export default function IssueList(props: {title: title}) {
@@ -15,6 +16,7 @@ export default function IssueList(props: {title: title}) {
   const [issues, setIssues] = useState<newspaper[]>([]);
   const [nIssuesInDb, setNIssuesInDb] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
+  const [showError, setShowError] = useState<boolean>(false);
 
   const initialValues = { issues };
 
@@ -97,7 +99,7 @@ export default function IssueList(props: {title: title}) {
 
   return (
     <div className='w-full mb-6 mt-4 py-10 pl-50 pr-50 border-5 border-blue-200 m-30'>
-      {loading ? (
+      { loading ? (
         <Spinner/>
       ) : (
         <Formik
@@ -107,16 +109,18 @@ export default function IssueList(props: {title: title}) {
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
+            setSubmitting(true);
             const newIssues = values.issues.slice(nIssuesInDb);
-            void postNewIssuesForTitle(props.title.id, newIssues).then(res => {
-              setSubmitting(false);
-              if (res.ok) {
-                setNIssuesInDb(values.issues.length);
-              } else {
-                alert('Noe gikk galt...');
-              }
-            });
-            setSubmitting(false);
+            void postNewIssuesForTitle(props.title.id, newIssues)
+              .then(res => {
+                if (res.ok) {
+                  setNIssuesInDb(values.issues.length);
+                } else {
+                  setShowError(true);
+                }
+              })
+              .catch(() => setShowError(true))
+              .finally(() => setSubmitting(false));
           }}
         >
           {({ values, isSubmitting }) => (
@@ -221,6 +225,7 @@ export default function IssueList(props: {title: title}) {
                     <Button
                       type="button"
                       className="edit-button-style my-4"
+                      disabled={isSubmitting}
                       onClick={() => {
                         push({
                           // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -241,12 +246,22 @@ export default function IssueList(props: {title: title}) {
                   </div>
                 )}
               </FieldArray>
-              <Button className="save-button-style" type="submit" disabled={isSubmitting}>Lagre</Button>
+              <Button
+                className="save-button-style"
+                type="submit"
+                disabled={isSubmitting}
+                startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
+              >Lagre</Button>
             </Form>
           )}
         </Formik>
-      )
-      }
+      )}
+
+      <ErrorModal
+        text='Kunne ikke lagre avisutgaver.'
+        onExit={() => setShowError(false)}
+        showModal={showError}
+      />
     </div>
   );
 }
