@@ -70,7 +70,7 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               startContent={isSubmitting && <Spinner size='sm'/>}
               endContent={<FaSave/>}
               size={'sm'}
-              className='save-button-style [&]:text-small w-full'
+              className='save-button-style [&]:text-small w-full min-h-9'
             >Lagre kommentar</Button>
           </Form>
         )}
