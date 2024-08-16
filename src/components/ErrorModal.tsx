@@ -1,6 +1,7 @@
 import {FC, useCallback, useEffect, useState} from 'react';
 import {useOutsideClick} from '@/hooks/useOutsideClick';
 import {Button} from '@nextui-org/button';
+import Link from 'next/link';
 
 
 interface ErrorModalProps {
@@ -47,7 +48,9 @@ const ErrorModal: FC<ErrorModalProps> = ({
         <div className='text-center'>
           <h3 className='top-title-style'> Ojsann... </h3>
           <p className='group-content-style mt-3 whitespace-pre-wrap'>
-            {text}<br/>Kontakt tekst-teamet dersom problemet vedvarer.
+            {text}<br/>Kontakt tekst-teamet
+            <Link href='https://sd.nb.no' className='text-blue-600 font-bold' target='_blank'> her </Link>
+            dersom problemet vedvarer.
           </p>
           <div className='flex flex-row justify-evenly'>
             <Button
