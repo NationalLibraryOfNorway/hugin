@@ -28,8 +28,6 @@ export default function IssueList(props: {title: title}) {
         title_id: props.title.id,
         edition: '',
         date: null,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        not_published: false,
         received: false,
         username: null,
         box: props.title.last_box ?? '',
@@ -56,7 +54,6 @@ export default function IssueList(props: {title: title}) {
     date: string | null;
     edition: string | null;
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    not_published: string | null;
     received: string | null;
   }
 
@@ -69,7 +66,6 @@ export default function IssueList(props: {title: title}) {
         date: null,
         edition: null,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        not_published: null,
         received: null
       };
       const identicalEditionNumbers = formIssues.filter(i => i.edition === issue.edition).length;
@@ -84,11 +80,6 @@ export default function IssueList(props: {title: title}) {
       if (!issue.edition) {
         isValid = false;
         issueError.edition = 'Påkrevd';
-      }
-      if (issue.not_published && issue.received) {
-        isValid = false;
-        issueError.not_published = '!';
-        issueError.received = '!';
       }
       errors.push(issueError);
     });
@@ -123,7 +114,7 @@ export default function IssueList(props: {title: title}) {
               .finally(() => setSubmitting(false));
           }}
         >
-          {({ values, isSubmitting }) => (
+          {({ values, isSubmitting, setFieldValue }) => (
             <Form>
               <FieldArray name="issues">
                 {({push, remove}) => (
@@ -134,7 +125,7 @@ export default function IssueList(props: {title: title}) {
                         <TableColumn align='center' className="text-lg">Dag</TableColumn>
                         <TableColumn align='center' className="text-lg">Dato</TableColumn>
                         <TableColumn align='center' className="text-lg">Nummer</TableColumn>
-                        <TableColumn align='center' className="text-lg">Ikke utgitt</TableColumn>
+                        <TableColumn align='center' className="text-lg">Ikke mottatt</TableColumn>
                         <TableColumn align='center' className="text-lg">Mottatt</TableColumn>
                         <TableColumn align='center' className="text-lg">Kommentar</TableColumn>
                         <TableColumn align='center' hideHeader={true} className="text-lg">Slett</TableColumn>
@@ -174,16 +165,12 @@ export default function IssueList(props: {title: title}) {
                             </TableCell>
                             <TableCell className="text-lg">
                               <Field
-                                name={`issues.${index}.not_published`}
+                                name={`issues.${index}.not_received`}
                                 type="checkbox"
                                 disabled={index < nIssuesInDb}
-                                value={Boolean(issue.not_published)}
-                                checked={Boolean(issue.not_published)}
-                              />
-                              <ErrorMessage
-                                name={`issues.${index}.not_published`}
-                                component="div"
-                                className="field-error text-lg"
+                                value={!issue.received}
+                                checked={!issue.received}
+                                onChange={() => setFieldValue(`issues.${index}.received`, false)}
                               />
                             </TableCell>
                             <TableCell className="text-lg">
@@ -233,7 +220,6 @@ export default function IssueList(props: {title: title}) {
                           edition: '',
                           date: '',
                           // eslint-disable-next-line @typescript-eslint/naming-convention
-                          not_published: false,
                           received: false,
                           username: null,
                           notes: null,
