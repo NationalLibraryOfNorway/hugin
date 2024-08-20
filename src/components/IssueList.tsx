@@ -281,6 +281,7 @@ const DatePickerField = (props: { fieldName: string; value: Date | null; id?: st
         if (val) void setValue(convertLocalDateToUTCDateString(val.toString()));
       }}
       locale='no-NB'
+      onBlur={() => field.onBlur(field.name)}
     />
   );
 };

@@ -14,6 +14,11 @@ input[type=number] {
     -moz-appearance: textfield;
 }
 
+/* Removes warning '<Fit />'s child needed to have its height decreased to 266.15625px.' */
+.react-date-picker__calendar--open {
+    height: 266px;
+}
+
 .edit-button-style {
     @apply bg-blue-300 enabled:hover:bg-blue-500;
     @apply text-xl font-bold text-black;
