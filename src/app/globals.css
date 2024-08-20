@@ -62,3 +62,8 @@ input[type=number] {
 .icon-style {
     @apply p-1 rounded;
 }
+
+/* NB: Må ha både margin og padding av ukjent grunn for at det skal bli mellomrom mellom border og innhold */
+.border-style {
+    @apply border-5 rounded-xl border-blue-200;
+}

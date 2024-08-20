@@ -114,8 +114,8 @@ export default function Page({params}: { params: { id: string } }) {
                     className='w-96'
                   />
 
-                  <div className="flex flex-row">
-                    <p className="group-title-style"> Serie ID: </p>
+                  <div className="flex flex-row mr-8">
+                    <p className="group-title-style"> Katalog ID: </p>
                     <p className="group-content-style ml-2">{params.id}</p>
                   </div>
                 </div>
@@ -157,7 +157,7 @@ export default function Page({params}: { params: { id: string } }) {
           </div>
 
           <div className="flex flex-col">
-            <div className='items-start mx-2 w-72 mb-6'>
+            <div className='items-start mt-7 w-72 mb-6'>
               {titleFromDb &&
                   <NotesComponent
                     notes={titleFromDb.notes ?? ''}

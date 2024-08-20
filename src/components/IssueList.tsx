@@ -94,7 +94,7 @@ export default function IssueList(props: {title: title}) {
   }
 
   return (
-    <div className='w-full mb-6 mt-4 py-10 pl-50 pr-50 border-5 border-blue-200 m-30'>
+    <div className='w-full mb-6 mt-4 py-10 border-style m-30'>
       { loading ? (
         <Spinner/>
       ) : (
