@@ -154,8 +154,8 @@ export default function IssueList(props: {title: title}) {
                       >Lagre</Button>
                     </div>
 
-                    <Table aria-label="list of issues in current box" className="text-lg"
-                      classNames={{table: 'min-h-80'}}>
+                    <Table aria-label="list of issues in current box"
+                      classNames={{base: 'text-lg', table: 'min-h-80'}}>
                       <TableHeader>
                         <TableColumn align='center' className="text-lg">Dag</TableColumn>
                         <TableColumn align='center' className="text-lg">Dato</TableColumn>
