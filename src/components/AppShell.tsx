@@ -1,14 +1,28 @@
 import React from 'react';
 import Header from '@/components/Header';
+import {getServerSession} from 'next-auth';
+import {authOptions} from '@/app/auth';
+import Logout from '@/components/Logout';
+import {UserDetails} from '@/components/UserDetails';
 
-export default function AppShell({
+export default async function AppShell({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
+  const userButton = session ? (
+    <div className="flex items-center space-x-4">
+      <UserDetails name={session.user.name} email={session.user.email} />
+      <Logout />
+    </div>
+  ) : <div />;
+
   return (
     <div className="min-h-screen flex flex-col text-center">
-      <Header />
+      <Header>
+        {userButton}
+      </Header>
       <div className="flex-grow flex justify-center pt-10">
         {children}
       </div>
