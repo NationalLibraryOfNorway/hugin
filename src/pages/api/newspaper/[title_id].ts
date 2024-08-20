@@ -6,13 +6,21 @@ import {newspaper} from '@prisma/client';
 import {createCatalogNewspaperDtoFromIssue} from '@/models/CatalogNewspaperDto';
 import {postItemToCatalog, postMissingItemToCatalog} from '@/services/catalog.data';
 import {createCatalogMissingNewspaperDtoFromIssue} from '@/models/CatalogMissingNewspaperDto';
+import {getServerSession} from 'next-auth';
+import {authOptions} from '@/app/auth';
 
 export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getServerSession(req, res, authOptions);
+
   const titleId = req.query.title_id;
   const box = req.query.box;
+
+  if (!session) {
+    return res.status(401).json({error: 'Unauthorized: Not signed in'});
+  }
 
   switch (req.method) {
   case 'GET':

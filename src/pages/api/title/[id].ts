@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma';
 import {title} from '@prisma/client';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
 import {Box} from '@/models/Box';
+import {getServerSession} from 'next-auth';
+import {authOptions} from '@/app/auth';
 
 type PatchData = {
   box?: Box;
@@ -15,6 +17,11 @@ export default async function handle(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  const session = await getServerSession(req, res, authOptions);
+  if (!session) {
+    return res.status(401).json({error: 'Unauthorized: Not signed in'});
+  }
+
   const titleId = req.query.id;
 
   switch (req.method) {
