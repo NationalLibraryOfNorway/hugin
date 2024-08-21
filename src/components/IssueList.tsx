@@ -121,13 +121,14 @@ export default function IssueList(props: {title: title}) {
         >
           {({ values, isSubmitting, setFieldValue }) => (
             <Form>
+              {/* <Form className='w-fit'>*/}
               <FieldArray name="issues">
                 {({insert, remove}) => (
                   <div className="mx-6">
                     <div className='flex flex-row mb-5'>
                       <Button
                         type="button"
-                        className="edit-button-style ml-auto"
+                        className="edit-button-style"
                         disabled={isSubmitting}
                         onClick={() => {
                           insert(0, {

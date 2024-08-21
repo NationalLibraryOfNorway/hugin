@@ -105,6 +105,10 @@ export default function Page({params}: { params: { id: string } }) {
                 ) : (
                   <p>Henter tittel ...</p>
                 )}
+                <div className="flex flex-row mt-2 w-full">
+                  <p className="group-title-style ml-auto"> Katalog ID: </p>
+                  <p className="group-content-style ml-2 mr-auto">{params.id}</p>
+                </div>
                 <div className='flex flex-row justify-between items-center mt-4'>
                   <EditTextInput
                     name='Hyllesignatur'
@@ -113,11 +117,6 @@ export default function Page({params}: { params: { id: string } }) {
                     onSuccess={updateShelfLocally}
                     className='w-96'
                   />
-
-                  <div className="flex flex-row mr-8">
-                    <p className="group-title-style"> Katalog ID: </p>
-                    <p className="group-content-style ml-2">{params.id}</p>
-                  </div>
                 </div>
               </div>
 
@@ -157,7 +156,7 @@ export default function Page({params}: { params: { id: string } }) {
           </div>
 
           <div className="flex flex-col">
-            <div className='items-start mt-7 w-72 mb-6'>
+            <div className='items-start mt-16 w-72 mb-6'>
               {titleFromDb &&
                   <NotesComponent
                     notes={titleFromDb.notes ?? ''}

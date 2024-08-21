@@ -355,7 +355,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
       )}
 
       <SuccessModal
-        text={'Lagret!'}
+        text='Kontakt- og utgivelsesinformasjon lagret!'
         onExit={() => setShowSuccess(false)}
         buttonText='Lukk'
         buttonOnClick={() => setShowSuccess(false)}

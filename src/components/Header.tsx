@@ -13,7 +13,7 @@ export default function Header() {
   const titlepageRegex = /^\/\d+$/;
 
   return (
-    <Navbar>
+    <Navbar maxWidth='xl'>
       <NavbarBrand>
         <Link
           color="foreground"
