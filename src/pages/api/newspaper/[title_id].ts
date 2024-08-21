@@ -36,7 +36,7 @@ async function handleGET(titleId: string, box: string, res: NextApiResponse) {
       title_id: +titleId,
       box
     },
-    orderBy: { date: 'asc' }
+    orderBy: { date: 'desc' }
   }).catch((e: Error) => {
     return res.status(500).json({error: `Error looking for title: ${e.name} - ${e.message}`});
   });

@@ -23,7 +23,7 @@ export default function IssueList(props: {title: title}) {
   useEffect(() => {
     function prepareTitles(titles: newspaper[]) {
       const formTitles = titles;
-      formTitles.push({
+      formTitles.unshift({
         // eslint-disable-next-line @typescript-eslint/naming-convention
         title_id: props.title.id,
         edition: '',
@@ -35,6 +35,7 @@ export default function IssueList(props: {title: title}) {
       });
       return formTitles;
     }
+
     void getIssuesForTitle(props.title.id, props.title.last_box ?? '')
       .then((data: newspaper[]) => {
         setNIssuesInDb(data.length);
@@ -88,6 +89,10 @@ export default function IssueList(props: {title: title}) {
     return {issues: errors} as FormikErrors<newspaper>;
   }
 
+  function newspaperIsSaved(index: number, arrayLength: number) {
+    return index >= arrayLength - nIssuesInDb;
+  }
+
   return (
     <div className='w-full mb-6 mt-4 py-10 pl-50 pr-50 border-5 border-blue-200 m-30'>
       { loading ? (
@@ -101,7 +106,7 @@ export default function IssueList(props: {title: title}) {
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
             setSubmitting(true);
-            const newIssues = values.issues.slice(nIssuesInDb);
+            const newIssues = values.issues.slice(0, values.issues.length - nIssuesInDb);
             void postNewIssuesForTitle(props.title.id, newIssues)
               .then(res => {
                 if (res.ok) {
@@ -117,8 +122,38 @@ export default function IssueList(props: {title: title}) {
           {({ values, isSubmitting, setFieldValue }) => (
             <Form>
               <FieldArray name="issues">
-                {({push, remove}) => (
+                {({insert, remove}) => (
                   <div className="mx-6">
+                    <div className='flex flex-row mb-5'>
+                      <Button
+                        type="button"
+                        className="edit-button-style ml-auto"
+                        disabled={isSubmitting}
+                        onClick={() => {
+                          insert(0, {
+                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                            title_id: props.title.id,
+                            edition: '',
+                            date: '',
+                            // eslint-disable-next-line @typescript-eslint/naming-convention
+                            received: false,
+                            username: null,
+                            notes: null,
+                            box: props.title.last_box
+                          });
+                        }}
+                      >
+                        Legg til ny utgave
+                      </Button>
+
+                      <Button
+                        className="save-button-style ml-auto min-w-28"
+                        type="submit"
+                        disabled={isSubmitting}
+                        startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
+                      >Lagre</Button>
+                    </div>
+
                     <Table aria-label="list of issues in current box" className="text-lg"
                       classNames={{table: 'min-h-80'}}>
                       <TableHeader>
@@ -141,7 +176,7 @@ export default function IssueList(props: {title: title}) {
                                 id={`issues.${index}.date`}
                                 value={issue.date}
                                 fieldName={`issues.${index}.date`}
-                                disabled={index < nIssuesInDb}
+                                disabled={newspaperIsSaved(index, values.issues.length)}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.date`}
@@ -155,7 +190,7 @@ export default function IssueList(props: {title: title}) {
                                 className="max-w-16 border text-center"
                                 type="text"
                                 width='40'
-                                disabled={index < nIssuesInDb}
+                                disabled={newspaperIsSaved(index, values.issues.length)}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.edition`}
@@ -167,7 +202,7 @@ export default function IssueList(props: {title: title}) {
                               <Field
                                 name={`issues.${index}.not_received`}
                                 type="checkbox"
-                                disabled={index < nIssuesInDb}
+                                disabled={newspaperIsSaved(index, values.issues.length)}
                                 value={!issue.received}
                                 checked={!issue.received}
                                 onChange={() => setFieldValue(`issues.${index}.received`, false)}
@@ -177,7 +212,7 @@ export default function IssueList(props: {title: title}) {
                               <Field
                                 name={`issues.${index}.received`}
                                 type="checkbox"
-                                disabled={index < nIssuesInDb}
+                                disabled={newspaperIsSaved(index, values.issues.length)}
                                 value={Boolean(issue.received)}
                                 checked={Boolean(issue.received)}
                               />
@@ -192,12 +227,12 @@ export default function IssueList(props: {title: title}) {
                                 name={`issues.${index}.notes`}
                                 className="border"
                                 type="text"
-                                disabled={index < nIssuesInDb}
+                                disabled={newspaperIsSaved(index, values.issues.length)}
                                 value={issue.notes || ''}
                               />
                             </TableCell>
                             <TableCell className="text-lg">
-                              { index > nIssuesInDb - 1 &&
+                              { !newspaperIsSaved(index, values.issues.length) &&
                                 <button
                                   type="button"
                                   onClick={() => remove(index)}>
@@ -209,35 +244,9 @@ export default function IssueList(props: {title: title}) {
                         ))}
                       </TableBody>
                     </Table>
-                    <Button
-                      type="button"
-                      className="edit-button-style my-4"
-                      disabled={isSubmitting}
-                      onClick={() => {
-                        push({
-                          // eslint-disable-next-line @typescript-eslint/naming-convention
-                          title_id: props.title.id,
-                          edition: '',
-                          date: '',
-                          // eslint-disable-next-line @typescript-eslint/naming-convention
-                          received: false,
-                          username: null,
-                          notes: null,
-                          box: props.title.last_box
-                        });
-                      }}
-                    >
-                      Legg til ny utgave
-                    </Button>
                   </div>
                 )}
               </FieldArray>
-              <Button
-                className="save-button-style"
-                type="submit"
-                disabled={isSubmitting}
-                startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
-              >Lagre</Button>
             </Form>
           )}
         </Formik>

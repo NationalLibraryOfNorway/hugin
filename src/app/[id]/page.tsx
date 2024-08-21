@@ -147,7 +147,11 @@ export default function Page({params}: { params: { id: string } }) {
                 </Button>
               </div>
 
-              <IssueList title={titleFromDb}/>
+              {(titleFromDb.last_box && titleFromDb.last_box !== '') ? (
+                <IssueList title={titleFromDb}/>
+              ) : (
+                <p className='mt-20 group-content-style text-start'>Legg til eske for å legge inn avisutgaver</p>
+              )}
 
             </div>
           </div>
