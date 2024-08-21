@@ -121,7 +121,6 @@ export default function IssueList(props: {title: title}) {
         >
           {({ values, isSubmitting, setFieldValue }) => (
             <Form>
-              {/* <Form className='w-fit'>*/}
               <FieldArray name="issues">
                 {({insert, remove}) => (
                   <div className="mx-6">
