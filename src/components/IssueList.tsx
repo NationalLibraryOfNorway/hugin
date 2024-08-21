@@ -17,6 +17,7 @@ export default function IssueList(props: {title: title}) {
   const [nIssuesInDb, setNIssuesInDb] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [showError, setShowError] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
 
   const initialValues = { issues };
 
@@ -93,6 +94,13 @@ export default function IssueList(props: {title: title}) {
     return index >= arrayLength - nIssuesInDb;
   }
 
+  function showSuccessMessage() {
+    setShowSuccess(true);
+    setTimeout(() => {
+      setShowSuccess(false);
+    }, 5000);
+  }
+
   return (
     <div className='w-full mb-6 mt-4 py-10 border-style m-30'>
       { loading ? (
@@ -111,6 +119,7 @@ export default function IssueList(props: {title: title}) {
               .then(res => {
                 if (res.ok) {
                   setNIssuesInDb(values.issues.length);
+                  showSuccessMessage();
                 } else {
                   setShowError(true);
                 }
@@ -124,7 +133,7 @@ export default function IssueList(props: {title: title}) {
               <FieldArray name="issues">
                 {({insert, remove}) => (
                   <div className="mx-6">
-                    <div className='flex flex-row mb-5'>
+                    <div className='flex flex-row mb-5 justify-between items-center'>
                       <Button
                         type="button"
                         className="edit-button-style"
@@ -146,8 +155,12 @@ export default function IssueList(props: {title: title}) {
                         Legg til ny utgave
                       </Button>
 
+                      {showSuccess &&
+                        <p className='font-bold text-lg'> Lagret! </p>
+                      }
+
                       <Button
-                        className="save-button-style ml-auto min-w-28"
+                        className="save-button-style min-w-28"
                         type="submit"
                         disabled={isSubmitting}
                         startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
