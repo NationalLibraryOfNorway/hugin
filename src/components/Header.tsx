@@ -5,6 +5,7 @@ import React from 'react';
 import {Button} from '@nextui-org/button';
 import {usePathname, useRouter} from 'next/navigation';
 import SearchBar from '@/components/SearchBar';
+import Image from 'next/image';
 
 export default function Header() {
   const router = useRouter();
@@ -13,14 +14,15 @@ export default function Header() {
   const titlepageRegex = /^\/\d+$/;
 
   return (
-    <Navbar>
+    <Navbar maxWidth='xl'>
       <NavbarBrand>
         <Link
           color="foreground"
           className="font-bold text-2xl hover:cursor-pointer"
           onClick={() => router.push('/')}
         >
-            Hugin
+          <Image className="mr-2" src="/hugin/hugin.svg" alt="Hugin logo" width={45} height={45}/>
+          Hugin
         </Link>
       </NavbarBrand>
       { titlepageRegex.test(pathname) &&

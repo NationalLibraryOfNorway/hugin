@@ -25,7 +25,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
   const [showError, setShowError] = useState<boolean>(false);
 
   return (
-    <div className={'flex flex-col outline outline-2 outline-blue-300 p-2 rounded-xl' + props.className}>
+    <div className={'flex flex-col border-style p-3 m-0' + props.className}>
       {isEditing ? (
         <>
           <Formik
@@ -355,7 +355,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
       )}
 
       <SuccessModal
-        text={'Lagret!'}
+        text='Kontakt- og utgivelsesinformasjon lagret!'
         onExit={() => setShowSuccess(false)}
         buttonText='Lukk'
         buttonOnClick={() => setShowSuccess(false)}

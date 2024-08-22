@@ -66,6 +66,7 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
                 onChange={handleChange}
                 onBlur={handleBlur}
                 className='input-text-style mr-2'
+                autoFocus={true}
               />
               {isSubmitting ? (
                 <Spinner size='sm' className='px-1' />
