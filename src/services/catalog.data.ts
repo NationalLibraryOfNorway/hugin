@@ -1,5 +1,9 @@
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {NotFoundError} from '@/models/Errors';
+import {CatalogNewspaperDto} from '@/models/CatalogNewspaperDto';
+import {CatalogMissingNewspaperDto} from '@/models/CatalogMissingNewspaperDto';
+import {CatalogItem} from '@/models/CatalogItem';
+import {KeycloakToken} from '@/models/KeycloakToken';
 
 export async function searchNewspaperTitlesInCatalog(searchTerm: string, signal: AbortSignal): Promise<CatalogTitle[]> {
   return fetch(
@@ -27,4 +31,66 @@ export async function fetchNewspaperTitleFromCatalog(id: string): Promise<Catalo
   } else {
     return Promise.reject(new Error('Failed to fetch title'));
   }
+}
+
+export async function postItemToCatalog(issue: CatalogNewspaperDto): Promise<CatalogItem> {
+  const token = await getKeycloakTekstToken();
+
+  return fetch(`${process.env.CATALOGUE_API_PATH}/newspapers/items`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Authorization: `Bearer ${token.access_token}`
+    },
+    body: JSON.stringify(issue)
+  })
+    .then(async response => {
+      if (response.ok) {
+        return await response.json() as Promise<CatalogItem>;
+      } else {
+        return Promise.reject(new Error(`Failed to create title in catalog: ${response.status} - ${await response.json()}`));
+      }
+    })
+    .catch((e: Error) => {
+      return Promise.reject(new Error(`Failed to create title in catalog: ${e.message}`));
+    });
+}
+
+export async function postMissingItemToCatalog(issue: CatalogMissingNewspaperDto): Promise<CatalogItem> {
+  const token = await getKeycloakTekstToken();
+
+  return fetch(`${process.env.CATALOGUE_API_PATH}/newspapers/items/missing`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Authorization: `Bearer ${token.access_token}`
+    },
+    body: JSON.stringify(issue)
+  })
+    .then(async response => {
+      if (response.ok) {
+        return await response.json() as Promise<CatalogItem>;
+      } else {
+        return Promise.reject(new Error(`Failed to create title in catalog: ${response.status} - ${await response.json()}`));
+      }
+    })
+    .catch((e: Error) => {
+      return Promise.reject(new Error(`Failed to create title in catalog: ${e.message}`));
+    });
+}
+
+async function getKeycloakTekstToken(): Promise<KeycloakToken> {
+  const body = `client_id=${process.env.KEYCLOAK_TEKST_CLIENT_ID}` +
+      `&client_secret=${process.env.KEYCLOAK_TEKST_CLIENT_SECRET}` +
+      '&grant_type=client_credentials';
+  const res = await fetch(`${process.env.KEYCLOAK_TEKST_URL}/token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body
+  });
+  return await res.json() as KeycloakToken;
 }

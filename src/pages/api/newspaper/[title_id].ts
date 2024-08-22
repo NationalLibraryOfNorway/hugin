@@ -3,6 +3,9 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import prisma from '@/lib/prisma';
 import {newspaper} from '@prisma/client';
+import {createCatalogNewspaperDtoFromIssue} from '@/models/CatalogNewspaperDto';
+import {postItemToCatalog, postMissingItemToCatalog} from '@/services/catalog.data';
+import {createCatalogMissingNewspaperDtoFromIssue} from '@/models/CatalogMissingNewspaperDto';
 
 export default async function handle(
   req: NextApiRequest,
@@ -37,10 +40,26 @@ async function handleGET(titleId: string, box: string, res: NextApiResponse) {
 
 // POST api/newspaper/[title_id]
 async function handlePOST(issues: newspaper[], res: NextApiResponse) {
+  const issuesWithId: newspaper[] = [];
+
+  for (const issue of issues) {
+    if (issue.received) {
+      const dto = createCatalogNewspaperDtoFromIssue(issue);
+      const catalogItem = await postItemToCatalog(dto);
+      const issueWithId: newspaper = {...issue, catalog_id: catalogItem.parentCatalogueId};
+      issuesWithId.push(issueWithId);
+    } else {
+      const dto = createCatalogMissingNewspaperDtoFromIssue(issue);
+      const catalogItem = await postMissingItemToCatalog(dto);
+      const issueWithId: newspaper = {...issue, catalog_id: catalogItem.catalogueId};
+      issuesWithId.push(issueWithId);
+    }
+  }
+
   await prisma.newspaper.createMany({
-    data: issues
+    data: issuesWithId
   }).catch(e => {
-    return res.status(500).json({error: `Failed to create or update newspapers: ${e}`});
+    return res.status(500).json({error: `Failed to create or update newspapers in local database: ${e}`});
   });
 
   return res.status(200).json(issues);

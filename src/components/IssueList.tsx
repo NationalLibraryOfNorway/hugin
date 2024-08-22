@@ -32,7 +32,9 @@ export default function IssueList(props: {title: title}) {
         received: false,
         username: null,
         box: props.title.last_box ?? '',
-        notes: null
+        notes: null,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        catalog_id: null
       });
       return formTitles;
     }
