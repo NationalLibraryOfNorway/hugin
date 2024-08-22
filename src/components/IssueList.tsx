@@ -42,39 +42,34 @@ export default function IssueList(props: {title: title}) {
       });
     }
 
-    function proposeNextExpected(newspapers: newspaper[]): newspaper {
-      const newestIssue = getNewestNewspaper(newspapers) ?? {
-        date: props.title.last_box_from
-          ? new Date(props.title.last_box_from).setDate(new Date(props.title.last_box_from).getDate() - 1)
-          : new Date(),
-        edition: '0'
-      };
+    const newestIssue = getNewestNewspaper(currentIssues) ?? {
+      date: props.title.last_box_from
+        ? new Date(props.title.last_box_from).setDate(new Date(props.title.last_box_from).getDate() - 1)
+        : new Date(),
+      edition: '0'
+    };
 
-      // TS paranoia check: issue.date can in theory be null, but will in practice never be
-      const newDate = newestIssue.date ? new Date(newestIssue.date) : new Date();
-      const daysToJump = getDaysToNextExpected(newDate.getDay());
-      newDate.setDate(newDate.getDate() + daysToJump);
+    // TS paranoia check: issue.date can in theory be null, but should in practice never be
+    const newDate = newestIssue.date ? new Date(newestIssue.date) : new Date();
+    const daysToJump = getDaysToNextExpected(newDate.getDay());
+    newDate.setDate(newDate.getDate() + daysToJump);
 
-      // Using parseInt instead of +issue.edition since we can then e.g. increase from 8b to 9
-      const editionAsNumber = parseInt(newestIssue.edition, 10);
-      const newNumber = Number.isNaN(editionAsNumber) || editionAsNumber === 0 ? '' : `${editionAsNumber + 1}`;
+    // Using parseInt instead of +issue.edition since we can then e.g. increase from 8b to 9
+    const editionAsNumber = parseInt(newestIssue.edition, 10);
+    const newNumber = Number.isNaN(editionAsNumber) || editionAsNumber === 0 ? '' : `${editionAsNumber + 1}`;
 
-      return {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        title_id: props.title.id,
-        edition: newNumber,
-        date: newDate,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        received: false,
-        username: null,
-        notes: null,
-        box: props.title.last_box ?? '',
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        catalog_id: null
-      };
-    }
-
-    return proposeNextExpected(currentIssues);
+    return {
+      /* eslint-disable @typescript-eslint/naming-convention */
+      title_id: props.title.id,
+      edition: newNumber,
+      date: newDate,
+      received: false,
+      username: null,
+      notes: '',
+      box: props.title.last_box ?? '',
+      catalog_id: null
+      /* eslint-enable @typescript-eslint/naming-convention */
+    };
   }, [props]);
 
   useEffect(() => {
