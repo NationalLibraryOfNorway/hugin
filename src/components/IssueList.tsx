@@ -28,7 +28,7 @@ export default function IssueList(props: {title: title}) {
 
       // If release pattern only consists of 0s, just go to next day
       const pattern = props.title.release_pattern;
-      if (pattern.filter(day => day !== 0).length === 0) return 1;
+      if (pattern.every(day => day === 0)) return 1;
 
       // Using two patterns merged to continue after reaching sunday
       const doublePattern = pattern.concat(props.title.release_pattern);
