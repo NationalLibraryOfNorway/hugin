@@ -1,5 +1,5 @@
 import {newspaper, title} from '@prisma/client';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues, useField} from 'formik';
 import {FaTrash} from 'react-icons/fa';
@@ -21,21 +21,66 @@ export default function IssueList(props: {title: title}) {
 
   const initialValues = { issues };
 
-  useEffect(() => {
-    function prepareTitles(titles: newspaper[]) {
-      const formTitles = titles;
-      formTitles.unshift({
+  const proposeNewIssue = useCallback((currentIssues: newspaper[]): newspaper => {
+    function getDaysToNextExpected(currentDayOfWeek: number) {
+      // Current might be '0' from getDay, which is sunday...
+      const dayIndexOfWeek = currentDayOfWeek === 0 ? 7 : currentDayOfWeek;
+
+      // If release pattern only consists of 0s, just go to next day
+      const pattern = props.title.release_pattern;
+      if (pattern.filter(day => day !== 0).length === 0) return 1;
+
+      // Using two patterns merged to continue after reaching sunday
+      const doublePattern = pattern.concat(props.title.release_pattern);
+      return doublePattern.findIndex((day, index) => index + 1 > dayIndexOfWeek && day !== 0) + 1 - dayIndexOfWeek;
+    }
+
+    function getNewestNewspaper(newspapers: newspaper[]): newspaper | null {
+      if (newspapers.length === 0) return null;
+      return newspapers.reduce((prev, current) => {
+        return (prev.date ? new Date(prev.date).getTime() : 0) > (current.date ? new Date(current.date).getTime() : 0) ? prev : current;
+      });
+    }
+
+    function proposeNextExpected(newspapers: newspaper[]): newspaper {
+      const newestIssue = getNewestNewspaper(newspapers) ?? {
+        date: props.title.last_box_from
+          ? new Date(props.title.last_box_from).setDate(new Date(props.title.last_box_from).getDate() - 1)
+          : new Date(),
+        edition: '0'
+      };
+
+      // TS paranoia check: issue.date can in theory be null, but will in practice never be
+      const newDate = newestIssue.date ? new Date(newestIssue.date) : new Date();
+      const daysToJump = getDaysToNextExpected(newDate.getDay());
+      newDate.setDate(newDate.getDate() + daysToJump);
+
+      // Using parseInt instead of +issue.edition since we can then e.g. increase from 8b to 9
+      const editionAsNumber = parseInt(newestIssue.edition, 10);
+      const newNumber = Number.isNaN(editionAsNumber) || editionAsNumber === 0 ? '' : `${editionAsNumber + 1}`;
+
+      return {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         title_id: props.title.id,
-        edition: '',
-        date: null,
+        edition: newNumber,
+        date: newDate,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         received: false,
         username: null,
-        box: props.title.last_box ?? '',
         notes: null,
+        box: props.title.last_box ?? '',
         // eslint-disable-next-line @typescript-eslint/naming-convention
         catalog_id: null
-      });
+      };
+    }
+
+    return proposeNextExpected(currentIssues);
+  }, [props]);
+
+  useEffect(() => {
+    function prepareTitles(newspapers: newspaper[]) {
+      const formTitles = newspapers;
+      formTitles.unshift(proposeNewIssue(newspapers));
       return formTitles;
     }
 
@@ -45,7 +90,7 @@ export default function IssueList(props: {title: title}) {
         setIssues(prepareTitles(data));
         setLoading(false);
       });
-  }, [props, nIssuesInDb]);
+  }, [props, nIssuesInDb, proposeNewIssue]);
 
   function dayOfWeek(date: Date | null) : string {
     if (date) {
@@ -141,17 +186,7 @@ export default function IssueList(props: {title: title}) {
                         className="edit-button-style"
                         disabled={isSubmitting}
                         onClick={() => {
-                          insert(0, {
-                            // eslint-disable-next-line @typescript-eslint/naming-convention
-                            title_id: props.title.id,
-                            edition: '',
-                            date: '',
-                            // eslint-disable-next-line @typescript-eslint/naming-convention
-                            received: false,
-                            username: null,
-                            notes: null,
-                            box: props.title.last_box
-                          });
+                          insert(0, proposeNewIssue(values.issues));
                         }}
                       >
                         Legg til ny utgave
