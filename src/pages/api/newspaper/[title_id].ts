@@ -43,7 +43,7 @@ async function handlePOST(issues: newspaper[], res: NextApiResponse) {
   const issuesWithId: newspaper[] = [];
 
   for (const issue of issues) {
-    if (issue.received === true) {
+    if (issue.received) {
       const dto = createCatalogNewspaperDtoFromIssue(issue);
       const catalogItem = await postItemToCatalog(dto);
       const issueWithId: newspaper = {...issue, catalog_id: catalogItem.parentCatalogueId};
