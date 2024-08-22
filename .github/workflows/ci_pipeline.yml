@@ -96,9 +96,9 @@ jobs:
           echo "SENTRY_ORG=${{ secrets.SENTRY_ORG }}" >> .env.production
           echo "SENTRY_PROJECT=${{ secrets.SENTRY_PROJECT }}" >> .env.production
           echo "SENTRY_URL=${{ secrets.SENTRY_URL }}" >> .env.production
-          echo "KEYCLOAK_TEKST_CLIENT_ID"=${{ steps.import-secrets.outputs.KEYCLOAK_TEKST_CLIENT_ID }}" >> .env.production
-          echo "KEYCLOAK_TEKST_CLIENT_SECRET"=${{ steps.import-secrets.outputs.KEYCLOAK_TEKST_CLIENT_SECRET }}" >> .env.production
-          echo "KEYCLOAK_TEKST_URL"=${{ steps.import-secrets.outputs.KEYCLOAK_TEKST_URL }}" >> .env.production
+          echo "KEYCLOAK_TEKST_CLIENT_ID=${{ steps.import-secrets.outputs.KEYCLOAK_TEKST_CLIENT_ID }}" >> .env.production
+          echo "KEYCLOAK_TEKST_CLIENT_SECRET=${{ steps.import-secrets.outputs.KEYCLOAK_TEKST_CLIENT_SECRET }}" >> .env.production
+          echo "KEYCLOAK_TEKST_URL=${{ steps.import-secrets.outputs.KEYCLOAK_TEKST_URL }}" >> .env.production
 
       - name: Build and push image
         uses: docker/build-push-action@v5
