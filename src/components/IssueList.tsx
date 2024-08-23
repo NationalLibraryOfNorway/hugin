@@ -1,14 +1,12 @@
 import {newspaper, title} from '@prisma/client';
 import React, {useCallback, useEffect, useState} from 'react';
 import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
-import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues, useField} from 'formik';
+import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaTrash} from 'react-icons/fa';
-import DatePicker from 'react-date-picker';
-import 'react-date-picker/dist/DatePicker.css';
-import 'react-calendar/dist/Calendar.css';
-import {Button, Spinner, Table} from '@nextui-org/react';
+import {Button, CalendarDate, DatePicker, Spinner, Table} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
+import {parseDate} from '@internationalized/date';
 
 
 export default function IssueList(props: {title: title}) {
@@ -143,6 +141,11 @@ export default function IssueList(props: {title: title}) {
     }, 5000);
   }
 
+  function dateToCalendarDate(date: Date | null): CalendarDate {
+    const usedDate = date ? date : new Date();
+    return parseDate(new Date(usedDate).toISOString().split('T')[0]);
+  }
+
   return (
     <div className='w-full mb-6 mt-4 py-10 border-style m-30'>
       { loading ? (
@@ -217,11 +220,12 @@ export default function IssueList(props: {title: title}) {
                               {dayOfWeek(issue.date)}
                             </TableCell>
                             <TableCell className="text-lg">
-                              <DatePickerField
+                              <DatePicker
+                                aria-label='Datovelger'
                                 id={`issues.${index}.date`}
-                                value={issue.date}
-                                fieldName={`issues.${index}.date`}
-                                disabled={newspaperIsSaved(index, values.issues.length)}
+                                value={dateToCalendarDate(issue.date)}
+                                onChange={val => void setFieldValue(`issues.${index}.date`, val.toDate('UTC'))}
+                                isDisabled={newspaperIsSaved(index, values.issues.length)}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.date`}
@@ -305,28 +309,3 @@ export default function IssueList(props: {title: title}) {
     </div>
   );
 }
-
-const DatePickerField = (props: { fieldName: string; value: Date | null; id?: string; disabled?: boolean }) => {
-  const [field, , {setValue}] = useField(props.fieldName);
-
-  function convertLocalDateToUTCDateString(date: string) : Date {
-    const oldDate = new Date(date);
-    // Both prisma and DatePicker have bad support for timezones, causing a need for this workaround
-    // 1 min = 60s * 1000ms = 60000ms; timezoneOffset is in minutes from current to UTC, causing a subtraction
-    // E.g. getTimezoneOffset() returns -120 for CEST, so 2 hours are essentially added to the old date with the double negative
-    return new Date(oldDate.getTime() - oldDate.getTimezoneOffset() * 60000);
-  }
-
-  return (
-    <DatePicker
-      id={props.fieldName}
-      {...field}
-      {...props}
-      onChange={val => {
-        if (val) void setValue(convertLocalDateToUTCDateString(val.toString()));
-      }}
-      locale='no-NB'
-      onBlur={() => field.onBlur(field.name)}
-    />
-  );
-};
