@@ -19,6 +19,6 @@ export function createCatalogMissingNewspaperDtoFromIssue(
     username: 'hugin stage', // TODO replace with actual username when auth is present
     notes: issue.notes ?? '',
     // eslint-disable-next-line id-denylist
-    number: issue.edition
+    number: issue.edition ?? ''
   };
 }
