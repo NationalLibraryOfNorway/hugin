@@ -3,7 +3,6 @@ import './globals.css';
 import {Providers} from '@/app/providers';
 import AppShell from '@/components/AppShell';
 import {Comic_Neue} from 'next/font/google';
-import {NextUIProvider} from '@nextui-org/react';
 
 const customFont = Comic_Neue({ weight: ['400'], subsets: ['latin'] });
 
