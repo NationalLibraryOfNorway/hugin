@@ -14,18 +14,21 @@ export async function GET(req: NextRequest, params: IdParams): Promise<NextRespo
   const box = req.nextUrl.searchParams.get('box');
   if (!box) return NextResponse.json({error: 'Box not provided'}, {status: 400});
 
-  const issuesForTitle = await prisma.newspaper.findMany({
+  return await prisma.newspaper.findMany({
     where: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       title_id: +params.params.title_id,
       box
     },
     orderBy: { date: 'desc' }
-  }).catch((e: Error) => {
-    return NextResponse.json({error: `Error looking for title: ${e.name} - ${e.message}`}, {status: 500});
-  });
+  })
+    .then(issuesForTitle => {
+      return NextResponse.json(issuesForTitle, {status: 200});
+    })
+    .catch((e: Error) => {
+      return NextResponse.json({error: `Error looking for title: ${e.name} - ${e.message}`}, {status: 500});
+    });
 
-  return NextResponse.json(issuesForTitle, {status: 200});
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -48,11 +51,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
   }
 
-  await prisma.newspaper.createMany({
+  return prisma.newspaper.createMany({
     data: issuesWithId
-  }).catch((e: Error) => {
-    return NextResponse.json({error: `Failed to create newspaper: ${e.message}`}, {status: 500});
-  });
-
-  return NextResponse.json(issuesWithId, {status: 200});
+  })
+    .then(() => {
+      return NextResponse.json(issuesWithId, {status: 200});
+    })
+    .catch((e: Error) => {
+      return NextResponse.json({error: `Failed to create newspaper: ${e.message}`}, {status: 500});
+    });
 }
