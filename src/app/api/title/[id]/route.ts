@@ -36,9 +36,8 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
   const exists = await prisma.title.findUnique({
     where: { id: +params.params.id }
   });
-  if (exists) {
-    return NextResponse.json({error: 'Title already exists'}, {status: 409});
-  }
+  if (exists) return NextResponse.json({error: 'Title already exists'}, {status: 409});
+
   const localTitle = await req.json() as title;
 
   return prisma.title.create({
@@ -66,7 +65,6 @@ export async function PUT(req: NextRequest, params: IdParams): Promise<NextRespo
     .catch((e: Error) => {
       return NextResponse.json({error: `Failed to update title: ${e.name} - ${e.message}`}, {status: 500});
     });
-
 }
 
 // PATCH api/title/[id]

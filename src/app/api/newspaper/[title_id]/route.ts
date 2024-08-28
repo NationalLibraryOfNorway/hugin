@@ -28,7 +28,6 @@ export async function GET(req: NextRequest, params: IdParams): Promise<NextRespo
     .catch((e: Error) => {
       return NextResponse.json({error: `Error looking for title: ${e.name} - ${e.message}`}, {status: 500});
     });
-
 }
 
 // POST api/newspaper/[title_id]
