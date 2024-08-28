@@ -31,6 +31,7 @@ export async function GET(req: NextRequest, params: IdParams): Promise<NextRespo
     });
 }
 
+// POST api/title/[id]
 export async function POST(req: NextRequest, params: IdParams): Promise<NextResponse> {
   const exists = await prisma.title.findUnique({
     where: { id: +params.params.id }
@@ -51,6 +52,7 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
     });
 }
 
+// PUT api/title/[id]
 export async function PUT(req: NextRequest, params: IdParams): Promise<NextResponse> {
   const localTitle = await req.json() as title;
 
@@ -67,6 +69,7 @@ export async function PUT(req: NextRequest, params: IdParams): Promise<NextRespo
 
 }
 
+// PATCH api/title/[id]
 export async function PATCH(req: NextRequest, params: IdParams): Promise<NextResponse> {
   const { box, notes, shelf } = await req.json() as PatchData;
   const id = +params.params.id;
