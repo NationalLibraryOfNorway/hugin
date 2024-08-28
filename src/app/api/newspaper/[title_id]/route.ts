@@ -1,56 +1,48 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-
-import {NextApiRequest, NextApiResponse} from 'next';
+import {NextRequest, NextResponse} from 'next/server';
 import prisma from '@/lib/prisma';
 import {newspaper} from '@prisma/client';
 import {createCatalogNewspaperDtoFromIssue} from '@/models/CatalogNewspaperDto';
 import {postItemToCatalog, postMissingItemToCatalog} from '@/services/catalog.data';
 import {createCatalogMissingNewspaperDtoFromIssue} from '@/models/CatalogMissingNewspaperDto';
 
-export default async function handle(
-  req: NextApiRequest,
-  res: NextApiResponse
-) {
-  const titleId = req.query.title_id;
-  const box = req.query.box;
 
-  switch (req.method) {
-  case 'GET':
-    return handleGET(titleId as string, box as string, res);
-  case 'POST':
-    return handlePOST(req.body as newspaper[], res);
-  default:
-    return res.status(405).end();
-  }
-}
+// eslint-disable-next-line @typescript-eslint/naming-convention
+interface IdParams { params: { title_id: string} }
 
 // GET api/newspaper/[title_id]?box=[box]
-async function handleGET(titleId: string, box: string, res: NextApiResponse) {
+export async function GET(req: NextRequest, params: IdParams): Promise<NextResponse> {
+  const box = req.nextUrl.searchParams.get('box');
+  if (!box) return NextResponse.json({error: 'Box not provided'}, {status: 400});
+
   const issuesForTitle = await prisma.newspaper.findMany({
     where: {
-      title_id: +titleId,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      title_id: +params.params.title_id,
       box
     },
     orderBy: { date: 'desc' }
   }).catch((e: Error) => {
-    return res.status(500).json({error: `Error looking for title: ${e.name} - ${e.message}`});
+    return NextResponse.json({error: `Error looking for title: ${e.name} - ${e.message}`}, {status: 500});
   });
-  return res.status(200).json(issuesForTitle);
+
+  return NextResponse.json(issuesForTitle, {status: 200});
 }
 
-// POST api/newspaper/[title_id]
-async function handlePOST(issues: newspaper[], res: NextApiResponse) {
+export async function POST(req: NextRequest): Promise<NextResponse> {
+  const issues = await req.json() as newspaper[];
   const issuesWithId: newspaper[] = [];
 
   for (const issue of issues) {
     if (issue.received) {
       const dto = createCatalogNewspaperDtoFromIssue(issue);
       const catalogItem = await postItemToCatalog(dto);
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const issueWithId: newspaper = {...issue, catalog_id: catalogItem.parentCatalogueId};
       issuesWithId.push(issueWithId);
     } else {
       const dto = createCatalogMissingNewspaperDtoFromIssue(issue);
       const catalogItem = await postMissingItemToCatalog(dto);
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       const issueWithId: newspaper = {...issue, catalog_id: catalogItem.catalogueId};
       issuesWithId.push(issueWithId);
     }
@@ -58,9 +50,9 @@ async function handlePOST(issues: newspaper[], res: NextApiResponse) {
 
   await prisma.newspaper.createMany({
     data: issuesWithId
-  }).catch(e => {
-    return res.status(500).json({error: `Failed to create or update newspapers in local database: ${e}`});
+  }).catch((e: Error) => {
+    return NextResponse.json({error: `Failed to create newspaper: ${e.message}`}, {status: 500});
   });
 
-  return res.status(200).json(issues);
+  return NextResponse.json(issuesWithId, {status: 200});
 }
