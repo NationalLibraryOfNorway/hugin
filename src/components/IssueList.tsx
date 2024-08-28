@@ -213,7 +213,7 @@ export default function IssueList(props: {title: title}) {
                     </div>
 
                     <Table aria-label="list of issues in current box"
-                      classNames={{base: 'text-lg', table: 'min-h-80'}}>
+                      classNames={{base: 'text-lg'}}>
                       <TableHeader>
                         <TableColumn align='center' className="text-lg">Dag</TableColumn>
                         <TableColumn align='center' className="text-lg">Dato</TableColumn>
@@ -236,6 +236,7 @@ export default function IssueList(props: {title: title}) {
                                 value={dateToCalendarDate(issue.date)}
                                 onChange={val => void setFieldValue(`issues.${index}.date`, val.toDate('UTC'))}
                                 isDisabled={newspaperIsSaved(index, values.issues.length)}
+                                popoverProps={{placement: 'right'}}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.date`}
