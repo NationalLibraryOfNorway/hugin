@@ -6,6 +6,7 @@ import {useRouter} from 'next/navigation';
 import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
+import ActiveLabel from '@/components/ActiveLabel';
 
 export default function SearchBar(props: {inHeader: boolean}) {
   const router = useRouter();
@@ -56,9 +57,14 @@ export default function SearchBar(props: {inHeader: boolean}) {
       }}
     >
       {(title: CatalogTitle) =>
-        <AutocompleteItem key={title.catalogueId} textValue={title.name}>
+        <AutocompleteItem
+          key={title.catalogueId}
+          textValue={title.name}
+          endContent={!title.endDate && <ActiveLabel/>}
+          classNames={!title.endDate ? {base: 'bg-green-300 bg-opacity-45'} : {}}
+        >
           <div className={
-            (!title.endDate) ? 'font-extrabold bg-green-400 bg-opacity-45 w-fit py-1 px-2 rounded-lg' : 'text-gray-600 py-1 px-2'
+            (!title.endDate) ? 'font-extrabold py-1 px-2 rounded-lg' : 'text-gray-600 py-1 px-2'
           }>
             {title.name}
           </div>
