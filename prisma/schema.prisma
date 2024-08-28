@@ -21,16 +21,15 @@ model title {
   newspaper       newspaper[]
 }
 
+// catalog_id = Manifestasjons-ID i Collections
 model newspaper {
   title_id   Int
-  edition    String    @db.VarChar
+  edition    String?   @db.VarChar
   date       DateTime? @db.Date
   received   Boolean?
   username   String?   @db.VarChar
   box        String    @db.VarChar
   notes      String?   @db.VarChar
-  catalog_id String?   @db.VarChar
+  catalog_id String    @id @db.VarChar
   title      title     @relation(fields: [title_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  @@id([title_id, box, edition])
 }

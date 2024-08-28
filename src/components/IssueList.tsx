@@ -1,11 +1,12 @@
 import {newspaper, title} from '@prisma/client';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaTrash} from 'react-icons/fa';
 import {Button, CalendarDate, DatePicker, Spinner, Table} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
+import {newNewspapersContainsDuplicateEditions, newspapersContainsEdition} from '@/utils/validationUtils';
 import {parseDate} from '@internationalized/date';
 
 
@@ -16,6 +17,7 @@ export default function IssueList(props: {title: title}) {
   const [loading, setLoading] = useState<boolean>(true);
   const [showError, setShowError] = useState<boolean>(false);
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
+  const [saveWarning, setSaveWarning] = useState<string>('');
 
   const initialValues = { issues };
 
@@ -53,7 +55,7 @@ export default function IssueList(props: {title: title}) {
     newDate.setDate(newDate.getDate() + daysToJump);
 
     // Using parseInt instead of +issue.edition since we can then e.g. increase from 8b to 9
-    const editionAsNumber = parseInt(newestIssue.edition, 10);
+    const editionAsNumber = newestIssue.edition ? parseInt(newestIssue.edition, 10) : 0;
     const newNumber = Number.isNaN(editionAsNumber) || editionAsNumber === 0 ? '' : `${editionAsNumber + 1}`;
 
     return {
@@ -65,7 +67,7 @@ export default function IssueList(props: {title: title}) {
       username: null,
       notes: '',
       box: props.title.last_box ?? '',
-      catalog_id: null
+      catalog_id: ''
       /* eslint-enable @typescript-eslint/naming-convention */
     };
   }, [props]);
@@ -110,11 +112,6 @@ export default function IssueList(props: {title: title}) {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         received: null
       };
-      const identicalEditionNumbers = formIssues.filter(i => i.edition === issue.edition).length;
-      if (identicalEditionNumbers > 1) {
-        isValid = false;
-        issueError.edition = 'Duplikat!';
-      }
       if (!issue.date) {
         isValid = false;
         issueError.date = 'Dato er påkrevd';
@@ -139,6 +136,16 @@ export default function IssueList(props: {title: title}) {
     setTimeout(() => {
       setShowSuccess(false);
     }, 5000);
+  }
+
+  function checkForDuplicateEditionsAndShowWarning(edition: string, newspapers: newspaper[]) {
+    const newIssues = newspapers.slice(0, newspapers.length - nIssuesInDb);
+    // Uses newspapersContainsEdition since the newspaper value is not yet updated in list
+    if (newspapersContainsEdition(edition, newspapers) || newNewspapersContainsDuplicateEditions(newIssues, newspapers)) {
+      setSaveWarning('Det fins duplikate utgavenummer');
+    } else {
+      setSaveWarning('');
+    }
   }
 
   function dateToCalendarDate(date: Date | null): CalendarDate {
@@ -173,7 +180,7 @@ export default function IssueList(props: {title: title}) {
               .finally(() => setSubmitting(false));
           }}
         >
-          {({ values, isSubmitting, setFieldValue }) => (
+          {({ values, isSubmitting, setFieldValue, handleChange }) => (
             <Form>
               <FieldArray name="issues">
                 {({insert, remove}) => (
@@ -194,12 +201,15 @@ export default function IssueList(props: {title: title}) {
                         <p className='font-bold text-lg'> Lagret! </p>
                       }
 
-                      <Button
-                        className="save-button-style min-w-28"
-                        type="submit"
-                        disabled={isSubmitting}
-                        startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
-                      >Lagre</Button>
+                      <div className='flex flex-row items-center'>
+                        <p className='mr-2'>{saveWarning}</p>
+                        <Button
+                          className="save-button-style min-w-28"
+                          type="submit"
+                          disabled={isSubmitting}
+                          startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
+                        >Lagre</Button>
+                      </div>
                     </div>
 
                     <Table aria-label="list of issues in current box"
@@ -240,6 +250,10 @@ export default function IssueList(props: {title: title}) {
                                 type="text"
                                 width='40'
                                 disabled={newspaperIsSaved(index, values.issues.length)}
+                                onChange={(e: ChangeEvent) => {
+                                  checkForDuplicateEditionsAndShowWarning((e.nativeEvent as InputEvent).data ?? '', values.issues);
+                                  handleChange(e);
+                                }}
                               />
                               <ErrorMessage
                                 name={`issues.${index}.edition`}
