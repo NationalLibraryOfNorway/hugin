@@ -31,6 +31,7 @@ export async function GET(req: NextRequest, params: IdParams): Promise<NextRespo
 
 }
 
+// POST api/newspaper/[title_id]
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const issues = await req.json() as newspaper[];
   const issuesWithId: newspaper[] = [];
