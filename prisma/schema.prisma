@@ -24,7 +24,7 @@ model title {
 // catalog_id = Manifestasjons-ID i Collections
 model newspaper {
   title_id   Int
-  edition    String?   @db.VarChar
+  edition    String    @db.VarChar
   date       DateTime? @db.Date
   received   Boolean?
   username   String?   @db.VarChar
