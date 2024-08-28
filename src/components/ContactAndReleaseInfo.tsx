@@ -276,28 +276,28 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                     {currentValue.vendor &&
                           <div className="self-start flex flex-row">
                             <p className="group-subtitle-style">Avleverer: </p>
-                            <p className="group-content-style ml-2">{currentValue.vendor}</p>
+                            <p className="group-content-style ml-3">{currentValue.vendor}</p>
                           </div>
                     }
 
                     {currentValue.contact_name &&
                           <div className="self-start flex flex-row">
                             <p className="group-subtitle-style">Kontaktperson: </p>
-                            <p className="group-content-style ml-2">{currentValue.contact_name}</p>
+                            <p className="group-content-style ml-3">{currentValue.contact_name}</p>
                           </div>
                     }
 
                     {currentValue.contact_email &&
                     <div className="self-start flex flex-row">
                       <p className="group-subtitle-style">E-post: </p>
-                      <p className="group-content-style ml-2">{currentValue.contact_email}</p>
+                      <p className="group-content-style ml-3">{currentValue.contact_email}</p>
                     </div>
                     }
 
                     {currentValue.contact_phone &&
                     <div className="self-start flex flex-row">
                       <p className="group-subtitle-style">Telefon: </p>
-                      <p className="group-content-style ml-2">{currentValue.contact_phone}</p>
+                      <p className="group-content-style ml-3">{currentValue.contact_phone}</p>
                     </div>
                     }
 
