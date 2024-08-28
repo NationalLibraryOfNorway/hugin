@@ -42,8 +42,8 @@ Dette vil si at med innstillingene som er satt, så vil det prøves i maks 30 se
 Default timeout er bare 10 sek, men default connection limit er 0, som vil si alle prisma klarer å finne.
 Mer info på [prisma docs](https://www.prisma.io/docs/orm/prisma-client/setup-and-configuration/databases-connections/connection-pool).
 
-#### Lokale utvikling med database-endringer
-For å lage ting hvor man må endre på databasen anbefaler vi å først sette opp en local postgres-instans.
+#### Lokal utvikling med database-endringer
+For å lage ting hvor man må endre på databasen anbefaler vi å først sette opp en lokal postgres-instans.
 
 For å laste endringer fra databasen til applikasjonen, må man legge inn DATABASE_URL rett i `.env` (ikke `.env.local`!). 
 Kjør så `prisma db pull` for å lage nytt schema.prisma, og `prisma generate` for å laste skjemaet inn i prisma klienten.
