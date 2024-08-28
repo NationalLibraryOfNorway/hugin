@@ -2,9 +2,9 @@ import type {Metadata} from 'next';
 import './globals.css';
 import {Providers} from '@/app/providers';
 import AppShell from '@/components/AppShell';
-import {Comic_Neue} from 'next/font/google';
+import {Quicksand} from 'next/font/google';
 
-const customFont = Comic_Neue({ weight: ['400'], subsets: ['latin'] });
+const customFont = Quicksand({ weight: ['500'], subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Hugin'
