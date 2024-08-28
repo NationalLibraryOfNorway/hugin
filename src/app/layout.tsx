@@ -21,11 +21,9 @@ export default function RootLayout({
       <body>
         <Providers>
           <main>
-            <NextUIProvider locale='nb-NO'>
-              <AppShell>
-                {children}
-              </AppShell>
-            </NextUIProvider>
+            <AppShell>
+              {children}
+            </AppShell>
           </main>
         </Providers>
       </body>
