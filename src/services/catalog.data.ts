@@ -81,6 +81,29 @@ export async function postMissingItemToCatalog(issue: CatalogMissingNewspaperDto
     });
 }
 
+export async function deletePhysicalItemFromCatalog(catalog_id: string): Promise<void> {
+  const token = await getKeycloakTekstToken();
+
+  return fetch(`${process.env.CATALOGUE_API_PATH}/newspapers/items/physical/${catalog_id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Authorization: `Bearer ${token.access_token}`
+    }
+  })
+    .then(async response => {
+      if (response.ok) {
+        return Promise.resolve();
+      } else {
+        return Promise.reject(new Error(`Failed to delete item in catalog: ${response.status} - ${await response.json()}`));
+      }
+    })
+    .catch((e: Error) => {
+      return Promise.reject(new Error(`Failed to delete item in catalog: ${e.message}`));
+    });
+}
+
 async function getKeycloakTekstToken(): Promise<KeycloakToken> {
   const body = `client_id=${process.env.KEYCLOAK_TEKST_CLIENT_ID}` +
       `&client_secret=${process.env.KEYCLOAK_TEKST_CLIENT_SECRET}` +
