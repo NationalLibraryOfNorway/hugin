@@ -4,14 +4,14 @@ import {Button} from '@nextui-org/button';
 
 interface InfoModalProps {
   header?: string;
-  text: ReactNode;
+  content: ReactNode;
   onExit?: () => void;
   showModal?: boolean;
 }
 
 const InfoModal: FC<InfoModalProps> = ({
   header = 'Hmmm...🤔',
-  text,
+  content,
   onExit,
   showModal
 }) => {
@@ -48,7 +48,7 @@ const InfoModal: FC<InfoModalProps> = ({
       <div ref={ref} className='modal-style border-gray-600 bg-gray-100'>
         <div className='text-center'>
           <h3 className='top-title-style'>{header}</h3>
-          <p className='group-content-style mt-3 whitespace-pre-wrap'>{text}</p>
+          <p className='group-content-style mt-3 whitespace-pre-wrap'>{content}</p>
           <div className='flex flex-row justify-evenly'>
             <Button
               type='button'
@@ -56,7 +56,7 @@ const InfoModal: FC<InfoModalProps> = ({
               className='abort-button-style mt-5'
               onClick={() => handleExit()}
             >
-                            Lukk
+              Lukk
             </Button>
           </div>
         </div>

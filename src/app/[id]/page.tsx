@@ -137,6 +137,7 @@ export default function Page({params}: { params: { id: string } }) {
                       text='Registrer en ny eske'
                       closeModal={() => setShowBoxRegistrationModal(false)}
                       updateBoxInfo={setBoxFromDb}
+                      titleName={titleString ?? ''}
                       titleId={params.id}/>
                 }
 

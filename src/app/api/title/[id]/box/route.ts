@@ -35,6 +35,10 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
   const id = +params.params.id;
   const { boxId, startDate } = await req.json() as {boxId: string; startDate: string};
 
+  if (await doesBoxExist(boxId)) {
+    return NextResponse.json({error: `Box with ID ${boxId} already exists.`}, {status: 409});
+  }
+
   await setActiveBoxToInactive(id);
 
   return prisma.box.create({
@@ -49,9 +53,6 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
       return NextResponse.json(result, {status: 201});
     })
     .catch((e: Error) => {
-      if (e.message.includes('Unique constraint failed on the fields: (`id`)')) {
-        return NextResponse.json({error: `Box with ID ${boxId} already exists.`}, {status: 409});
-      }
       return NextResponse.json({error: `Failed to create box: ${e.message}`}, {status: 500});
     });
 }
@@ -81,7 +82,14 @@ export async function PATCH(req: NextRequest, params: IdParams): Promise<NextRes
     });
 }
 
-// Helper function to set current active box on title id to active=false
+
+export async function doesBoxExist(boxId: string): Promise<boolean> {
+  const existingBox = await prisma.box.findFirst({
+    where: { id: boxId }
+  });
+  return !!existingBox;
+}
+
 export async function setActiveBoxToInactive(titleId: number): Promise<void> {
   const activeBox = await prisma.box.findFirst({
     where: {

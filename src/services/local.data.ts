@@ -38,21 +38,6 @@ export async function putLocalTitle(localTitle: title): Promise<Response> {
   });
 }
 
-export async function updateBoxForTitle(
-  titleId: string,
-  newBox: box
-): Promise<Response> {
-  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/box`, { // TODO: Opprett eget boks endepunkt
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({newBox})
-  }).catch((e: Error) => {
-    return Promise.reject(new Error(`Failed to update box: ${e.message}`));
-  });
-}
-
 export async function updateNotesForTitle(
   titleId: string,
   notes: string
@@ -146,18 +131,6 @@ export async function postNewBoxForTitle(id: string, boxId: string, startDate: D
   default:
     return Promise.reject(new Error('Failed to create box'));
   }
-}
-
-export async function patchActiveBoxForTitle(id: string, boxId: string): Promise<Response> {
-  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}/box`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({boxId})
-  }).catch((e: Error) => {
-    return Promise.reject(new Error(`Failed to patch box: ${e.message}`));
-  });
 }
 
 export async function postNewIssuesForTitle(id: number, issues: newspaper[]): Promise<Response> {

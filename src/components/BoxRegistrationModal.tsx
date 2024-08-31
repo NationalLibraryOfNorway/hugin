@@ -11,11 +11,13 @@ import {Spinner} from '@nextui-org/react';
 import {box} from '@prisma/client';
 import InfoModal from '@/components/InfoModal';
 import {AlreadyExistsError} from '@/models/Errors';
+import Link from 'next/link';
 
 
 interface BoxRegistrationModalProps {
   text: string;
   titleId: string;
+  titleName: string;
   updateBoxInfo: (box: box) => void;
   closeModal: () => void;
 }
@@ -23,6 +25,7 @@ interface BoxRegistrationModalProps {
 const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrationModalProps) => {
   const [showError, setShowError] = useState<boolean>(false);
   const [showInfo, setShowInfo] = useState<{showModal: boolean; sameTitle: boolean}>({showModal: false, sameTitle: false});
+  const [existingBox, setExistingBox] = useState<box|undefined>(undefined);
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
@@ -45,6 +48,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
                     if (e instanceof AlreadyExistsError) {
                       // Find out if box exists on same title_id or different to render different info modals
                       await getBoxById(values.boxId).then((b: box) => {
+                        setExistingBox(b);
                         if (b.title_id === +props.titleId) {
                           setShowInfo({showModal: true, sameTitle: true});
                         } else {
@@ -99,11 +103,20 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 
       <InfoModal
         header="Esken finnes allerede"
-        text={
+        content={
           showInfo.sameTitle ? (
-            <>Esken finnes allerede på denne tittelen {props.titleId}</>
+            <>
+              Esken er allerede registrert på denne tittelen ({props.titleName}). Ønsker du å laste inn den eksisterende esken?<br/>
+              <Button className="edit-button-style" onClick={() => {
+                props.updateBoxInfo(existingBox!);
+                props.closeModal();
+              }}>Bruk eske</Button>
+            </>
           ) : (
-            <>Esken finnes allerede på en annen tittel.</>
+            <>
+              Denne esken er allerede registrert på en annen tittel.<br/>
+              <Button className="edit-button-style" as={Link} href={`/${existingBox?.title_id}`}>Gå til tittel</Button>
+            </>
           )
         }
         onExit={() => setShowInfo({showModal: false, sameTitle: false})}
