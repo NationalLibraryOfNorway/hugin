@@ -1,16 +1,16 @@
-import {FC, useCallback, useEffect, useState} from 'react';
+import {FC, ReactNode, useCallback, useEffect, useState} from 'react';
 import {useOutsideClick} from '@/hooks/useOutsideClick';
 import {Button} from '@nextui-org/button';
-import Link from 'next/link';
 
-
-interface ErrorModalProps {
-  text: string;
+interface InfoModalProps {
+  header?: string;
+  text: ReactNode;
   onExit?: () => void;
   showModal?: boolean;
 }
 
-const ErrorModal: FC<ErrorModalProps> = ({
+const InfoModal: FC<InfoModalProps> = ({
+  header = 'Hmmm...🤔',
   text,
   onExit,
   showModal
@@ -24,6 +24,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
   }, [onExit]);
 
   useEffect(() => {
+
     function handleEscapeKeyDown(event: KeyboardEvent) {
       if (event.code === 'Escape') {
         event.preventDefault();
@@ -44,14 +45,10 @@ const ErrorModal: FC<ErrorModalProps> = ({
 
   return (
     <div className='modal-backdrop'>
-      <div ref={ref} className='modal-style border-red-600 bg-red-300'>
+      <div ref={ref} className='modal-style border-gray-600 bg-gray-100'>
         <div className='text-center'>
-          <h3 className='top-title-style'> Ojsann... </h3>
-          <p className='group-content-style mt-3 whitespace-pre-wrap'>
-            {text}<br/>Kontakt tekst-teamet
-            <Link href='https://sd.nb.no' className='text-blue-600 font-bold' target='_blank'> her </Link>
-            dersom problemet vedvarer.
-          </p>
+          <h3 className='top-title-style'>{header}</h3>
+          <p className='group-content-style mt-3 whitespace-pre-wrap'>{text}</p>
           <div className='flex flex-row justify-evenly'>
             <Button
               type='button'
@@ -59,7 +56,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
               className='abort-button-style mt-5'
               onClick={() => handleExit()}
             >
-              Lukk
+                            Lukk
             </Button>
           </div>
         </div>
@@ -68,4 +65,4 @@ const ErrorModal: FC<ErrorModalProps> = ({
   );
 };
 
-export default ErrorModal;
+export default InfoModal;

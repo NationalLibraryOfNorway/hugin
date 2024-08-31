@@ -1,6 +1,5 @@
-import {NotFoundError} from '@/models/Errors';
-import {newspaper, title} from '@prisma/client';
-import {Box} from '@/models/Box';
+import {AlreadyExistsError, NotFoundError} from '@/models/Errors';
+import { newspaper, title, box } from '@prisma/client';
 
 export async function getLocalTitle(id: string): Promise<title> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}`);
@@ -41,14 +40,14 @@ export async function putLocalTitle(localTitle: title): Promise<Response> {
 
 export async function updateBoxForTitle(
   titleId: string,
-  box: Box
+  newBox: box
 ): Promise<Response> {
-  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}`, {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/box`, { // TODO: Opprett eget boks endepunkt
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({box})
+    body: JSON.stringify({newBox})
   }).catch((e: Error) => {
     return Promise.reject(new Error(`Failed to update box: ${e.message}`));
   });
@@ -84,17 +83,81 @@ export async function updateShelfForTitle(
   });
 }
 
-export async function getIssuesForTitle(id: number, box: string): Promise<newspaper[]> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${id}?box=${box}`);
+export async function getBoxById(id: string): Promise<box> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/box/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  });
 
+  switch(response.status) {
+  case 200:
+    return await response.json() as Promise<box>;
+  case 404:
+    return Promise.reject(new NotFoundError(`No box with id ${id} found.`));
+  default:
+    return Promise.reject(new Error('Failed to fetch box.'));
+  }
+}
+
+export async function getBoxForTitle(id: number): Promise<box> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}/box`);
+
+  switch (response.status) {
+  case 200:
+    return await response.json() as Promise<box>;
+  case 404:
+    return Promise.reject(new NotFoundError(`No box found on title with id ${id}`));
+  default:
+    return Promise.reject(new Error('Failed to fetch box.'));
+  }
+}
+
+export async function getNewspapersForBoxOnTitle(titleId: number, boxId: string): Promise<newspaper[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/${titleId}?box_id=${boxId}`);
   switch (response.status) {
   case 200:
     return await response.json() as Promise<newspaper[]>;
   case 404:
-    return Promise.reject(new NotFoundError('Title not found'));
+    return Promise.reject(new NotFoundError('Box or title not found'));
   default:
-    return Promise.reject(new Error('Failed to fetch title'));
+    return Promise.reject(new Error(`Failed to fetch newspapers for box ${boxId} on title ${titleId}`));
   }
+}
+
+export async function postNewBoxForTitle(id: string, boxId: string, startDate: Date): Promise<box> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}/box`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({boxId, startDate})
+  })
+    .catch((e: Error) => {
+      return Promise.reject(new Error(`Failed to post box: ${e.message}`));
+    });
+
+  switch(response.status) {
+  case 201:
+    return await response.json() as Promise<box>;
+  case 409:
+    return Promise.reject(new AlreadyExistsError(`Box with id ${boxId} already exists`));
+  default:
+    return Promise.reject(new Error('Failed to create box'));
+  }
+}
+
+export async function patchActiveBoxForTitle(id: string, boxId: string): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}/box`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({boxId})
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to patch box: ${e.message}`));
+  });
 }
 
 export async function postNewIssuesForTitle(id: number, issues: newspaper[]): Promise<Response> {

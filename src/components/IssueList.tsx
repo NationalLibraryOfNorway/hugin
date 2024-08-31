@@ -1,6 +1,6 @@
-import {newspaper, title} from '@prisma/client';
+import {box, newspaper, title} from '@prisma/client';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
-import {deleteIssue, getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
+import {deleteIssue, getNewspapersForBoxOnTitle, getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaTrash} from 'react-icons/fa';
 import {Button, CalendarDate, DatePicker, Spinner, Table} from '@nextui-org/react';
@@ -11,7 +11,7 @@ import {parseDate} from '@internationalized/date';
 import ConfirmationModal from '@/components/ConfirmationModal';
 
 
-export default function IssueList(props: {title: title}) {
+export default function IssueList(props: {title: title; box: box}) {
 
   const [issues, setIssues] = useState<newspaper[]>([]);
   const [nIssuesInDb, setNIssuesInDb] = useState<number>(0);
@@ -45,8 +45,8 @@ export default function IssueList(props: {title: title}) {
     }
 
     const newestIssue = getNewestNewspaper(currentIssues) ?? {
-      date: props.title.last_box_from
-        ? new Date(props.title.last_box_from).setDate(new Date(props.title.last_box_from).getDate() - 1)
+      date: props.box.date_from
+        ? new Date(props.box.date_from).setDate(new Date(props.box.date_from).getDate() - 1)
         : new Date(),
       edition: '0'
     };
@@ -62,13 +62,12 @@ export default function IssueList(props: {title: title}) {
 
     return {
       /* eslint-disable @typescript-eslint/naming-convention */
-      title_id: props.title.id,
       edition: newNumber,
       date: newDate,
       received: false,
       username: null,
       notes: '',
-      box: props.title.last_box ?? '',
+      box_id: props.box.id,
       catalog_id: ''
       /* eslint-enable @typescript-eslint/naming-convention */
     };
@@ -81,7 +80,7 @@ export default function IssueList(props: {title: title}) {
       return formTitles;
     }
 
-    void getIssuesForTitle(props.title.id, props.title.last_box ?? '')
+    void getNewspapersForBoxOnTitle(props.title.id, props.box.id)
       .then(data => {
         setNIssuesInDb(data.length);
         setIssues(prepareTitles(data));

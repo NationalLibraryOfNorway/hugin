@@ -1,7 +1,6 @@
 import React, {FC, useState} from 'react';
 import {Field, Form, Formik, useField} from 'formik';
-import {updateBoxForTitle} from '@/services/local.data';
-import {Box} from '@/models/Box';
+import {getBoxById, postNewBoxForTitle} from '@/services/local.data';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
@@ -9,17 +8,21 @@ import {FiSave} from 'react-icons/fi';
 import {Button} from '@nextui-org/button';
 import ErrorModal from '@/components/ErrorModal';
 import {Spinner} from '@nextui-org/react';
+import {box} from '@prisma/client';
+import InfoModal from '@/components/InfoModal';
+import {AlreadyExistsError} from '@/models/Errors';
 
 
 interface BoxRegistrationModalProps {
   text: string;
   titleId: string;
-  updateBoxInfo: (box: Box) => void;
+  updateBoxInfo: (box: box) => void;
   closeModal: () => void;
 }
 
 const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrationModalProps) => {
   const [showError, setShowError] = useState<boolean>(false);
+  const [showInfo, setShowInfo] = useState<{showModal: boolean; sameTitle: boolean}>({showModal: false, sameTitle: false});
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
@@ -29,19 +32,29 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           <Formik
             initialValues={{boxId: '', startDate: new Date()}}
             onSubmit={(values, {setSubmitting}) => {
-              const box = new Box(values.boxId, values.startDate);
+
               setSubmitting(true);
               setTimeout(() => {
-                void updateBoxForTitle(props.titleId, box)
-                  .then(res => {
-                    if (res.ok) {
-                      props.updateBoxInfo(box);
-                      props.closeModal();
+                void postNewBoxForTitle(props.titleId, values.boxId, values.startDate)
+                  .then(createdBox => {
+                    props.updateBoxInfo(createdBox);
+                    props.closeModal();
+
+                  })
+                  .catch(async (e: Error) => {
+                    if (e instanceof AlreadyExistsError) {
+                      // Find out if box exists on same title_id or different to render different info modals
+                      await getBoxById(values.boxId).then((b: box) => {
+                        if (b.title_id === +props.titleId) {
+                          setShowInfo({showModal: true, sameTitle: true});
+                        } else {
+                          setShowInfo({showModal: true, sameTitle: false});
+                        }
+                      });
                     } else {
                       setShowError(true);
                     }
                   })
-                  .catch(() => setShowError(true))
                   .finally(() => setSubmitting(false));
               }, 400);
             }}
@@ -83,6 +96,19 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           </Button>
         </div>
       </div>
+
+      <InfoModal
+        header="Esken finnes allerede"
+        text={
+          showInfo.sameTitle ? (
+            <>Esken finnes allerede på denne tittelen {props.titleId}</>
+          ) : (
+            <>Esken finnes allerede på en annen tittel.</>
+          )
+        }
+        onExit={() => setShowInfo({showModal: false, sameTitle: false})}
+        showModal={showInfo.showModal}
+      />
 
       <ErrorModal
         text='Noe gikk galt ved lagring av eske.'

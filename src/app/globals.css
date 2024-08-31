@@ -76,3 +76,11 @@ input[type=number] {
 [data-today='true'] {
     @apply bg-yellow-300;
 }
+
+.modal-backdrop {
+    @apply fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-40;
+}
+
+.modal-style {
+    @apply p-8 border w-2/5 rounded z-50;
+}
