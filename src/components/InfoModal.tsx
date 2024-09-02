@@ -3,14 +3,14 @@ import {useOutsideClick} from '@/hooks/useOutsideClick';
 import {Button} from '@nextui-org/button';
 
 interface InfoModalProps {
-  header?: string;
+  header: string;
   content: ReactNode;
   onExit?: () => void;
   showModal?: boolean;
 }
 
 const InfoModal: FC<InfoModalProps> = ({
-  header = 'Hmmm...🤔',
+  header,
   content,
   onExit,
   showModal

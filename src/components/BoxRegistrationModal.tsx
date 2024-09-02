@@ -1,6 +1,6 @@
 import React, {FC, useState} from 'react';
 import {Field, Form, Formik, useField} from 'formik';
-import {getBoxById, postNewBoxForTitle} from '@/services/local.data';
+import {getBoxById, postNewBoxForTitle, updateActiveBoxForTitle} from '@/services/local.data';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
@@ -46,7 +46,6 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
                   })
                   .catch(async (e: Error) => {
                     if (e instanceof AlreadyExistsError) {
-                      // Find out if box exists on same title_id or different to render different info modals
                       await getBoxById(values.boxId).then((b: box) => {
                         setExistingBox(b);
                         if (b.title_id === +props.titleId) {
@@ -108,6 +107,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             <>
               Esken er allerede registrert på denne tittelen ({props.titleName}). Ønsker du å laste inn den eksisterende esken?<br/>
               <Button className="edit-button-style" onClick={() => {
+                void updateActiveBoxForTitle(props.titleId, existingBox!.id);
                 props.updateBoxInfo(existingBox!);
                 props.closeModal();
               }}>Bruk eske</Button>

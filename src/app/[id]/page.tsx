@@ -67,7 +67,6 @@ export default function Page({params}: { params: { id: string } }) {
   }, [params]);
 
   useEffect(() => {
-    // Get the box for the title
     void getBoxForTitle(+params.id).then((b: box) => {
       setBoxFromDb(b);
     }).catch((e: Error) => {

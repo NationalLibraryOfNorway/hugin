@@ -59,23 +59,20 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
 
 // PATCH /title/[id]/box set active box for title
 export async function PATCH(req: NextRequest, params: IdParams): Promise<NextResponse> {
+  console.log('PATCH /title/[id]/box');
   const id = +params.params.id;
   const { boxId } = await req.json() as {boxId: string; startDate: string};
 
   await setActiveBoxToInactive(id);
 
-  const existingBox = await prisma.box.findUniqueOrThrow({
-    where: { id: boxId }
-  });
-
-  return prisma.box.create({
+  return prisma.box.update({
+    where: { id: boxId },
     data: {
-      ...existingBox,
       active: true
     }
   })
-    .then(result => {
-      return NextResponse.json(result, {status: 204});
+    .then(() => {
+      return new NextResponse(null, {status: 204});
     })
     .catch((e: Error) => {
       return NextResponse.json({error: `Failed to update box: ${e.message}`}, {status: 500});
@@ -83,14 +80,14 @@ export async function PATCH(req: NextRequest, params: IdParams): Promise<NextRes
 }
 
 
-export async function doesBoxExist(boxId: string): Promise<boolean> {
+async function doesBoxExist(boxId: string): Promise<boolean> {
   const existingBox = await prisma.box.findFirst({
     where: { id: boxId }
   });
   return !!existingBox;
 }
 
-export async function setActiveBoxToInactive(titleId: number): Promise<void> {
+async function setActiveBoxToInactive(titleId: number): Promise<void> {
   const activeBox = await prisma.box.findFirst({
     where: {
       // eslint-disable-next-line @typescript-eslint/naming-convention

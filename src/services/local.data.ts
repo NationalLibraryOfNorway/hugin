@@ -38,6 +38,21 @@ export async function putLocalTitle(localTitle: title): Promise<Response> {
   });
 }
 
+export async function updateActiveBoxForTitle(
+  titleId: string,
+  boxId: string
+): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/box`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({boxId})
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to update box: ${e.message}`));
+  });
+}
+
 export async function updateNotesForTitle(
   titleId: string,
   notes: string
