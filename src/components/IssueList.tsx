@@ -1,6 +1,6 @@
 import {box, newspaper, title} from '@prisma/client';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
-import {deleteIssue, getNewspapersForBoxOnTitle, getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
+import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaTrash} from 'react-icons/fa';
 import {Button, CalendarDate, DatePicker, Spinner, Table} from '@nextui-org/react';
