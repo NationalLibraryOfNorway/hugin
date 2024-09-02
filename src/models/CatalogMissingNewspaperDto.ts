@@ -11,10 +11,11 @@ export interface CatalogMissingNewspaperDto {
 }
 
 export function createCatalogMissingNewspaperDtoFromIssue(
-  issue: newspaper
+  issue: newspaper,
+  titleId: string
 ): CatalogMissingNewspaperDto {
   return {
-    titleCatalogueId: issue.title_id.toString(),
+    titleCatalogueId: titleId,
     date: createCatalogDateString(issue.date),
     username: 'hugin stage', // TODO replace with actual username when auth is present
     notes: issue.notes ?? '',

@@ -10,15 +10,14 @@ import {createCatalogMissingNewspaperDtoFromIssue} from '@/models/CatalogMissing
 interface IdParams { params: { title_id: string} }
 
 // GET api/newspaper/[title_id]?box=[box]
-export async function GET(req: NextRequest, params: IdParams): Promise<NextResponse> {
-  const box = req.nextUrl.searchParams.get('box');
-  if (!box) return NextResponse.json({error: 'Box not provided'}, {status: 400});
+export async function GET(req: NextRequest): Promise<NextResponse> {
+  const boxId = req.nextUrl.searchParams.get('box_id');
+  if (!boxId) return NextResponse.json({error: 'Box not provided'}, {status: 400});
 
   return await prisma.newspaper.findMany({
     where: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      title_id: +params.params.title_id,
-      box
+      box_id: boxId
     },
     orderBy: { date: 'desc' }
   })
@@ -31,19 +30,20 @@ export async function GET(req: NextRequest, params: IdParams): Promise<NextRespo
 }
 
 // POST api/newspaper/[title_id]
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: NextRequest, params: IdParams): Promise<NextResponse> {
+  const titleId = params.params.title_id;
   const issues = await req.json() as newspaper[];
   const issuesWithId: newspaper[] = [];
 
   for (const issue of issues) {
     if (issue.received) {
-      const dto = createCatalogNewspaperDtoFromIssue(issue);
+      const dto = createCatalogNewspaperDtoFromIssue(issue, titleId);
       const catalogItem = await postItemToCatalog(dto);
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const issueWithId: newspaper = {...issue, catalog_id: catalogItem.parentCatalogueId};
       issuesWithId.push(issueWithId);
     } else {
-      const dto = createCatalogMissingNewspaperDtoFromIssue(issue);
+      const dto = createCatalogMissingNewspaperDtoFromIssue(issue, titleId);
       const catalogItem = await postMissingItemToCatalog(dto);
       // eslint-disable-next-line @typescript-eslint/naming-convention
       const issueWithId: newspaper = {...issue, catalog_id: catalogItem.catalogueId};

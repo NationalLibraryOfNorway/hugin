@@ -3,13 +3,12 @@
 import React, {useEffect, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
-import {getLocalTitle, putLocalTitle, updateNotesForTitle, updateShelfForTitle} from '@/services/local.data';
-import {title} from '@prisma/client';
+import {getBoxForTitle, getLocalTitle, putLocalTitle, updateNotesForTitle, updateShelfForTitle} from '@/services/local.data';
+import {box, title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
-import {Box} from '@/models/Box';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
@@ -20,6 +19,7 @@ import ErrorModal from '@/components/ErrorModal';
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
   const [titleFromDb, setTitleFromDb] = useState<title>();
+  const [boxFromDb, setBoxFromDb] = useState<box>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
   const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
   const router = useRouter();
@@ -66,19 +66,21 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params]);
 
-  function updateBox(newBox: Box) {
-    setTitleFromDb(
-      {...titleFromDb as title, ['last_box']: newBox.boxId, ['last_box_from']: newBox.startDate}
-    );
-  }
+  useEffect(() => {
+    void getBoxForTitle(+params.id).then((b: box) => {
+      setBoxFromDb(b);
+    }).catch((e: Error) => {
+      if (e instanceof NotFoundError) {
+        setBoxFromDb(undefined);
+      } else {
+        setErrorMessage('Får ikke kontakt med databasen for å se etter eskeinformasjon.');
+        setShowError(true);
+      }
+    }).then();
+  }, [params.id]);
 
-  function boxToString(t: title) : string {
-    let dateString = '';
-    if (t.last_box_from) {
-      const dateObject = new Date(t.last_box_from);
-      dateString = ` (fra ${dateObject.toLocaleDateString('no-NB')})`;
-    }
-    return t.last_box + dateString;
+  function boxToString(b: box) : string {
+    return b.id + (b.date_from ? ` (fra ${new Date(b.date_from).toLocaleDateString('no-NB')})` : '');
   }
 
   function submitNotes(notes: string): Promise<Response> {
@@ -121,10 +123,10 @@ export default function Page({params}: { params: { id: string } }) {
               </div>
 
               <div className='flex flex-row flex-wrap items-center'>
-                {titleFromDb.last_box ? (
+                {boxFromDb ? (
                   <>
                     <p className="group-title-style">Eske til registrering: </p>
-                    <p className="group-content-style ml-2">{boxToString(titleFromDb)}</p>
+                    <p className="group-content-style ml-2">{boxToString(boxFromDb)}</p>
                   </>
                 ) : (<p className="group-content-style"> Ingen eske registrert </p>)
                 }
@@ -133,7 +135,8 @@ export default function Page({params}: { params: { id: string } }) {
                     <BoxRegistrationModal
                       text='Registrer en ny eske'
                       closeModal={() => setShowBoxRegistrationModal(false)}
-                      updateBoxInfo={updateBox}
+                      updateBoxInfo={setBoxFromDb}
+                      titleName={titleString ?? ''}
                       titleId={params.id}/>
                 }
 
@@ -146,8 +149,8 @@ export default function Page({params}: { params: { id: string } }) {
                 </Button>
               </div>
 
-              {(titleFromDb.last_box && titleFromDb.last_box !== '') ? (
-                <IssueList title={titleFromDb}/>
+              {boxFromDb ? (
+                <IssueList title={titleFromDb} box={boxFromDb}/>
               ) : (
                 <p className='mt-20 group-content-style text-start'>Legg til eske for å legge inn avisutgaver</p>
               )}

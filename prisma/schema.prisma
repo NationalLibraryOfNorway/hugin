@@ -8,28 +8,33 @@ datasource db {
 }
 
 model title {
-  id              Int         @id
-  last_box        String?     @db.VarChar
-  contact_email   String?     @db.VarChar
-  contact_name    String?     @db.VarChar
-  contact_phone   String?     @db.VarChar
-  vendor          String?     @db.VarChar
-  release_pattern Int[]       @default([0, 0, 0, 0, 0, 0, 0])
-  last_box_from   DateTime?   @db.Date
-  shelf           String?     @db.VarChar
-  notes           String?     @db.VarChar
-  newspaper       newspaper[]
+  id              Int     @id
+  contact_email   String? @db.VarChar
+  contact_name    String? @db.VarChar
+  contact_phone   String? @db.VarChar
+  vendor          String? @db.VarChar
+  release_pattern Int[]   @default([0, 0, 0, 0, 0, 0, 0])
+  shelf           String? @db.VarChar
+  notes           String? @db.VarChar
+  box             box[]
 }
 
-// catalog_id = Manifestasjons-ID i Collections
 model newspaper {
-  title_id   Int
   edition    String    @db.VarChar
   date       DateTime? @db.Date
   received   Boolean?
   username   String?   @db.VarChar
-  box        String    @db.VarChar
   notes      String?   @db.VarChar
+  box_id     String    @db.VarChar
   catalog_id String    @id @db.VarChar
-  title      title     @relation(fields: [title_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  box        box       @relation(fields: [box_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model box {
+  id        String      @id @db.VarChar
+  date_from DateTime    @db.Date
+  active    Boolean
+  title_id  Int
+  title     title       @relation(fields: [title_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  newspaper newspaper[]
 }

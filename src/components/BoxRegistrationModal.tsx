@@ -1,7 +1,6 @@
 import React, {FC, useState} from 'react';
 import {Field, Form, Formik, useField} from 'formik';
-import {updateBoxForTitle} from '@/services/local.data';
-import {Box} from '@/models/Box';
+import {getBoxById, postNewBoxForTitle, updateActiveBoxForTitle} from '@/services/local.data';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
@@ -9,17 +8,27 @@ import {FiSave} from 'react-icons/fi';
 import {Button} from '@nextui-org/button';
 import ErrorModal from '@/components/ErrorModal';
 import {Spinner} from '@nextui-org/react';
+import {box} from '@prisma/client';
+import InfoModal from '@/components/InfoModal';
+import {AlreadyExistsError} from '@/models/Errors';
+import Link from 'next/link';
+import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
+import {CatalogTitle} from '@/models/CatalogTitle';
 
 
 interface BoxRegistrationModalProps {
   text: string;
   titleId: string;
-  updateBoxInfo: (box: Box) => void;
+  titleName: string;
+  updateBoxInfo: (box: box) => void;
   closeModal: () => void;
 }
 
 const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrationModalProps) => {
   const [showError, setShowError] = useState<boolean>(false);
+  const [showInfo, setShowInfo] = useState<{showModal: boolean; sameTitle: boolean}>({showModal: false, sameTitle: false});
+  const [existingBox, setExistingBox] = useState<box|undefined>(undefined);
+  const [otherTitleName, setOtherTitleName] = useState<string|undefined>(undefined);
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
@@ -29,19 +38,32 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           <Formik
             initialValues={{boxId: '', startDate: new Date()}}
             onSubmit={(values, {setSubmitting}) => {
-              const box = new Box(values.boxId, values.startDate);
+
               setSubmitting(true);
               setTimeout(() => {
-                void updateBoxForTitle(props.titleId, box)
-                  .then(res => {
-                    if (res.ok) {
-                      props.updateBoxInfo(box);
-                      props.closeModal();
+                void postNewBoxForTitle(props.titleId, values.boxId, values.startDate)
+                  .then(createdBox => {
+                    props.updateBoxInfo(createdBox);
+                    props.closeModal();
+
+                  })
+                  .catch(async (e: Error) => {
+                    if (e instanceof AlreadyExistsError) {
+                      await getBoxById(values.boxId).then((b: box) => {
+                        setExistingBox(b);
+                        if (b.title_id === +props.titleId) {
+                          setShowInfo({showModal: true, sameTitle: true});
+                        } else {
+                          void fetchNewspaperTitleFromCatalog(b.title_id.toString()).then((t: CatalogTitle) => {
+                            setOtherTitleName(t.name);
+                          });
+                          setShowInfo({showModal: true, sameTitle: false});
+                        }
+                      });
                     } else {
                       setShowError(true);
                     }
                   })
-                  .catch(() => setShowError(true))
                   .finally(() => setSubmitting(false));
               }, 400);
             }}
@@ -83,6 +105,29 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           </Button>
         </div>
       </div>
+
+      <InfoModal
+        header="Esken finnes allerede"
+        content={
+          showInfo.sameTitle ? (
+            <>
+              Esken er allerede registrert på denne tittelen ({props.titleName}). Ønsker du å laste inn den eksisterende esken?<br/>
+              <Button className="edit-button-style" onClick={() => {
+                void updateActiveBoxForTitle(props.titleId, existingBox!.id);
+                props.updateBoxInfo(existingBox!);
+                props.closeModal();
+              }}>Bruk eske</Button>
+            </>
+          ) : (
+            <>
+              Denne esken er allerede registrert på en annen tittel ({otherTitleName}).<br/>
+              <Button className="edit-button-style" as={Link} href={`/${existingBox?.title_id}`}>Gå til tittel</Button>
+            </>
+          )
+        }
+        onExit={() => setShowInfo({showModal: false, sameTitle: false})}
+        showModal={showInfo.showModal}
+      />
 
       <ErrorModal
         text='Noe gikk galt ved lagring av eske.'

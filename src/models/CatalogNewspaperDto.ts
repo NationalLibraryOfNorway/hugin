@@ -15,14 +15,15 @@ export interface CatalogNewspaperDto {
 }
 
 export function createCatalogNewspaperDtoFromIssue(
-  issue: newspaper
+  issue: newspaper,
+  titleId: string
 ): CatalogNewspaperDto {
   return {
-    titleCatalogueId: issue.title_id.toString(),
+    titleCatalogueId: titleId,
     date: createCatalogDateString(issue.date),
     username: 'hugin stage', // TODO replace with actual username when auth is present
     digital: false,
-    containerId: issue.box,
+    containerId: issue.box_id,
     notes: issue.notes ?? '',
     // eslint-disable-next-line id-denylist
     number: issue.edition ?? ''

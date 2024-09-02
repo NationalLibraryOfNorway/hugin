@@ -2,12 +2,9 @@ import {NextRequest, NextResponse} from 'next/server';
 import prisma from '@/lib/prisma';
 import {PrismaClientKnownRequestError} from '@prisma/client/runtime/library';
 import {title} from '@prisma/client';
-import {Box} from '@/models/Box';
-
 
 interface IdParams { params: { id: string} }
 interface PatchData {
-  box?: Box;
   notes?: string;
   shelf?: string;
 }
@@ -69,22 +66,10 @@ export async function PUT(req: NextRequest, params: IdParams): Promise<NextRespo
 
 // PATCH api/title/[id]
 export async function PATCH(req: NextRequest, params: IdParams): Promise<NextResponse> {
-  const { box, notes, shelf } = await req.json() as PatchData;
+  const { notes, shelf } = await req.json() as PatchData;
   const id = +params.params.id;
 
-  if (box) {
-    return prisma.title.update({
-      where: { id },
-      // eslint-disable-next-line @typescript-eslint/naming-convention
-      data: { last_box: box.boxId, last_box_from: box.startDate }
-    })
-      .then(() => {
-        return new NextResponse(null, {status: 204});
-      })
-      .catch((e: Error) => {
-        return NextResponse.json({error: `Failed to update box: ${e.message}`}, {status: 500});
-      });
-  } else if (notes || notes === '') {
+  if (notes || notes === '') {
     return prisma.title.update({
       where: { id },
       data: { notes }
