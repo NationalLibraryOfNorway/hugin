@@ -74,6 +74,7 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
                 <button
                   type='submit'
                   disabled={isSubmitting || !dirty}
+                  data-testid='save-button'
                 >
                   <IconContext.Provider value={{
                     className: 'icon-style save-button-style',
@@ -83,7 +84,7 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
                   </IconContext.Provider>
                 </button>
               )}
-              <button className='ml-1'>
+              <button className='ml-1' data-testid='abort-button'>
                 <IconContext.Provider value={{
                   className: 'icon-style abort-button-style [&]:text-xl',
                   size: '1.5em'
@@ -100,12 +101,12 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
       ) : (
         <>
           <p className='group-content-style'>{currentValue}</p>
-          <button className='ml-2'>
+          <button className='ml-2' onClick={() => setIsEditing(true)}>
             <IconContext.Provider value={{
               className: 'icon-style edit-button-style',
               size: '1.5em'
             }}>
-              <FaEdit onClick={() => setIsEditing(true)}/>
+              <FaEdit/>
             </IconContext.Provider>
           </button>
         </>

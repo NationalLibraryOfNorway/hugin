@@ -1,0 +1,49 @@
+import {afterEach, beforeAll, vi} from 'vitest';
+import {cleanup} from '@testing-library/react';
+
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+
+beforeAll(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  vi.mock('next/navigation', async importOriginal => {
+    const actual = await importOriginal<typeof import('next/navigation')>();
+    const { useRouter } = await vi.importActual<typeof import('next-router-mock')>('next-router-mock');
+    const usePathname = vi.fn().mockImplementation(() => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      const router = useRouter();
+      return router.pathname;
+    });
+    return {
+      ...actual,
+      useRouter: vi.fn().mockImplementation(useRouter),
+      usePathname
+    };
+  });
+
+  vi.mock('@/services/catalog.data', () => ({
+    searchNewspaperTitlesInCatalog: vi.fn(),
+    fetchNewspaperTitleFromCatalog: vi.fn(),
+    postItemToCatalog: vi.fn(),
+    postMissingItemToCatalog: vi.fn()
+  }));
+
+  vi.mock('@/services/local.data', () => ({
+    getLocalTitle: vi.fn(),
+    postLocalTitle: vi.fn(),
+    putLocalTitle: vi.fn(),
+    updateBoxForTitle: vi.fn(),
+    updateNotesForTitle: vi.fn(),
+    updateShelfForTitle: vi.fn(),
+    getIssuesForTitle: vi.fn(),
+    postNewIssuesForTitle: vi.fn()
+  }));
+});
+
+afterEach(() => {
+  cleanup();
+});
+
