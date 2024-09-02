@@ -1,6 +1,6 @@
 import {newspaper, title} from '@prisma/client';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
-import {getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
+import {deleteIssue, getIssuesForTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaTrash} from 'react-icons/fa';
 import {Button, CalendarDate, DatePicker, Spinner, Table} from '@nextui-org/react';
@@ -8,6 +8,7 @@ import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-
 import ErrorModal from '@/components/ErrorModal';
 import {newNewspapersContainsDuplicateEditions, newspapersContainsEdition} from '@/utils/validationUtils';
 import {parseDate} from '@internationalized/date';
+import ConfirmationModal from '@/components/ConfirmationModal';
 
 
 export default function IssueList(props: {title: title}) {
@@ -15,9 +16,10 @@ export default function IssueList(props: {title: title}) {
   const [issues, setIssues] = useState<newspaper[]>([]);
   const [nIssuesInDb, setNIssuesInDb] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
-  const [showError, setShowError] = useState<boolean>(false);
+  const [errorText, setErrorText] = useState<string>('');
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [saveWarning, setSaveWarning] = useState<string>('');
+  const [issueToDelete, setIssueToDelete] = useState<string>('');
 
   const initialValues = { issues };
 
@@ -72,7 +74,7 @@ export default function IssueList(props: {title: title}) {
     };
   }, [props]);
 
-  useEffect(() => {
+  const updateIssues = useCallback(() => {
     function prepareTitles(newspapers: newspaper[]) {
       const formTitles = newspapers;
       formTitles.unshift(proposeNewIssue(newspapers));
@@ -80,12 +82,16 @@ export default function IssueList(props: {title: title}) {
     }
 
     void getIssuesForTitle(props.title.id, props.title.last_box ?? '')
-      .then((data: newspaper[]) => {
+      .then(data => {
         setNIssuesInDb(data.length);
         setIssues(prepareTitles(data));
         setLoading(false);
       });
-  }, [props, nIssuesInDb, proposeNewIssue]);
+  }, [props, proposeNewIssue]);
+
+  useEffect(() => {
+    updateIssues();
+  }, [updateIssues]);
 
   function dayOfWeek(date: Date | null) : string {
     if (date) {
@@ -170,13 +176,13 @@ export default function IssueList(props: {title: title}) {
             void postNewIssuesForTitle(props.title.id, newIssues)
               .then(res => {
                 if (res.ok) {
-                  setNIssuesInDb(values.issues.length);
                   showSuccessMessage();
+                  updateIssues();
                 } else {
-                  setShowError(true);
+                  setErrorText('Kunne ikke lagre avisutgaver.');
                 }
               })
-              .catch(() => setShowError(true))
+              .catch(() => setErrorText('Kunne ikke lagre avisutgaver.'))
               .finally(() => setSubmitting(false));
           }}
         >
@@ -296,13 +302,17 @@ export default function IssueList(props: {title: title}) {
                               />
                             </TableCell>
                             <TableCell className="text-lg">
-                              { !newspaperIsSaved(index, values.issues.length) &&
-                                <button
-                                  type="button"
-                                  onClick={() => remove(index)}>
-                                  <FaTrash/>
-                                </button>
-                              }
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (!newspaperIsSaved(index, values.issues.length)) {
+                                    remove(index);
+                                  } else {
+                                    setIssueToDelete(issue.catalog_id);
+                                  }
+                                }}>
+                                <FaTrash/>
+                              </button>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -317,9 +327,25 @@ export default function IssueList(props: {title: title}) {
       )}
 
       <ErrorModal
-        text='Kunne ikke lagre avisutgaver.'
-        onExit={() => setShowError(false)}
-        showModal={showError}
+        text={errorText}
+        onExit={() => setErrorText('')}
+        showModal={errorText !== ''}
+      />
+
+      <ConfirmationModal
+        showModal={issueToDelete !== ''}
+        header={'Er du sikker på at du vil slette?'}
+        text={'Avisen vil bli slettet både fra Hugin og katalogen.'}
+        buttonText={'Ja'}
+        buttonOnClick={async () => {
+          await deleteIssue(issueToDelete)
+            .then(() => {
+              setIssueToDelete('');
+              updateIssues();
+            })
+            .catch(() => setErrorText('Kunne ikke slette avisutgave.'));
+        }}
+        onExit={() => setIssueToDelete('')}
       />
     </div>
   );
