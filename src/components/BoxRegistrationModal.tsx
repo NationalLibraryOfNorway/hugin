@@ -12,6 +12,8 @@ import {box} from '@prisma/client';
 import InfoModal from '@/components/InfoModal';
 import {AlreadyExistsError} from '@/models/Errors';
 import Link from 'next/link';
+import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
+import {CatalogTitle} from '@/models/CatalogTitle';
 
 
 interface BoxRegistrationModalProps {
@@ -26,6 +28,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
   const [showError, setShowError] = useState<boolean>(false);
   const [showInfo, setShowInfo] = useState<{showModal: boolean; sameTitle: boolean}>({showModal: false, sameTitle: false});
   const [existingBox, setExistingBox] = useState<box|undefined>(undefined);
+  const [otherTitleName, setOtherTitleName] = useState<string|undefined>(undefined);
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
@@ -51,6 +54,9 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
                         if (b.title_id === +props.titleId) {
                           setShowInfo({showModal: true, sameTitle: true});
                         } else {
+                          void fetchNewspaperTitleFromCatalog(b.title_id.toString()).then((t: CatalogTitle) => {
+                            setOtherTitleName(t.name);
+                          });
                           setShowInfo({showModal: true, sameTitle: false});
                         }
                       });
@@ -114,7 +120,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             </>
           ) : (
             <>
-              Denne esken er allerede registrert på en annen tittel.<br/>
+              Denne esken er allerede registrert på en annen tittel ({otherTitleName}).<br/>
               <Button className="edit-button-style" as={Link} href={`/${existingBox?.title_id}`}>Gå til tittel</Button>
             </>
           )
