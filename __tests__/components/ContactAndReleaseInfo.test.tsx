@@ -1,13 +1,10 @@
 import {beforeEach, expect, test, vi} from 'vitest';
-import {updateBoxForTitle} from '@/services/local.data';
-import {NextResponse} from 'next/server';
 import {cleanup, render, screen} from '@testing-library/react';
 import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
 import {MockTitle} from '../mockdata';
 
 
 beforeEach(() => {
-  vi.mocked(updateBoxForTitle).mockImplementation(() => Promise.resolve(new NextResponse(null, {status: 204})));
   render(<ContactAndReleaseInfo titleFromDb={MockTitle} onSubmit={() => Promise.resolve(new Response())} />);
 });
 

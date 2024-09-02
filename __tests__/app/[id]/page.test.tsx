@@ -2,14 +2,15 @@ import {beforeEach, expect, test, vi} from 'vitest';
 import {render, screen} from '@testing-library/react';
 import Page from '@/app/[id]/page';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
-import {MockCatalogTitle1, MockNewspaper1, MockTitle} from '../../mockdata';
-import {getIssuesForTitle, getLocalTitle} from '@/services/local.data';
+import {MockBox1, MockCatalogTitle1, MockNewspaper1, MockTitle} from '../../mockdata';
+import {getBoxForTitle, getLocalTitle, getNewspapersForBoxOnTitle} from '@/services/local.data';
 import {NotFoundError} from '@/models/Errors';
 
 beforeEach(() => {
   vi.mocked(fetchNewspaperTitleFromCatalog).mockImplementation(() => Promise.resolve(MockCatalogTitle1));
   vi.mocked(getLocalTitle).mockImplementation(() => Promise.resolve(MockTitle));
-  vi.mocked(getIssuesForTitle).mockImplementation(() => Promise.resolve([MockNewspaper1]));
+  vi.mocked(getBoxForTitle).mockImplementation(() => Promise.resolve(MockBox1));
+  vi.mocked(getNewspapersForBoxOnTitle).mockImplementation(() => Promise.resolve([MockNewspaper1]));
   render(<Page params={{id: ''}}/>);
 });
 

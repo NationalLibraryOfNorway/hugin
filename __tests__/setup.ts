@@ -35,11 +35,15 @@ beforeAll(() => {
     getLocalTitle: vi.fn(),
     postLocalTitle: vi.fn(),
     putLocalTitle: vi.fn(),
-    updateBoxForTitle: vi.fn(),
+    updateActiveBoxForTitle: vi.fn(),
     updateNotesForTitle: vi.fn(),
     updateShelfForTitle: vi.fn(),
-    getIssuesForTitle: vi.fn(),
-    postNewIssuesForTitle: vi.fn()
+    getBoxById: vi.fn(),
+    getBoxForTitle: vi.fn(),
+    getNewspapersForBoxOnTitle: vi.fn(),
+    postNewBoxForTitle: vi.fn(),
+    postNewIssuesForTitle: vi.fn(),
+    deleteIssue: vi.fn()
   }));
 });
 

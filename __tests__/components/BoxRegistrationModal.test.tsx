@@ -1,13 +1,14 @@
 import {beforeEach, expect, test, vi} from 'vitest';
 import * as localData from '@/services/local.data';
-import {updateBoxForTitle} from '@/services/local.data';
+import {getBoxById, postNewBoxForTitle} from '@/services/local.data';
 import {fireEvent, render, screen} from '@testing-library/react';
-import {NextResponse} from 'next/server';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
+import {MockBox1} from '../mockdata';
 
 beforeEach(() => {
-  vi.mocked(updateBoxForTitle).mockImplementation(() => Promise.resolve(new NextResponse(null, {status: 204})));
-  render(<BoxRegistrationModal text={'boxText'} titleId='123' closeModal={() => {}} updateBoxInfo={() => {}}/>);
+  vi.mocked(getBoxById).mockImplementation(() => Promise.resolve(MockBox1));
+  vi.mocked(postNewBoxForTitle).mockImplementation(() => Promise.resolve(MockBox1));
+  render(<BoxRegistrationModal text={'boxText'} titleId='123' titleName='title' closeModal={() => {}} updateBoxInfo={() => {}}/>);
 });
 
 test('Box registration has field for box id', () => {
@@ -25,7 +26,7 @@ test('Box registration has calendar for start date', () => {
 });
 
 test('Box registration saves on button press', async () => {
-  const saveSpy = vi.spyOn(localData, 'updateBoxForTitle');
+  const saveSpy = vi.spyOn(localData, 'postNewBoxForTitle');
   expect(saveSpy).not.toHaveBeenCalled();
 
   fireEvent.change(screen.getByRole('textbox', {name: 'Eske id'}), {target: {value: '123'}});
