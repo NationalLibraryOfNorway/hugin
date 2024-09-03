@@ -1,14 +1,16 @@
 import {box, newspaper, title} from '@prisma/client';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
-import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle} from '@/services/local.data';
+import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle, putIssue} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
-import {FaTrash} from 'react-icons/fa';
-import {Button, CalendarDate, DatePicker, Spinner, Switch, Table} from '@nextui-org/react';
+import {FaSave, FaTrash} from 'react-icons/fa';
+import {Button, CalendarDate, DatePicker, Spinner, Switch, Table, Tooltip} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
 import {newNewspapersContainsDuplicateEditions, newspapersContainsEdition} from '@/utils/validationUtils';
 import {parseDate} from '@internationalized/date';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import {FiEdit} from 'react-icons/fi';
+import {ImCross} from 'react-icons/im';
 
 
 export default function IssueList(props: {title: title; box: box}) {
@@ -20,6 +22,8 @@ export default function IssueList(props: {title: title; box: box}) {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [saveWarning, setSaveWarning] = useState<string>('');
   const [issueToDelete, setIssueToDelete] = useState<string>('');
+  const [issueIndexToEdit, setIssueIndexToEdit] = useState<number|undefined>(undefined);
+  const [issueBeingSaved, setIssueBeingSaved] = useState<boolean>(false);
 
   const initialValues = { issues };
 
@@ -132,8 +136,25 @@ export default function IssueList(props: {title: title; box: box}) {
     return {issues: errors} as FormikErrors<newspaper>;
   }
 
-  function newspaperIsSaved(index: number, arrayLength: number) {
+  function newspaperIsSaved(index: number, arrayLength: number):boolean {
     return index >= arrayLength - nIssuesInDb;
+  }
+
+  function isEditingIssue(index?: number): boolean {
+    if (index || index === 0) return issueIndexToEdit === index;
+    return issueIndexToEdit !== undefined;
+  }
+
+  function shouldDisableIssue(index: number, arrayLength: number): boolean {
+    return newspaperIsSaved(index, arrayLength) && !isEditingIssue(index);
+  }
+
+  function startEditingIssue(index: number) {
+    if (issueIndexToEdit === undefined) setIssueIndexToEdit(index);
+  }
+
+  function stopEditingIssue() {
+    setIssueIndexToEdit(undefined);
   }
 
   function showSuccessMessage() {
@@ -156,6 +177,20 @@ export default function IssueList(props: {title: title; box: box}) {
   function dateToCalendarDate(date: Date | null): CalendarDate {
     const usedDate = date ? date : new Date();
     return parseDate(new Date(usedDate).toISOString().split('T')[0]);
+  }
+
+  function updateIssue(issue: newspaper) {
+    setIssueBeingSaved(true);
+    void putIssue(issue)
+      .then(res => {
+        if (res.ok) {
+          stopEditingIssue();
+        } else {
+          setErrorText('Kunne ikke lagre avisutgave.');
+        }
+      })
+      .catch(() => setErrorText('Kunne ikke lagre avisutgave.'))
+      .finally(() => setIssueBeingSaved(false));
   }
 
   return (
@@ -208,12 +243,18 @@ export default function IssueList(props: {title: title; box: box}) {
 
                       <div className='flex flex-row items-center'>
                         <p className='mr-2'>{saveWarning}</p>
-                        <Button
-                          className="save-button-style min-w-28"
-                          type="submit"
-                          disabled={isSubmitting}
-                          startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
-                        >Lagre</Button>
+
+                        <Tooltip
+                          content='Lagre aller avbryt endring av avisutgave først'
+                          isDisabled={!isEditingIssue()}
+                        >
+                          <Button
+                            className="save-button-style min-w-28"
+                            type="submit"
+                            disabled={isSubmitting || isEditingIssue()}
+                            startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
+                          >Lagre</Button>
+                        </Tooltip>
                       </div>
                     </div>
 
@@ -225,11 +266,11 @@ export default function IssueList(props: {title: title; box: box}) {
                         <TableColumn align='center' className="text-lg">Nummer</TableColumn>
                         <TableColumn align='center' className="text-lg">Mottatt</TableColumn>
                         <TableColumn align='center' className="text-lg">Kommentar</TableColumn>
-                        <TableColumn align='center' hideHeader={true} className="text-lg">Slett</TableColumn>
+                        <TableColumn align='end' hideHeader={true} className="text-lg">Slett</TableColumn>
                       </TableHeader>
                       <TableBody>
                         {values.issues.map((issue, index) => (
-                          <TableRow key={index}>
+                          <TableRow key={index} className={isEditingIssue(index) ? 'bg-blue-200' : ''}>
                             <TableCell className="text-lg">
                               {dayOfWeek(issue.date)}
                             </TableCell>
@@ -239,7 +280,7 @@ export default function IssueList(props: {title: title; box: box}) {
                                 id={`issues.${index}.date`}
                                 value={dateToCalendarDate(issue.date)}
                                 onChange={val => void setFieldValue(`issues.${index}.date`, val.toDate('UTC'))}
-                                isDisabled={newspaperIsSaved(index, values.issues.length)}
+                                isDisabled={shouldDisableIssue(index, values.issues.length)}
                                 popoverProps={{placement: 'right'}}
                               />
                               <ErrorMessage
@@ -254,7 +295,7 @@ export default function IssueList(props: {title: title; box: box}) {
                                 className="max-w-16 border text-center"
                                 type="text"
                                 width='40'
-                                disabled={newspaperIsSaved(index, values.issues.length)}
+                                disabled={shouldDisableIssue(index, values.issues.length)}
                                 onChange={(e: ChangeEvent) => {
                                   checkForDuplicateEditionsAndShowWarning((e.nativeEvent as InputEvent).data ?? '', values.issues);
                                   handleChange(e);
@@ -270,7 +311,7 @@ export default function IssueList(props: {title: title; box: box}) {
                               <Switch
                                 name={`issues.${index}.received`}
                                 isSelected={issue.received ?? false}
-                                isDisabled={newspaperIsSaved(index, values.issues.length)}
+                                isDisabled={shouldDisableIssue(index, values.issues.length)}
                                 onChange={value => void setFieldValue(`issues.${index}.received`, value.target.checked)}
                               > {issue.received ? 'Mottatt' : 'Ikke mottatt'} </Switch>
                             </TableCell>
@@ -279,11 +320,40 @@ export default function IssueList(props: {title: title; box: box}) {
                                 name={`issues.${index}.notes`}
                                 className="border"
                                 type="text"
-                                disabled={newspaperIsSaved(index, values.issues.length)}
+                                disabled={shouldDisableIssue(index, values.issues.length)}
                                 value={issue.notes || ''}
                               />
                             </TableCell>
                             <TableCell className="text-lg">
+                              {newspaperIsSaved(index, values.issues.length) &&
+                                <>
+                                  {isEditingIssue(index) ?
+                                    <>
+                                      {issueBeingSaved ?
+                                        <Spinner size='sm' className='mr-2'/>
+                                        :
+                                        <>
+                                          <button className='mr-2' type='button' onClick={() => updateIssue(issue)}>
+                                            <FaSave color='1ba636'/>
+                                          </button>
+                                          <button className='mr-2' type='button' onClick={() => stopEditingIssue()}>
+                                            <ImCross color='dca238'/>
+                                          </button>
+                                        </>
+                                      }
+                                    </>
+                                    :
+                                    <button
+                                      className={isEditingIssue() ? 'mr-2 opacity-30' : 'mr-2'}
+                                      type='button'
+                                      disabled={isEditingIssue()}
+                                      onClick={() => startEditingIssue(index)}
+                                    >
+                                      <FiEdit color='blue'/>
+                                    </button>
+                                  }
+                                </>
+                              }
                               <button
                                 type="button"
                                 onClick={() => {

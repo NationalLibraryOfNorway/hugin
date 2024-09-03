@@ -4,6 +4,7 @@ import {CatalogNewspaperDto} from '@/models/CatalogNewspaperDto';
 import {CatalogMissingNewspaperDto} from '@/models/CatalogMissingNewspaperDto';
 import {CatalogItem} from '@/models/CatalogItem';
 import {KeycloakToken} from '@/models/KeycloakToken';
+import {CatalogNewspaperEditDto} from '@/models/CatalogNewspaperEditDto';
 
 export async function searchNewspaperTitlesInCatalog(searchTerm: string, signal: AbortSignal): Promise<CatalogTitle[]> {
   return fetch(
@@ -49,11 +50,11 @@ export async function postItemToCatalog(issue: CatalogNewspaperDto): Promise<Cat
       if (response.ok) {
         return await response.json() as Promise<CatalogItem>;
       } else {
-        return Promise.reject(new Error(`Failed to create title in catalog: ${response.status} - ${await response.json()}`));
+        return Promise.reject(new Error(`Failed to create issue in catalog: ${response.status} - ${await response.json()}`));
       }
     })
     .catch((e: Error) => {
-      return Promise.reject(new Error(`Failed to create title in catalog: ${e.message}`));
+      return Promise.reject(new Error(`Failed to create issue in catalog: ${e.message}`));
     });
 }
 
@@ -81,10 +82,11 @@ export async function postMissingItemToCatalog(issue: CatalogMissingNewspaperDto
     });
 }
 
-export async function deletePhysicalItemFromCatalog(catalog_id: string): Promise<void> {
+export async function deletePhysicalItemFromCatalog(catalog_id: string, deleteManifestation?: boolean): Promise<void> {
   const token = await getKeycloakTekstToken();
+  const queryParams = deleteManifestation !== undefined ? `?deleteManifestation=${deleteManifestation}` : '';
 
-  return fetch(`${process.env.CATALOGUE_API_PATH}/newspapers/items/physical/${catalog_id}`, {
+  return fetch(`${process.env.CATALOGUE_API_PATH}/newspapers/items/physical/${catalog_id}${queryParams}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -101,6 +103,30 @@ export async function deletePhysicalItemFromCatalog(catalog_id: string): Promise
     })
     .catch((e: Error) => {
       return Promise.reject(new Error(`Failed to delete item in catalog: ${e.message}`));
+    });
+}
+
+export async function putPhysicalItemInCatalog(issue: CatalogNewspaperEditDto): Promise<void> {
+  const token = await getKeycloakTekstToken();
+
+  return fetch(`${process.env.CATALOGUE_API_PATH}/newspapers/items`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      Authorization: `Bearer ${token.access_token}`
+    },
+    body: JSON.stringify(issue)
+  })
+    .then(async response => {
+      if (response.ok) {
+        return Promise.resolve();
+      } else {
+        return Promise.reject(new Error(`Failed to update issue in catalog: ${response.status} - ${await response.json()}`));
+      }
+    })
+    .catch((e: Error) => {
+      return Promise.reject(new Error(`Failed to update issue in catalog: ${e.message}`));
     });
 }
 

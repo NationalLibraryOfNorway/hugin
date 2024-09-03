@@ -167,3 +167,13 @@ export async function deleteIssue(catalog_id: string): Promise<Response> {
     return Promise.reject(new Error(`Failed to delete newspaper issue: ${e.message}`));
   });
 }
+
+export async function putIssue(issue: newspaper): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/newspaper/single/${issue.catalog_id}`, {
+    method: 'PUT',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(issue)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to update newspaper issue: ${e.message}`));
+  });
+}
