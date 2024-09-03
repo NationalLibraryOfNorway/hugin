@@ -41,6 +41,9 @@ jobs:
             echo "CATALOGUE_API_PATH=${{ secrets.CATALOGUE_STAGE_API_PATH }}" >> $GITHUB_ENV
           fi
 
+      - name: Run unit tests
+        run: npm run test
+
       - name: Build application
         run: npm run build
 
