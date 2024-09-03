@@ -3,7 +3,7 @@ import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaTrash} from 'react-icons/fa';
-import {Button, CalendarDate, DatePicker, Spinner, Table} from '@nextui-org/react';
+import {Button, CalendarDate, DatePicker, Spinner, Switch, Table} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
 import {newNewspapersContainsDuplicateEditions, newspapersContainsEdition} from '@/utils/validationUtils';
@@ -223,7 +223,6 @@ export default function IssueList(props: {title: title; box: box}) {
                         <TableColumn align='center' className="text-lg">Dag</TableColumn>
                         <TableColumn align='center' className="text-lg">Dato</TableColumn>
                         <TableColumn align='center' className="text-lg">Nummer</TableColumn>
-                        <TableColumn align='center' className="text-lg">Ikke mottatt</TableColumn>
                         <TableColumn align='center' className="text-lg">Mottatt</TableColumn>
                         <TableColumn align='center' className="text-lg">Kommentar</TableColumn>
                         <TableColumn align='center' hideHeader={true} className="text-lg">Slett</TableColumn>
@@ -267,29 +266,13 @@ export default function IssueList(props: {title: title; box: box}) {
                                 className="field-error text-lg"
                               />
                             </TableCell>
-                            <TableCell className="text-lg">
-                              <Field
-                                name={`issues.${index}.not_received`}
-                                type="checkbox"
-                                disabled={newspaperIsSaved(index, values.issues.length)}
-                                value={!issue.received}
-                                checked={!issue.received}
-                                onChange={() => setFieldValue(`issues.${index}.received`, false)}
-                              />
-                            </TableCell>
-                            <TableCell className="text-lg">
-                              <Field
+                            <TableCell className="text-lg text-left">
+                              <Switch
                                 name={`issues.${index}.received`}
-                                type="checkbox"
-                                disabled={newspaperIsSaved(index, values.issues.length)}
-                                value={Boolean(issue.received)}
-                                checked={Boolean(issue.received)}
-                              />
-                              <ErrorMessage
-                                name={`issues.${index}.received`}
-                                component="div"
-                                className="field-error text-lg"
-                              />
+                                isSelected={issue.received ?? false}
+                                isDisabled={newspaperIsSaved(index, values.issues.length)}
+                                onChange={value => void setFieldValue(`issues.${index}.received`, value.target.checked)}
+                              > {issue.received ? 'Mottatt' : 'Ikke mottatt'} </Switch>
                             </TableCell>
                             <TableCell className="text-lg">
                               <Field
