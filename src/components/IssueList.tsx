@@ -333,29 +333,36 @@ export default function IssueList(props: {title: title; box: box}) {
                                         <Spinner size='sm' className='mr-2'/>
                                         :
                                         <>
-                                          <button className='mr-2' type='button' onClick={() => updateIssue(issue)}>
-                                            <FaSave color='1ba636'/>
-                                          </button>
-                                          <button className='mr-2' type='button' onClick={() => stopEditingIssue()}>
-                                            <ImCross color='dca238'/>
-                                          </button>
+                                          <Button isIconOnly
+                                            className='save-button-style mr-1 [&]:text-medium [&]:bg-green-400'
+                                            type='button'
+                                            onClick={() => updateIssue(issue)}>
+                                            <FaSave/>
+                                          </Button>
+                                          <Button isIconOnly
+                                            className='abort-button-style mr-1'
+                                            type='button'
+                                            onClick={() => stopEditingIssue()}>
+                                            <ImCross/>
+                                          </Button>
                                         </>
                                       }
                                     </>
                                     :
-                                    <button
-                                      className={isEditingIssue() ? 'mr-2 opacity-30' : 'mr-2'}
+                                    <Button isIconOnly
+                                      className={isEditingIssue() ? 'opacity-25 mr-0.5' : 'edit-button-style [&]:text-medium mr-0.5'}
                                       type='button'
                                       disabled={isEditingIssue()}
                                       onClick={() => startEditingIssue(index)}
                                     >
-                                      <FiEdit color='blue'/>
-                                    </button>
+                                      <FiEdit/>
+                                    </Button>
                                   }
                                 </>
                               }
-                              <button
+                              <Button isIconOnly
                                 type="button"
+                                className='delete-button-style'
                                 onClick={() => {
                                   if (!newspaperIsSaved(index, values.issues.length)) {
                                     remove(index);
@@ -363,8 +370,8 @@ export default function IssueList(props: {title: title; box: box}) {
                                     setIssueToDelete(issue.catalog_id);
                                   }
                                 }}>
-                                <FaTrash/>
-                              </button>
+                                <FaTrash size={16}/>
+                              </Button>
                             </TableCell>
                           </TableRow>
                         ))}
