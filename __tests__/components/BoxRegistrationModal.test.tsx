@@ -16,13 +16,13 @@ test('Box registration has field for box id', () => {
 });
 
 test('Box registration has calendar for start date', () => {
-  expect(screen.getAllByText('1.')).toBeTruthy();
-  expect(screen.getAllByText('2.')).toBeTruthy();
-  expect(screen.getByText('9.')).toBeTruthy();
-  expect(screen.getByText('16.')).toBeTruthy();
-  expect(screen.getByText('21.')).toBeTruthy();
-  expect(screen.getByText('22.')).toBeTruthy();
-  expect(screen.getAllByText('28.')).toBeTruthy();
+  expect(screen.getAllByText('1')).toBeTruthy();
+  expect(screen.getAllByText('2')).toBeTruthy();
+  expect(screen.getByText('9')).toBeTruthy();
+  expect(screen.getByText('16')).toBeTruthy();
+  expect(screen.getByText('21')).toBeTruthy();
+  expect(screen.getByText('22')).toBeTruthy();
+  expect(screen.getAllByText('28')).toBeTruthy();
 });
 
 test('Box registration saves on button press', async () => {
