@@ -3,7 +3,13 @@
 import React, {useEffect, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
-import {getBoxForTitle, getLocalTitle, putLocalTitle, updateNotesForTitle, updateShelfForTitle} from '@/services/local.data';
+import {
+  getBoxForTitle,
+  getLocalTitle,
+  putLocalTitle,
+  updateNotesForTitle,
+  updateShelfForTitle
+} from '@/services/local.data';
 import {box, title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
@@ -15,9 +21,12 @@ import EditTextInput from '@/components/EditTextInput';
 import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
 import IssueList from '@/components/IssueList';
 import ErrorModal from '@/components/ErrorModal';
+import WarningLabel from '@/components/WarningLabel';
+import {catalogDateStringToNorwegianDateString} from '@/utils/dateUtils';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
+  const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
   const [titleFromDb, setTitleFromDb] = useState<title>();
   const [boxFromDb, setBoxFromDb] = useState<box>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
@@ -35,6 +44,7 @@ export default function Page({params}: { params: { id: string } }) {
 
     void fetchNewspaperTitleFromCatalog(params.id)
       .then((data: CatalogTitle) => {
+        setCatalogTitle(data);
         setTitleString(data.name);
         document.title = titleString ?? 'Hugin';
       })
@@ -111,6 +121,12 @@ export default function Page({params}: { params: { id: string } }) {
                   <p className="group-title-style ml-auto"> Katalog ID: </p>
                   <p className="group-content-style ml-2 mr-auto">{params.id}</p>
                 </div>
+                {catalogTitle && catalogTitle.endDate && (
+                  <WarningLabel
+                    className="my-2 w-full"
+                    text={`Denne avisen ble avsluttet ${catalogDateStringToNorwegianDateString(catalogTitle.endDate)}`}
+                  />
+                )}
                 <div className='flex flex-row justify-between items-center mt-4'>
                   <EditTextInput
                     name='Hyllesignatur'
@@ -188,7 +204,15 @@ export default function Page({params}: { params: { id: string } }) {
       {titleFromDbNotFound &&
           <>
             {titleString ? (
-              <h1 className="top-title-style">{titleString}</h1>
+              <div className='flex flex-col items-center'>
+                <h1 className="top-title-style">{titleString}</h1>
+                {catalogTitle && catalogTitle.endDate && (
+                  <WarningLabel
+                    className="mt-2"
+                    text={`Denne avisen ble avsluttet ${catalogDateStringToNorwegianDateString(catalogTitle.endDate)}`}
+                  />
+                )}
+              </div>
             ) : (
               <p>Henter tittel ...</p>
             )}
