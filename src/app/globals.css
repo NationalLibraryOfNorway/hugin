@@ -51,7 +51,7 @@ input[type=number] {
 }
 
 .group-content-style {
-    @apply text-lg text-black;
+    @apply text-lg text-black text-left text-wrap break-all;
 }
 
 .group-subtitle-style {

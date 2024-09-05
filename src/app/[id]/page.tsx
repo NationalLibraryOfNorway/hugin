@@ -158,7 +158,7 @@ export default function Page({params}: { params: { id: string } }) {
             </div>
           </div>
 
-          <div className="flex flex-col">
+          <div className="flex flex-col w-96">
             <div className='items-start mt-16 w-72 mb-6'>
               {titleFromDb &&
                   <NotesComponent
