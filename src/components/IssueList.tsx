@@ -136,7 +136,7 @@ export default function IssueList(props: {title: title; box: box}) {
     return {issues: errors} as FormikErrors<newspaper>;
   }
 
-  function newspaperIsSaved(index: number, arrayLength: number):boolean {
+  function newspaperIsSaved(index: number, arrayLength: number): boolean {
     return index >= arrayLength - nIssuesInDb;
   }
 
