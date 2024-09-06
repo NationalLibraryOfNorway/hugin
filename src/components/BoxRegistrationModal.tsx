@@ -79,6 +79,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 
                 <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="startDate">Fra dato</label>
                 <Calendar
+                  showMonthAndYearPickers
                   aria-label='startDate'
                   value={dateToCalendarDate(values.startDate)}
                   onChange={val => void setFieldValue('startDate', val.toDate('UTC'))}
