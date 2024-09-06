@@ -4,7 +4,7 @@ import {Providers} from '@/app/providers';
 import AppShell from '@/components/AppShell';
 import {Quicksand} from 'next/font/google';
 
-const customFont = Quicksand({ weight: ['500'], subsets: ['latin'] });
+const customFont = Quicksand({ weight: ['400'], subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: 'Hugin'

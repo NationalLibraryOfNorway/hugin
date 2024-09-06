@@ -33,6 +33,7 @@ export default function SearchBar(props: {inHeader: boolean}) {
   return (
     <Autocomplete
       id='searchBarField'
+      className='min-w-80'
       size={props.inHeader ? 'md' : 'lg'}
       autoFocus={!props.inHeader}
       menuTrigger="focus"
@@ -61,6 +62,7 @@ export default function SearchBar(props: {inHeader: boolean}) {
           key={title.catalogueId}
           textValue={title.name}
           endContent={!title.endDate && <ActiveLabel/>}
+          hideSelectedIcon={true}
           classNames={!title.endDate ? {base: 'bg-green-300 bg-opacity-45'} : {}}
         >
           <div className={

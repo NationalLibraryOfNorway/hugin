@@ -1,19 +1,18 @@
 import React, {FC, useState} from 'react';
-import {Field, Form, Formik, useField} from 'formik';
+import {Field, Form, Formik} from 'formik';
 import {getBoxById, postNewBoxForTitle, updateActiveBoxForTitle} from '@/services/local.data';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css';
 import {FaArrowAltCircleLeft} from 'react-icons/fa';
 import {FiSave} from 'react-icons/fi';
 import {Button} from '@nextui-org/button';
 import ErrorModal from '@/components/ErrorModal';
-import {Spinner} from '@nextui-org/react';
+import {Calendar, Spinner} from '@nextui-org/react';
 import {box} from '@prisma/client';
 import InfoModal from '@/components/InfoModal';
 import {AlreadyExistsError} from '@/models/Errors';
 import Link from 'next/link';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
+import {dateToCalendarDate} from '@/utils/dateUtils';
 
 
 interface BoxRegistrationModalProps {
@@ -69,7 +68,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             }}
           >
             {({
-              isSubmitting
+              isSubmitting, values, setFieldValue
             }) => (
               <Form>
                 <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="boxId">Eske id</label>
@@ -79,7 +78,11 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
                 <br/>
 
                 <label className="block text-gray-700 text-lg font-bold mb-1" htmlFor="startDate">Fra dato</label>
-                <CalendarField fieldName="startDate"/>
+                <Calendar
+                  aria-label='startDate'
+                  value={dateToCalendarDate(values.startDate)}
+                  onChange={val => void setFieldValue('startDate', val.toDate('UTC'))}
+                />
 
                 {isSubmitting ? (
                   <Spinner size='lg' className='py-3'/>
@@ -139,17 +142,3 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
 };
 
 export default BoxRegistrationModal;
-
-const CalendarField = (props: { fieldName: string }) => {
-  const [field, , {setValue}] = useField(props.fieldName);
-  return (
-    <Calendar
-      className="border mb-3 w-full py-2 px-3 text-gray-700 focus:outline-secondary-200"
-      {...field}
-      onChange={val => {
-        void setValue(val);
-      }}
-      locale='no-NB'
-    />
-  );
-};

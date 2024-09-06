@@ -45,6 +45,14 @@ beforeAll(() => {
     postNewIssuesForTitle: vi.fn(),
     deleteIssue: vi.fn()
   }));
+
+  const ResizeObserverMock = vi.fn(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }));
+  vi.stubGlobal('ResizeObserver', ResizeObserverMock);
+  window.scrollTo = vi.fn();
 });
 
 afterEach(() => {

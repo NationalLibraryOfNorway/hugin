@@ -3,12 +3,12 @@ import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle, putIssue} from '@/services/local.data';
 import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
 import {FaSave, FaTrash} from 'react-icons/fa';
-import {Button, CalendarDate, DatePicker, Spinner, Switch, Table, Tooltip} from '@nextui-org/react';
+import {Button, DatePicker, Spinner, Switch, Table, Tooltip} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
 import {newNewspapersContainsDuplicateEditions, newspapersContainsEdition} from '@/utils/validationUtils';
-import {parseDate} from '@internationalized/date';
 import ConfirmationModal from '@/components/ConfirmationModal';
+import {dateToCalendarDate} from '@/utils/dateUtils';
 import {FiEdit} from 'react-icons/fi';
 import {ImCross} from 'react-icons/im';
 
@@ -172,11 +172,6 @@ export default function IssueList(props: {title: title; box: box}) {
     } else {
       setSaveWarning('');
     }
-  }
-
-  function dateToCalendarDate(date: Date | null): CalendarDate {
-    const usedDate = date ? date : new Date();
-    return parseDate(new Date(usedDate).toISOString().split('T')[0]);
   }
 
   function updateIssue(issue: newspaper) {
