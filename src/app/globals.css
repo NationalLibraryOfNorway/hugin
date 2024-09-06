@@ -36,6 +36,12 @@ input[type=number] {
     @apply disabled:bg-gray-400;
 }
 
+.delete-button-style {
+    @apply bg-red-400 enabled:hover:bg-red-600;
+    @apply text-medium font-bold text-black;
+    @apply disabled:bg-gray-400;
+}
+
 .top-title-style {
     @apply text-4xl font-bold text-black;
 }
