@@ -271,6 +271,7 @@ export default function IssueList(props: {title: title; box: box}) {
                             </TableCell>
                             <TableCell className="text-lg">
                               <DatePicker
+                                showMonthAndYearPickers
                                 aria-label='Datovelger'
                                 id={`issues.${index}.date`}
                                 value={dateToCalendarDate(issue.date)}
