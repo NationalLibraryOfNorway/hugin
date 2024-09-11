@@ -34,6 +34,20 @@ export async function fetchNewspaperTitleFromCatalog(id: string): Promise<Catalo
   }
 }
 
+export async function getLinkToNewspaperInCatalog(id: string): Promise<string> {
+  return fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/catalog/title/link?catalogueId=${id}&materialType=NEWSPAPER`)
+    .then(response => {
+      if (response.ok) {
+        return response.json() as Promise<string>;
+      } else {
+        return Promise.reject(new Error('Failed getting link'));
+      }
+    })
+    .catch(() => {
+      return Promise.reject(new Error('Failed getting link'));
+    });
+}
+
 export async function postItemToCatalog(issue: CatalogNewspaperDto): Promise<CatalogItem> {
   const token = await getKeycloakTekstToken();
 

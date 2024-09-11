@@ -1,7 +1,7 @@
 'use client';
 
 import React, {useEffect, useState} from 'react';
-import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
+import {fetchNewspaperTitleFromCatalog, getLinkToNewspaperInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {
   getBoxForTitle,
@@ -14,7 +14,7 @@ import {box, title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
-import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit} from 'react-icons/fa';
+import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit, FaExternalLinkAlt} from 'react-icons/fa';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
@@ -26,6 +26,7 @@ import {catalogDateStringToNorwegianDateString} from '@/utils/dateUtils';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
+  const [titleLink, setTitleLink] = useState<string>();
   const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
   const [titleFromDb, setTitleFromDb] = useState<title>();
   const [boxFromDb, setBoxFromDb] = useState<box>();
@@ -77,6 +78,13 @@ export default function Page({params}: { params: { id: string } }) {
   }, [params]);
 
   useEffect(() => {
+    void getLinkToNewspaperInCatalog(params.id)
+      .then((link: string) => {
+        setTitleLink(link);
+      });
+  }, [params]);
+
+  useEffect(() => {
     void getBoxForTitle(+params.id).then((b: box) => {
       setBoxFromDb(b);
     }).catch((e: Error) => {
@@ -117,9 +125,14 @@ export default function Page({params}: { params: { id: string } }) {
                 ) : (
                   <p>Henter tittel ...</p>
                 )}
-                <div className="flex flex-row mt-2 w-full">
-                  <p className="group-title-style ml-auto"> Katalog ID: </p>
-                  <p className="group-content-style ml-2 mr-auto">{params.id}</p>
+                <div className="flex justify-center gap-2">
+                  <p className="group-title-style"> Katalog ID: </p>
+                  <a className="group-content-style underline" href={titleLink} target="_blank">
+                    <div className="flex flex-row gap-2">
+                      <p>{params.id}</p>
+                      <FaExternalLinkAlt/>
+                    </div>
+                  </a>
                 </div>
                 {catalogTitle && catalogTitle.endDate && (
                   <WarningLabel

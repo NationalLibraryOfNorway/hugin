@@ -27,6 +27,7 @@ beforeAll(() => {
   vi.mock('@/services/catalog.data', () => ({
     searchNewspaperTitlesInCatalog: vi.fn(),
     fetchNewspaperTitleFromCatalog: vi.fn(),
+    getLinkToNewspaperInCatalog: vi.fn(),
     postItemToCatalog: vi.fn(),
     postMissingItemToCatalog: vi.fn()
   }));
