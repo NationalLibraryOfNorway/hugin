@@ -1,6 +1,7 @@
 import {withSentryConfig} from "@sentry/nextjs";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    reactStrictMode: false,
     output: "standalone",
     basePath: process.env.NEXT_PUBLIC_BASE_PATH,
     async rewrites() {
@@ -10,6 +11,11 @@ const nextConfig = {
                 destination: `${process.env.CATALOGUE_API_PATH}/:path*`,
                 basePath: false
             },
+            {
+                source: `${process.env.NEXT_PUBLIC_BASE_PATH}/api/ext/auth/:path*`,
+                destination: 'http://localhost:8087/tekst-auth/v1/auth/:path*',
+                basePath: false
+            }
         ];
     }
 };
