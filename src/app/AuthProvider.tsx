@@ -3,21 +3,12 @@
 import {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import keycloakConfig from '@/lib/keycloak';
-import {removeSessionStorageItem, setSessionStorageItem} from '@/utils/storageUtil';
-// import {cookies} from 'next/headers';
-
-interface User {
-  groups?: string[];
-  name?: string;
-  accessToken?: string;
-  expires?: Date;
-  refreshToken?: string;
-  refreshExpires?: Date;
-}
+import {UserToken, User} from '@/models/UserToken';
+import {refresh, signIn, signOut} from '@/services/auth.data';
 
 interface IAuthContext {
   authenticated: boolean;
-  user?: User;
+  user?: UserToken;
   logout?: () => void;
 }
 
@@ -37,19 +28,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const codeInParams = new URLSearchParams(window.location.search).get('code');
     if (codeInParams) {
       const redirectUrl = new URLSearchParams({redirectUrl: trimRedirectUrl(window.location.href)}).toString();
-      const fetchToken = async (): Promise<User> => {
-        const data = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/ext/auth/login?${redirectUrl}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: codeInParams
-
-        });
-        return await data.json() as User;
-      };
-
-      void fetchToken().then((token: User) => {
+      void signIn(codeInParams, redirectUrl).then((token: User) => {
         handleIsAuthenticated(token);
         router.push('/');
       });
@@ -66,11 +45,10 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const handleIsAuthenticated = (token: User) => {
-    if (token) {
-      setUser(token);
+  const handleIsAuthenticated = (newUser: User) => {
+    if (newUser) {
+      setUser(newUser);
       setAuthenticated(true);
-      setSessionStorageItem('accessToken', token?.accessToken ?? '');
     }
   };
 
@@ -80,24 +58,16 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     if (intervalId) {
       clearInterval(intervalId);
     }
-    removeSessionStorageItem('accessToken');
   }, [intervalId]);
 
   const refreshToken = useCallback(async () => {
-    const data = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/ext/auth/refresh`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: user?.refreshToken
-    });
-    return await data.json() as User;
+    return refresh();
   }, []);
 
   const setIntervalToRefreshAccessToken = useCallback(async () => {
     if (user?.expires && !intervalId) {
       const expiryTime = new Date(user?.expires).getTime() - Date.now();
-      if (expiryTime < 1000 * 60 * 4) {
+      if (expiryTime < 1000 * 60 * 4.75) {
         await refreshToken();
       }
       setIntervalId(window.setInterval(() => {
@@ -125,16 +95,11 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
   };
 
   const logout = async () => {
-    await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/ext/auth/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: user?.refreshToken
-    }).then(() => {
-      handleNotAuthenticated();
-      window.location.reload();
-    });
+    await signOut()
+      .then(() => {
+        handleNotAuthenticated();
+        window.location.reload();
+      });
   };
 
   return (

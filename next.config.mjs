@@ -10,11 +10,6 @@ const nextConfig = {
                 source: `${process.env.NEXT_PUBLIC_BASE_PATH}/api/catalog/:path*`,
                 destination: `${process.env.CATALOGUE_API_PATH}/:path*`,
                 basePath: false
-            },
-            {
-                source: `${process.env.NEXT_PUBLIC_BASE_PATH}/api/ext/auth/:path*`,
-                destination: 'http://localhost:8087/tekst-auth/v1/auth/:path*',
-                basePath: false
             }
         ];
     }

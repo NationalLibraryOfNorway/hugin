@@ -1,0 +1,26 @@
+import {NextRequest, NextResponse} from 'next/server';
+import {cookies} from 'next/headers';
+import {getRefreshToken} from '@/utils/cookieUtils';
+
+export async function POST(req: NextRequest) {
+  const refreshToken = getRefreshToken();
+  if (!refreshToken) {
+    return NextResponse.json({error: 'No user token found'}, {status: 401});
+  }
+
+  return await fetch(`${process.env.AUTH_API}/logout`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: refreshToken
+  }).then(res => {
+    if (!res.ok) {
+      return NextResponse.json({error: 'Failed to logout'}, {status: res.status});
+    }
+    cookies().delete('user');
+    return NextResponse.json({message: 'Logged out successfully'}, {status: 200});
+  }).catch((error: Error) => {
+    return NextResponse.json({error: `Failed to logout: ${error.message}`}, {status: 500});
+  });
+}

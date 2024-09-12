@@ -1,4 +1,4 @@
-interface User {
+interface UserToken {
   groups?: string[];
   name?: string;
   accessToken?: string;
@@ -7,4 +7,9 @@ interface User {
   refreshExpires?: Date;
 }
 
-export default User;
+interface User {
+  name: string;
+  expires: Date;
+}
+
+export type { User, UserToken };
