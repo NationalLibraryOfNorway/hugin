@@ -1,8 +1,8 @@
-import {NextRequest, NextResponse} from 'next/server';
+import {NextResponse} from 'next/server';
 import {User, UserToken} from '@/models/UserToken';
 import {getRefreshToken, setUserCookie} from '@/utils/cookieUtils';
 
-export async function POST(req: NextRequest) {
+export async function POST() {
   const refreshToken = getRefreshToken();
   if (!refreshToken) {
     return NextResponse.json({error: 'No user token found'}, {status: 401});

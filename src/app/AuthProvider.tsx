@@ -24,6 +24,18 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User>();
   const [intervalId, setIntervalId] = useState<number>();
 
+  const handleNotAuthenticated = useCallback(() => {
+    setAuthenticated(false);
+    setUser(undefined);
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+    const currentUrl = window.location.href;
+    router.push(
+      `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
+        `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
+  }, [intervalId, router]);
+
   useEffect(() => {
     const codeInParams = new URLSearchParams(window.location.search).get('code');
     if (codeInParams) {
@@ -43,7 +55,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
           `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
     }
-  }, []);
+
+  }, [handleNotAuthenticated, router, user]);
 
   const handleIsAuthenticated = (newUser: User) => {
     if (newUser) {
@@ -51,18 +64,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
       setAuthenticated(true);
     }
   };
-
-  const handleNotAuthenticated = useCallback(() => {
-    setAuthenticated(false);
-    setUser(undefined);
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-    const currentUrl = window.location.href;
-    router.push(
-      `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
-        `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
-  }, [intervalId, router]);
 
   const refreshToken = useCallback(async () => {
     return refresh();
