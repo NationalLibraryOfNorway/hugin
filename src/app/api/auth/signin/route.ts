@@ -10,7 +10,7 @@ interface LoginRequest {
 
 export async function POST(req: NextRequest) {
   const {code, redirectUrl} = await req.json() as LoginRequest;
-  const data = await fetch(`${process.env.AUTH_API}/login?${redirectUrl}`, {
+  const data = await fetch(`${process.env.AUTH_API_PATH}/login?${redirectUrl}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

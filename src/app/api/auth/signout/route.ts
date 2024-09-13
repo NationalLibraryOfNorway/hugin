@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({error: 'No user token found'}, {status: 401});
   }
 
-  return await fetch(`${process.env.AUTH_API}/logout`, {
+  return await fetch(`${process.env.AUTH_API_PATH}/logout`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

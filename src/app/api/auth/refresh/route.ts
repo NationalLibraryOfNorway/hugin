@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({error: 'No user token found'}, {status: 401});
   }
 
-  const data = await fetch(`${process.env.AUTH_API}/refresh`, {
+  const data = await fetch(`${process.env.AUTH_API_PATH}/refresh`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
