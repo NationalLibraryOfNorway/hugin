@@ -59,7 +59,6 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
 
 // PATCH /title/[id]/box set active box for title
 export async function PATCH(req: NextRequest, params: IdParams): Promise<NextResponse> {
-  console.log('PATCH /title/[id]/box');
   const id = +params.params.id;
   const { boxId } = await req.json() as {boxId: string; startDate: string};
 

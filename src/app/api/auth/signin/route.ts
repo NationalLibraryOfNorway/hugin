@@ -39,5 +39,4 @@ export async function POST(req: NextRequest) {
 
   const user: User = {name: userToken.name, expires: userToken.expires};
   return NextResponse.json(user, {status: 200});
-
 }

@@ -3,12 +3,12 @@
 import {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import keycloakConfig from '@/lib/keycloak';
-import {UserToken, User} from '@/models/UserToken';
+import {User} from '@/models/UserToken';
 import {refresh, signIn, signOut} from '@/services/auth.data';
 
 interface IAuthContext {
   authenticated: boolean;
-  user?: UserToken;
+  user?: User;
   logout?: () => void;
 }
 
@@ -58,7 +58,11 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     if (intervalId) {
       clearInterval(intervalId);
     }
-  }, [intervalId]);
+    const currentUrl = window.location.href;
+    router.push(
+      `${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
+        `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
+  }, [intervalId, router]);
 
   const refreshToken = useCallback(async () => {
     return refresh();
@@ -98,7 +102,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     await signOut()
       .then(() => {
         handleNotAuthenticated();
-        window.location.reload();
       });
   };
 

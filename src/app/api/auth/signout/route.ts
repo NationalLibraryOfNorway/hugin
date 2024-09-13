@@ -1,6 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {cookies} from 'next/headers';
-import {getRefreshToken} from '@/utils/cookieUtils';
+import {deleteUserToken, getRefreshToken} from '@/utils/cookieUtils';
 
 export async function POST(req: NextRequest) {
   const refreshToken = getRefreshToken();
@@ -18,7 +17,7 @@ export async function POST(req: NextRequest) {
     if (!res.ok) {
       return NextResponse.json({error: 'Failed to logout'}, {status: res.status});
     }
-    cookies().delete('user');
+    deleteUserToken();
     return NextResponse.json({message: 'Logged out successfully'}, {status: 200});
   }).catch((error: Error) => {
     return NextResponse.json({error: `Failed to logout: ${error.message}`}, {status: 500});

@@ -1,13 +1,20 @@
 import {cookies} from 'next/headers';
-import {UserToken} from '@/models/UserToken';
+import {UserToken, userTokenBuilder} from '@/models/UserToken';
 
-export function getRefreshToken(): string | undefined {
+export function getUserToken(): UserToken | undefined {
   const userCookieValue = cookies().get('user')?.value;
   if (!userCookieValue) {
     return undefined;
   }
-  const userToken = JSON.parse(userCookieValue) as UserToken;
-  return userToken.refreshToken;
+  return userTokenBuilder(JSON.parse(userCookieValue) as UserToken);
+}
+
+export function getRefreshToken(): string | undefined {
+  return getUserToken()?.refreshToken;
+}
+
+export function deleteUserToken() {
+  cookies().delete('user');
 }
 
 export function setUserCookie(user: UserToken) {
