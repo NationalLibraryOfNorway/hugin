@@ -1,5 +1,6 @@
 import {newspaper} from '@prisma/client';
 import {createCatalogDateString} from '@/utils/dateUtils';
+import {getUserName} from '@/utils/cookieUtils';
 
 export interface CatalogMissingNewspaperDto {
   titleCatalogueId: string;
@@ -17,7 +18,7 @@ export function createCatalogMissingNewspaperDtoFromIssue(
   return {
     titleCatalogueId: titleId,
     date: createCatalogDateString(issue.date),
-    username: 'hugin stage', // TODO replace with actual username when auth is present
+    username: getUserName() ?? '',
     notes: issue.notes ?? '',
     // eslint-disable-next-line id-denylist
     number: issue.edition ?? ''

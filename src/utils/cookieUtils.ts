@@ -13,6 +13,10 @@ export function getRefreshToken(): string | undefined {
   return getUserToken()?.refreshToken;
 }
 
+export function getUserName(): string | undefined {
+  return getUserToken()?.name;
+}
+
 export function deleteUserToken() {
   cookies().delete('user');
 }
