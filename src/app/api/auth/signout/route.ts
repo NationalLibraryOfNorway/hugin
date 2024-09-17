@@ -1,7 +1,8 @@
 import {NextResponse} from 'next/server';
 import {deleteUserToken, getRefreshToken} from '@/utils/cookieUtils';
 
-export async function POST() {
+// POST api/auth/signout
+export async function POST(): Promise<NextResponse> {
   const refreshToken = getRefreshToken();
   if (!refreshToken) {
     return NextResponse.json({error: 'No user token found'}, {status: 401});

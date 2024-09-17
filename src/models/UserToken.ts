@@ -1,3 +1,12 @@
+interface SerializedUserToken {
+  groups: string[];
+  name: string;
+  accessToken: string;
+  expires: string;
+  refreshToken: string;
+  refreshExpires: string;
+}
+
 interface UserToken {
   groups: string[];
   name: string;
@@ -7,7 +16,7 @@ interface UserToken {
   refreshExpires: Date;
 }
 
-const userTokenBuilder = (userToken: UserToken): UserToken => {
+const userTokenBuilder = (userToken: SerializedUserToken): UserToken => {
   return {
     groups: userToken.groups,
     name: userToken.name,
@@ -23,5 +32,5 @@ interface User {
   expires: Date;
 }
 
-export type { User, UserToken };
+export type { User, UserToken, SerializedUserToken };
 export { userTokenBuilder };

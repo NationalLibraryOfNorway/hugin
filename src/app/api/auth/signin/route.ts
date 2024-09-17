@@ -8,7 +8,8 @@ interface LoginRequest {
   redirectUrl: string;
 }
 
-export async function POST(req: NextRequest) {
+// POST api/auth/signin
+export async function POST(req: NextRequest): Promise<NextResponse> {
   const {code, redirectUrl} = await req.json() as LoginRequest;
   const data = await fetch(`${process.env.AUTH_API_PATH}/login?${redirectUrl}`, {
     method: 'POST',
