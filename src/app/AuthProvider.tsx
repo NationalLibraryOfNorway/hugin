@@ -42,6 +42,9 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
       void signIn(codeInParams, redirectUrl).then((token: User) => {
         handleIsAuthenticated(token);
         router.push('/');
+      }).catch((e: Error) => {
+        console.error('Failed to sign in: ', e.message);
+        handleNotAuthenticated();
       });
     } else if (user) {
       if (user.expires && new Date(user.expires) > new Date()) {
@@ -53,8 +56,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
       window.location.assign(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
           `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
     }
-
-  }, [handleNotAuthenticated, router, user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleIsAuthenticated = (newUser: User) => {
     if (newUser) {
