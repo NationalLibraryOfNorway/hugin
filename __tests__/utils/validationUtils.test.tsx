@@ -1,9 +1,5 @@
 import {expect, test} from 'vitest';
 import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
-import {MockNewspaper1, MockNewspaper2} from '../mockdata';
-import {newspaper} from '@prisma/client';
-
-const newspapersList: newspaper[] = [MockNewspaper1, MockNewspaper2];
 
 test('validateBetweenZeroAndFive should return undefined for values 0 to 5', () => {
   expect(validateBetweenZeroAndFive(0)).toBeUndefined();
