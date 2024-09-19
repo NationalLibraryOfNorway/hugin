@@ -1,5 +1,5 @@
 import {expect, test} from 'vitest';
-import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
+import {validateBetweenZeroAndFive, checkDuplicateEditions} from '@/utils/validationUtils';
 
 test('validateBetweenZeroAndFive should return undefined for values 0 to 5', () => {
   expect(validateBetweenZeroAndFive(0)).toBeUndefined();
@@ -15,4 +15,10 @@ test('validateBetweenZeroAndFive should return error for values less than 0 or m
   expect(validateBetweenZeroAndFive(-100)).toBe('Tallet kan ikke være negativt');
   expect(validateBetweenZeroAndFive(6)).toBe('Tallet kan ikke være større enn 5');
   expect(validateBetweenZeroAndFive(100)).toBe('Tallet kan ikke være større enn 5');
+});
+
+test('duplicate warnings should only occur for non empty identical string', () => {
+  expect(checkDuplicateEditions(['1', '2', '3'])).toBe('');
+  expect(checkDuplicateEditions(['1', '2', '', '3', ''])).toBe('');
+  expect(checkDuplicateEditions(['1', '2', '3', '1'])).toBe('Det fins duplikate utgavenummer');
 });

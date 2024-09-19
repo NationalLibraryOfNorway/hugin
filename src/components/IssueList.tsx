@@ -11,6 +11,7 @@ import {dateToCalendarDate} from '@/utils/dateUtils';
 import {FiEdit} from 'react-icons/fi';
 import {ImCross} from 'react-icons/im';
 import * as Yup from 'yup';
+import {checkDuplicateEditions} from '@/utils/validationUtils';
 
 
 export default function IssueList(props: {title: title; box: box}) {
@@ -77,17 +78,6 @@ export default function IssueList(props: {title: title; box: box}) {
     };
   }, [props]);
 
-  function checkDuplicateEditions(editions: string[]) {
-    let duplicateFound = false;
-    for (const ed of editions) {
-      if (editions.filter(v => !!v && v === ed).length > 1) {
-        duplicateFound = true;
-        break;
-      }
-    }
-    setSaveWarning(duplicateFound ? 'Det fins duplikate utgavenummer' : '');
-  }
-
   const validationSchema = Yup.object().shape({
     issues: Yup.array().of(
       Yup.object().shape({
@@ -100,7 +90,8 @@ export default function IssueList(props: {title: title; box: box}) {
         'no-duplicates',
         'Duplicate edition numbers',
         values => {
-          checkDuplicateEditions(values.map(v => v.edition ?? ''));
+          const editions = values.map(v => v.edition ?? '');
+          setSaveWarning(checkDuplicateEditions(editions));
           return true; // allow saving anyway
         }
       )
@@ -117,7 +108,8 @@ export default function IssueList(props: {title: title; box: box}) {
       .then(data => {
         setNIssuesInDb(data.length);
         setIssues(prepareTitles(data));
-        checkDuplicateEditions(data.map(d => d.edition ?? ''));
+        const editions = data.map(d => d.edition ?? '');
+        setSaveWarning(checkDuplicateEditions(editions));
         setLoading(false);
       });
   }, [props, proposeNewIssue]);

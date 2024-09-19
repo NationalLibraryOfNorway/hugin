@@ -7,3 +7,14 @@ export function validateBetweenZeroAndFive(value: number) {
   }
   return error;
 }
+
+export function checkDuplicateEditions(editions: string[]) {
+  let duplicateFound = false;
+  for (const ed of editions) {
+    if (editions.filter(v => !!v && v === ed).length > 1) {
+      duplicateFound = true;
+      break;
+    }
+  }
+  return duplicateFound ? 'Det fins duplikate utgavenummer' : '';
+}
