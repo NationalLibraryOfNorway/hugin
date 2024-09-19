@@ -1,16 +1,17 @@
 import {box, newspaper, title} from '@prisma/client';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle, putIssue} from '@/services/local.data';
-import {ErrorMessage, Field, FieldArray, Form, Formik, FormikErrors, FormikValues} from 'formik';
+import {Field, FieldArray, Form, Formik} from 'formik';
 import {FaSave, FaTrash} from 'react-icons/fa';
 import {Button, DatePicker, Spinner, Switch, Table, Tooltip} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
-import {newNewspapersContainsDuplicateEditions, newspapersContainsEdition} from '@/utils/validationUtils';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import {dateToCalendarDate} from '@/utils/dateUtils';
 import {FiEdit} from 'react-icons/fi';
 import {ImCross} from 'react-icons/im';
+import * as Yup from 'yup';
+import {checkDuplicateEditions} from '@/utils/validationUtils';
 
 
 export default function IssueList(props: {title: title; box: box}) {
@@ -77,6 +78,25 @@ export default function IssueList(props: {title: title; box: box}) {
     };
   }, [props]);
 
+  const validationSchema = Yup.object().shape({
+    issues: Yup.array().of(
+      Yup.object().shape({
+        date: Yup.date().required(),
+        edition: Yup.string()
+      })
+    )
+      .required()
+      .test(
+        'no-duplicates',
+        'Duplicate edition numbers',
+        values => {
+          const editions = values.map(v => v.edition ?? '');
+          setSaveWarning(checkDuplicateEditions(editions));
+          return true; // allow saving anyway
+        }
+      )
+  });
+
   const updateIssues = useCallback(() => {
     function prepareTitles(newspapers: newspaper[]) {
       const formTitles = newspapers;
@@ -88,6 +108,8 @@ export default function IssueList(props: {title: title; box: box}) {
       .then(data => {
         setNIssuesInDb(data.length);
         setIssues(prepareTitles(data));
+        const editions = data.map(d => d.edition ?? '');
+        setSaveWarning(checkDuplicateEditions(editions));
         setLoading(false);
       });
   }, [props, proposeNewIssue]);
@@ -101,39 +123,6 @@ export default function IssueList(props: {title: title; box: box}) {
       const dateObject = new Date(date);
       return `${dateObject.toLocaleDateString('no-NB', { weekday: 'long' })}`;
     } else return '';
-  }
-
-  interface errorType {
-    date: string | null;
-    edition: string | null;
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    received: string | null;
-  }
-
-  function validate(values: FormikValues): FormikErrors<newspaper> {
-    const errors: errorType[] = [];
-    const formIssues = values.issues as newspaper[];
-    let isValid = true;
-    formIssues.forEach((issue: newspaper) => {
-      const issueError: errorType = {
-        date: null,
-        edition: null,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        received: null
-      };
-      if (!issue.date) {
-        isValid = false;
-        issueError.date = 'Dato er påkrevd';
-      }
-      if (!issue.edition) {
-        isValid = false;
-        issueError.edition = 'Påkrevd';
-      }
-      errors.push(issueError);
-    });
-    if (isValid)
-      return {};
-    return {issues: errors} as FormikErrors<newspaper>;
   }
 
   function newspaperIsSaved(index: number, arrayLength: number): boolean {
@@ -164,16 +153,6 @@ export default function IssueList(props: {title: title; box: box}) {
     }, 5000);
   }
 
-  function checkForDuplicateEditionsAndShowWarning(edition: string, newspapers: newspaper[]) {
-    const newIssues = newspapers.slice(0, newspapers.length - nIssuesInDb);
-    // Uses newspapersContainsEdition since the newspaper value is not yet updated in list
-    if (newspapersContainsEdition(edition, newspapers) || newNewspapersContainsDuplicateEditions(newIssues, newspapers)) {
-      setSaveWarning('Det fins duplikate utgavenummer');
-    } else {
-      setSaveWarning('');
-    }
-  }
-
   function updateIssue(issue: newspaper) {
     setIssueBeingSaved(true);
     void putIssue(issue)
@@ -196,7 +175,7 @@ export default function IssueList(props: {title: title; box: box}) {
         <Formik
           initialValues={initialValues}
           enableReinitialize
-          validate={validate}
+          validationSchema={validationSchema}
           validateOnChange={false}
           validateOnBlur={false}
           onSubmit={(values, {setSubmitting}) => {
@@ -215,7 +194,7 @@ export default function IssueList(props: {title: title; box: box}) {
               .finally(() => setSubmitting(false));
           }}
         >
-          {({ values, isSubmitting, setFieldValue, handleChange }) => (
+          {({ values, isSubmitting, setFieldValue, handleChange, validateForm }) => (
             <Form>
               <FieldArray name="issues">
                 {({insert, remove}) => (
@@ -279,11 +258,6 @@ export default function IssueList(props: {title: title; box: box}) {
                                 isDisabled={shouldDisableIssue(index, values.issues.length)}
                                 popoverProps={{placement: 'right'}}
                               />
-                              <ErrorMessage
-                                name={`issues.${index}.date`}
-                                component="div"
-                                className="field-error text-lg"
-                              />
                             </TableCell>
                             <TableCell className="text-lg">
                               <Field
@@ -293,14 +267,13 @@ export default function IssueList(props: {title: title; box: box}) {
                                 width='40'
                                 disabled={shouldDisableIssue(index, values.issues.length)}
                                 onChange={(e: ChangeEvent) => {
-                                  checkForDuplicateEditionsAndShowWarning((e.nativeEvent as InputEvent).data ?? '', values.issues);
                                   handleChange(e);
+                                  asyncTimeout()
+                                    .then(
+                                      () => validateForm(),
+                                      reason => console.error(reason)
+                                    );
                                 }}
-                              />
-                              <ErrorMessage
-                                name={`issues.${index}.edition`}
-                                component="div"
-                                className="field-error text-lg"
                               />
                             </TableCell>
                             <TableCell className="text-lg text-left">
@@ -405,3 +378,9 @@ export default function IssueList(props: {title: title; box: box}) {
     </div>
   );
 }
+
+export const asyncTimeout = () => {
+  return new Promise(resolve => {
+    setTimeout(resolve);
+  });
+};

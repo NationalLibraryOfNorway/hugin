@@ -1,5 +1,3 @@
-import {newspaper} from '@prisma/client';
-
 export function validateBetweenZeroAndFive(value: number) {
   let error;
   if (value < 0) {
@@ -10,14 +8,13 @@ export function validateBetweenZeroAndFive(value: number) {
   return error;
 }
 
-export function newspapersContainsEdition(edition: string, newspapers: newspaper[]): boolean {
-  const issuesWithDuplicates = newspapers.filter(issue1 => issue1.edition === edition);
-  return issuesWithDuplicates.length !== 0;
-}
-
-export function newNewspapersContainsDuplicateEditions(newNewspapers: newspaper[], newspapers: newspaper[]): boolean {
-  const duplicates = newNewspapers.filter(issue1 => {
-    return newspapers.some(issue2 => issue1.edition === issue2.edition && issue1.date !== issue2.date);
-  });
-  return duplicates.length !== 0;
+export function checkDuplicateEditions(editions: string[]) {
+  let duplicateFound = false;
+  for (const ed of editions) {
+    if (editions.filter(v => !!v && v === ed).length > 1) {
+      duplicateFound = true;
+      break;
+    }
+  }
+  return duplicateFound ? 'Det fins duplikate utgavenummer' : '';
 }
