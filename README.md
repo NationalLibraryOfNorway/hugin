@@ -8,14 +8,18 @@ For å kjøre lokalt må du sette de nødvendige miljøvariablene:
 cp .env.example .env.local
 ```
 
-| Variabelnavn                 | Standardverdi                | Beskrivelse                                                                                                                 |
-|------------------------------|------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| NEXT_PUBLIC_BASE_PATH        | /hugin                       | Base path for applikasjonen                                                                                                 |
-| CATALOGUE_API_PATH           | http://localhost:8087/bikube | Sti til [katalog APIet ](https://github.com/NationalLibraryOfNorway/bikube)<br/>Må starte med `http://` eller `https://`    |
-| DATABASE_URL                 |                              | URL til databasen (se mer info i eget avsnitt under)                                                                        |
-| KEYCLOAK_TEKST_URL           |                              | Url til keycloak-tekst (inkl. realm om open-idconnect, eks. https://mysite.com/authn/realms/myRealm/protocol/openid-connect |
-| KEYCLOAK_TEKST_CLIENT_ID     |                              | Client ID i keycloak-tekst                                                                                                  | 
-| KEYCLOAK_TEKST_CLIENT_SECRET |                              | Client secret i keycloak-tekst                                                                                              |
+| Variabelnavn                   | Standardverdi                    | Beskrivelse                                                                                                                        |
+|--------------------------------|----------------------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| NEXT_PUBLIC_BASE_PATH          | /hugin                           | Base path for applikasjonen                                                                                                        |
+| CATALOGUE_API_PATH             | http://localhost:8087/bikube     | Sti til [katalog APIet ](https://github.com/NationalLibraryOfNorway/bikube)<br/>Må starte med `http://` eller `https://`           |
+| DATABASE_URL                   |                                  | URL til databasen (se mer info i eget avsnitt under)                                                                               |
+| AUTH_API_PATH                  | http://localhost:8080/tekst-auth | Sti til [autentiserings APIet](https://github.com/NationalLibraryOfNorway/tekst-auth)<br/>Må starte med `http://` eller `https://` |
+| NEXT_PUBLIC_KEYCLOAK_BASE_URL  |                                  | URL til keycloak                                                                                                                   |
+| NEXT_PUBLIC_KEYCLOAK_REALM     |                                  | Keycloak-realmen                                                                                                                   |
+| NEXT_PUBLIC_KEYCLOAK_CLIENT_ID |                                  | Keycloak-klienten                                                                                                                  |
+| KEYCLOAK_TEKST_URL             |                                  | Url til keycloak-tekst (inkl. realm om open-idconnect, eks. https://mysite.com/authn/realms/myRealm/protocol/openid-connect        |
+| KEYCLOAK_TEKST_CLIENT_ID       |                                  | Client ID i keycloak-tekst                                                                                                         | 
+| KEYCLOAK_TEKST_CLIENT_SECRET   |                                  | Client secret i keycloak-tekst                                                                                                     |
 
 Deretter må du kjøre følgende kommandoer:
 ```bash

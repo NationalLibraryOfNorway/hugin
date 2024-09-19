@@ -1,4 +1,5 @@
 import {newspaper} from '@prisma/client';
+import {getUserName} from '@/utils/cookieUtils';
 
 
 export interface CatalogNewspaperEditDto {
@@ -14,7 +15,7 @@ export function createCatalogNewspaperEditDtoFromIssue(
 ): CatalogNewspaperEditDto {
   return {
     manifestationId: issue.catalog_id,
-    username: 'Hugin stage', // TODO replace with actual username when auth is present
+    username: getUserName() ?? '',
     notes: issue.notes ?? '',
     // eslint-disable-next-line id-denylist
     number: issue.edition ?? ''

@@ -2,12 +2,15 @@
 
 import {Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from '@nextui-org/react';
 import React from 'react';
-import {Button} from '@nextui-org/button';
 import {usePathname, useRouter} from 'next/navigation';
 import SearchBar from '@/components/SearchBar';
 import Image from 'next/image';
+import LogoutButton from '@/components/LogoutButton';
+import {useAuth} from '@/app/AuthProvider';
+import {UserDetails} from '@/components/UserDetails';
 
 export default function Header() {
+  const { authenticated , user } = useAuth();
   const router = useRouter();
 
   const pathname = usePathname() || '';
@@ -33,14 +36,12 @@ export default function Header() {
       </NavbarContent> }
       <NavbarContent justify="end">
         <NavbarItem className="lg:flex">
-          <Button
-            as={Link}
-            variant="light"
-            color="primary"
-            className="edit-button-style"
-          >
-              Logg inn
-          </Button>
+          { authenticated ? (
+            <>
+              <UserDetails name={user?.name ?? ''} className="px-2.5"/>
+              <LogoutButton/>
+            </>
+          ) : <></>}
         </NavbarItem>
       </NavbarContent>
     </Navbar>

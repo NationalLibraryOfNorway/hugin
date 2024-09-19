@@ -12,10 +12,6 @@ test('Header should have logo and Hugin-text', () => {
   expect(screen.getByRole('img')).toBeTruthy();
 });
 
-test('Header should have login button', () => {
-  expect(screen.getByText('Logg inn')).toBeTruthy();
-});
-
 test('Header should not as default not show search bar', () => {
   expect(screen.queryByRole('searchbox')).toBeFalsy();
 });
