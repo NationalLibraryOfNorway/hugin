@@ -77,6 +77,35 @@ export default function IssueList(props: {title: title; box: box}) {
     };
   }, [props]);
 
+  function checkDuplicateEditions(editions: string[]) {
+    let duplicateFound = false;
+    for (const ed of editions) {
+      if (editions.filter(v => !!v && v === ed).length > 1) {
+        duplicateFound = true;
+        break;
+      }
+    }
+    setSaveWarning(duplicateFound ? 'Det fins duplikate utgavenummer' : '');
+  }
+
+  const validationSchema = Yup.object().shape({
+    issues: Yup.array().of(
+      Yup.object().shape({
+        date: Yup.date().required(),
+        edition: Yup.string()
+      })
+    )
+      .required()
+      .test(
+        'no-duplicates',
+        'Duplicate edition numbers',
+        values => {
+          checkDuplicateEditions(values.map(v => v.edition ?? ''));
+          return true; // allow saving anyway
+        }
+      )
+  });
+
   const updateIssues = useCallback(() => {
     function prepareTitles(newspapers: newspaper[]) {
       const formTitles = newspapers;
@@ -88,6 +117,7 @@ export default function IssueList(props: {title: title; box: box}) {
       .then(data => {
         setNIssuesInDb(data.length);
         setIssues(prepareTitles(data));
+        checkDuplicateEditions(data.map(d => d.edition ?? ''));
         setLoading(false);
       });
   }, [props, proposeNewIssue]);
@@ -144,31 +174,6 @@ export default function IssueList(props: {title: title; box: box}) {
       .catch(() => setErrorText('Kunne ikke lagre avisutgave.'))
       .finally(() => setIssueBeingSaved(false));
   }
-
-  const validationSchema = Yup.object().shape({
-    issues: Yup.array().of(
-      Yup.object().shape({
-        date: Yup.date().required(),
-        edition: Yup.string()
-      })
-    )
-      .required()
-      .test(
-        'no-duplicates',
-        'Duplicate edition numbers',
-        values => {
-          let duplicateFound = false;
-          for (const value of values) {
-            if (values.filter(v => !!(v.edition) && v.edition === value.edition).length > 1) {
-              duplicateFound = true;
-              break;
-            }
-          }
-          setSaveWarning(duplicateFound ? 'Det fins duplikate utgavenummer' : '');
-          return !duplicateFound;
-        }
-      )
-  });
 
   return (
     <div className='w-full mb-6 mt-4 py-10 border-style m-30'>
