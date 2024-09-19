@@ -2,6 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import {UserToken} from '@/models/UserToken';
 import {ProblemDetail} from '@/models/ProblemDetail';
 import {setUserCookie} from '@/utils/cookieUtils';
+import {User} from '@sentry/types';
 
 interface LoginRequest {
   code: string;
@@ -36,11 +37,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({error: 'Failed to authenticate'}, {status: 500});
   }
 
-  // Set the user cookie and then have a small timeout to allow the cookie to be set before returning the response
   setUserCookie(userToken);
-  return new Promise<NextResponse>(resolve => {
-    setTimeout(() => {
-      resolve(NextResponse.json({name: userToken.name, expires: userToken.expires}, {status: 200}));
-    }, 1000);
-  });
+
+  const user: User = {name: userToken.name, expires: userToken.expires};
+  return NextResponse.json(user, {status: 200});
 }
