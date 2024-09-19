@@ -1,8 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {UserToken} from '@/models/UserToken';
+import {User, UserToken} from '@/models/UserToken';
 import {ProblemDetail} from '@/models/ProblemDetail';
 import {setUserCookie} from '@/utils/cookieUtils';
-import {User} from '@sentry/types';
 
 interface LoginRequest {
   code: string;
