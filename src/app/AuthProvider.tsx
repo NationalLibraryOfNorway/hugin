@@ -30,7 +30,11 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     if (intervalId) {
       clearInterval(intervalId);
     }
-    const currentUrl = window.location.href;
+    let currentUrl = window.location.href;
+    // The app dislikes being redirected to a sub-path, redirecting to root to avoid issues
+    currentUrl = currentUrl.replace(/\/hugin.*/, '/hugin');
+    currentUrl = encodeURIComponent(currentUrl);
+
     window.location.assign(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
         `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
   }, [intervalId]);
@@ -52,9 +56,6 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
       }
     } else {
       handleNotAuthenticated();
-      const currentUrl = window.location.href;
-      window.location.assign(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/auth` +
-          `?client_id=${keycloakConfig.clientId}&redirect_uri=${currentUrl}&response_type=code&scope=openid`);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
