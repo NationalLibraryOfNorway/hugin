@@ -335,7 +335,7 @@ export default function IssueList(props: {title: title; box: box}) {
                                 className='delete-button-style'
                                 onClick={() => {
                                   if (!newspaperIsSaved(index, values.issues.length)) {
-                                    remove.bind(index);
+                                    remove(index);
                                   } else {
                                     setIssueToDelete(issue.catalog_id);
                                   }
