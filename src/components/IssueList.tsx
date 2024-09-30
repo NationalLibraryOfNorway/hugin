@@ -197,6 +197,7 @@ export default function IssueList(props: {title: title; box: box}) {
           {({ values, isSubmitting, setFieldValue, handleChange, validateForm }) => (
             <Form>
               <FieldArray name="issues">
+                {/* eslint-disable-next-line @typescript-eslint/unbound-method */}
                 {({insert, remove}) => (
                   <div className="mx-6">
                     <div className='flex flex-row mb-5 justify-between items-center'>

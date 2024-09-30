@@ -347,7 +347,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                       endContent={<FaEdit size={25}/>}
                       onClick={() => setIsEditing(true)}
                     >
-                    Rediger
+                      Rediger
                     </Button>
                   </div>
           }

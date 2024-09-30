@@ -3,6 +3,9 @@ import {withSentryConfig} from "@sentry/nextjs";
 const nextConfig = {
     output: "standalone",
     basePath: process.env.NEXT_PUBLIC_BASE_PATH,
+    experimental: {
+        instrumentationHook: true
+    },
     async rewrites() {
         return [
             {
