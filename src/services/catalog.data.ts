@@ -111,6 +111,9 @@ export async function deletePhysicalItemFromCatalog(catalog_id: string, deleteMa
     .then(async response => {
       if (response.ok) {
         return Promise.resolve();
+      } else if (response.status === 404) {
+        // If the item does not exist in the catalogue then we can consider it deleted
+        return Promise.resolve();
       } else {
         return Promise.reject(new Error(`Failed to delete item in catalog: ${response.status} - ${await response.json()}`));
       }
