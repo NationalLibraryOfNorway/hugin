@@ -1,7 +1,7 @@
 'use client';
 
 import {Link, Navbar, NavbarBrand, NavbarContent, NavbarItem} from '@nextui-org/react';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {usePathname, useRouter} from 'next/navigation';
 import SearchBar from '@/components/SearchBar';
 import Image from 'next/image';
@@ -12,9 +12,16 @@ import {UserDetails} from '@/components/UserDetails';
 export default function Header() {
   const { authenticated , user } = useAuth();
   const router = useRouter();
+  const [ isMounted, setIsMounted ] = useState(false);
 
   const pathname = usePathname() || '';
   const titlepageRegex = /^\/\d+$/;
+
+  // To prevent hydration error when displaying the user details as these are rendered from session storage
+  useEffect(() => {
+    setIsMounted(true);
+    return () => setIsMounted(false);
+  }, []);
 
   return (
     <Navbar maxWidth='xl'>
@@ -36,7 +43,7 @@ export default function Header() {
       </NavbarContent> }
       <NavbarContent justify="end">
         <NavbarItem className="lg:flex">
-          { authenticated ? (
+          { authenticated && isMounted ? (
             <>
               <UserDetails name={user?.name ?? ''} className="px-2.5"/>
               <LogoutButton/>
