@@ -79,7 +79,7 @@ export default function SearchBar(props: {inHeader: boolean}) {
           e.continuePropagation();
         }
       }}
-      startContent={<FaSearch className='opacity-85' />}
+      endContent={<FaSearch className='opacity-85' />}
     >
       {(title: CatalogTitle) =>
         <AutocompleteItem
