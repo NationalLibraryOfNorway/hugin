@@ -7,6 +7,7 @@ import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import ActiveLabel from '@/components/ActiveLabel';
+import {FaSearch} from 'react-icons/fa';
 
 export default function SearchBar(props: {inHeader: boolean}) {
   const router = useRouter();
@@ -78,6 +79,7 @@ export default function SearchBar(props: {inHeader: boolean}) {
           e.continuePropagation();
         }
       }}
+      startContent={<FaSearch className='opacity-85' />}
     >
       {(title: CatalogTitle) =>
         <AutocompleteItem
