@@ -46,8 +46,8 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
   };
 
   return (
-    <div>
-      <div className='flex flex-row'>
+    <div className='my-1.5'>
+      <div className='flex flex-row gap-1'>
         <button
           type='button'
           onClick={decreaseValue}
