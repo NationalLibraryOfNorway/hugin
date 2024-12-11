@@ -9,14 +9,13 @@ import {Field, Form, Formik} from 'formik';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {Button} from '@nextui-org/button';
 import {NotFoundError} from '@/models/Errors';
-import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
-import NumberInputWithButtons from '@/components/NumberInput';
 import SuccessModal from '@/components/SuccessModal';
 import {FaArrowAltCircleLeft, FaSave} from 'react-icons/fa';
 import {Textarea} from '@nextui-org/input';
-import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
 import ErrorModal from '@/components/ErrorModal';
 import {Spinner} from '@nextui-org/react';
+import ContactInformationForm from '@/components/ContactInformationForm';
+import ReleasePatternForm from '@/components/ReleasePatternForm';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -129,177 +128,16 @@ export default function Page({params}: { params: { id: string } }) {
             }) => (
               <Form className='flex flex-col items-start' onSubmit={handleSubmit}>
                 <div className='flex flex-row flex-wrap'>
-                  <div className='w-60 mr-20 flex flex-col mb-6'>
-                    <p className='group-title-style mb-4 text-left'>Kontaktinformasjon</p>
-                    <label htmlFor='vendor' className='group-subtitle-style mb-1 self-start'> Avleverer </label>
-                    <Field
-                      type='text'
-                      id='vendor'
-                      className='input-text-style mb-3'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.vendor ?? ''}
-                    />
-
-                    <label htmlFor='contact_name' className='group-subtitle-style mb-1 self-start'> Navn </label>
-                    <Field
-                      type='text'
-                      id='contact_name'
-                      className='input-text-style mb-3'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.contact_name ?? ''}
-                    />
-
-                    <label htmlFor='contact_email' className='group-subtitle-style mb-1 self-start'> E-post </label>
-                    <Field
-                      type='text'
-                      id='contact_email'
-                      className='input-text-style mb-3'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.contact_email ?? ''}
-                    />
-
-                    <label htmlFor='contact_phone' className='group-subtitle-style mb-1 self-start'> Telefon </label>
-                    <Field
-                      type='text'
-                      id='contact_phone'
-                      className='input-text-style'
-                      onChange={handleChange}
-                      onBlur={handleBlur}
-                      value={values.contact_phone ?? ''}
-                    />
-                  </div>
+                  <ContactInformationForm
+                    className='w-60 mr-20 flex flex-col mb-6'
+                    values={values}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                  />
 
                   <div className='w-60 overflow-auto flex flex-col mb-6'>
                     <p className='group-title-style mb-4 text-left'> Utgivelsesmønster </p>
-                    <Table hideHeader removeWrapper className='table-fixed text-left' aria-labelledby='releaseTable'>
-                      <TableHeader>
-                        <TableColumn>Dag</TableColumn>
-                        <TableColumn>Antall</TableColumn>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow className='text-left'>
-                          <TableCell className='text-lg p-0'>Mandag</TableCell>
-                          <TableCell className='py-0 pr-0 w-full'>
-                            <Field
-                              name={'release_pattern[0]'}
-                              value={+values.release_pattern[0]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-
-                        <TableRow>
-                          <TableCell className='text-lg p-0'>Tirsdag</TableCell>
-                          <TableCell className='py-0 pr-0'>
-                            <Field
-                              name={'release_pattern[1]'}
-                              value={+values.release_pattern[1]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-
-                        <TableRow>
-                          <TableCell className='text-lg p-0'>Onsdag</TableCell>
-                          <TableCell className='py-0 pr-0'>
-                            <Field
-                              name={'release_pattern[2]'}
-                              value={+values.release_pattern[2]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-
-                        <TableRow>
-                          <TableCell className='text-lg p-0'>Torsdag</TableCell>
-                          <TableCell className='py-0 pr-0'>
-                            <Field
-                              name={'release_pattern[3]'}
-                              value={+values.release_pattern[3]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-
-                        <TableRow>
-                          <TableCell className='text-lg p-0'>Fredag</TableCell>
-                          <TableCell className='py-0 pr-0'>
-                            <Field
-                              name={'release_pattern[4]'}
-                              value={+values.release_pattern[4]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-
-                        <TableRow>
-                          <TableCell className='text-lg p-0'>Lørdag</TableCell>
-                          <TableCell className='py-0 pr-0'>
-                            <Field
-                              name={'release_pattern[5]'}
-                              value={+values.release_pattern[5]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-
-                        <TableRow>
-                          <TableCell className='text-lg p-0'>Søndag</TableCell>
-                          <TableCell className='py-0 pr-0'>
-                            <Field
-                              name={'release_pattern[6]'}
-                              value={+values.release_pattern[6]}
-                              component={NumberInputWithButtons}
-                              className='input-number-style'
-                              onChange={handleChange}
-                              validate={validateBetweenZeroAndFive}
-                              onBlur={handleBlur}
-                              minValue={0}
-                              maxValue={5}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
+                    <ReleasePatternForm releasePattern={values.release_pattern} handleChange={handleChange} handleBlur={handleBlur} />
                   </div>
 
                   <div>
