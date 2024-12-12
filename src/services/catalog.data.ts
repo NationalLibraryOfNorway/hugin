@@ -5,6 +5,7 @@ import {CatalogMissingNewspaperDto} from '@/models/CatalogMissingNewspaperDto';
 import {CatalogItem} from '@/models/CatalogItem';
 import {KeycloakToken} from '@/models/KeycloakToken';
 import {CatalogNewspaperEditDto} from '@/models/CatalogNewspaperEditDto';
+import {ProblemDetail} from '@/models/ProblemDetail';
 
 export async function searchNewspaperTitlesInCatalog(searchTerm: string, signal: AbortSignal): Promise<CatalogTitle[]> {
   return fetch(
@@ -64,7 +65,8 @@ export async function postItemToCatalog(issue: CatalogNewspaperDto): Promise<Cat
       if (response.ok) {
         return await response.json() as Promise<CatalogItem>;
       } else {
-        return Promise.reject(new Error(`Failed to create issue in catalog: ${response.status} - ${await response.json()}`));
+        const problemDetail = await response.json() as ProblemDetail;
+        return Promise.reject(new Error(`Failed to create issue in catalog: ${response.status} - ${problemDetail.detail}`));
       }
     })
     .catch((e: Error) => {
