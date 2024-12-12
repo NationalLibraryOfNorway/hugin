@@ -46,7 +46,7 @@ export async function POST(req: NextRequest, params: IdParams): Promise<NextResp
           // eslint-disable-next-line @typescript-eslint/naming-convention
           catalog_id: catalogItem.parentCatalogueId
         }
-      }).then(i => i);
+      });
 
       if (existingIssue) {
         // eslint-disable-next-line @typescript-eslint/naming-convention
