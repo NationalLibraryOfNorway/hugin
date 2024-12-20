@@ -22,6 +22,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
       <Field
         type='text'
         id='vendor'
+        autoFocus
         className='input-text-style mb-3'
         onChange={handleChange}
         onBlur={handleBlur}
