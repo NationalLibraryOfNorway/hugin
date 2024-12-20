@@ -10,10 +10,10 @@ import {useRouter, useSearchParams} from 'next/navigation';
 import {Button} from '@nextui-org/button';
 import {NotFoundError} from '@/models/Errors';
 import SuccessModal from '@/components/SuccessModal';
-import {FaArrowAltCircleLeft, FaSave} from 'react-icons/fa';
+import {FaArrowAltCircleLeft, FaQuestionCircle, FaSave} from 'react-icons/fa';
 import {Textarea} from '@nextui-org/input';
 import ErrorModal from '@/components/ErrorModal';
-import {Spinner} from '@nextui-org/react';
+import {Spinner, Tooltip} from '@nextui-org/react';
 import ContactInformationForm from '@/components/ContactInformationForm';
 import ReleasePatternForm from '@/components/ReleasePatternForm';
 
@@ -151,7 +151,14 @@ export default function Page({params}: { params: { id: string } }) {
                       value={values.shelf ?? ''}
                     />
 
-                    <p className='group-title-style text-left mt-6'> Merknad/kommentar </p>
+                    <p className='group-title-style text-left mt-6'>
+                      Merknad/kommentar
+                      <Tooltip content='Kommentarer blir kun liggende i Hugin og lagres ikke i katalogen.'>
+                        <div className='inline-block ml-2'>
+                          <FaQuestionCircle className={'text-blue-600'} size={18} />
+                        </div>
+                      </Tooltip>
+                    </p>
                     <Textarea
                       id='notes'
                       className='w-80 mt-3'
