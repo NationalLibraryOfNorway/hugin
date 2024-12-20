@@ -154,7 +154,8 @@ export default function Page({params}: { params: { id: string } }) {
                     <p className='group-title-style text-left mt-6'> Merknad/kommentar </p>
                     <Textarea
                       id='notes'
-                      className='w-80 mt-3 input-textarea-style'
+                      className='w-80 mt-3'
+                      variant='bordered'
                       maxRows={10}
                       onChange={handleChange}
                       onBlur={handleBlur}
