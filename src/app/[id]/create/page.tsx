@@ -141,7 +141,14 @@ export default function Page({params}: { params: { id: string } }) {
                   </div>
 
                   <div>
-                    <p className='group-title-style text-left mb-2'> Hyllesignatur </p>
+                    <div className='group-title-style text-left mb-2'>
+                      Hyllesignatur
+                      <Tooltip content='Plassering av avis i aternoster.'>
+                        <div className='inline-block ml-2'>
+                          <FaQuestionCircle className={'text-blue-600'} size={18} />
+                        </div>
+                      </Tooltip>
+                    </div>
                     <Field
                       type='text'
                       id='shelf'
@@ -151,14 +158,14 @@ export default function Page({params}: { params: { id: string } }) {
                       value={values.shelf ?? ''}
                     />
 
-                    <p className='group-title-style text-left mt-6'>
+                    <div className='group-title-style text-left mt-6'>
                       Merknad/kommentar
                       <Tooltip content='Kommentarer blir kun liggende i Hugin og lagres ikke i katalogen.'>
                         <div className='inline-block ml-2'>
                           <FaQuestionCircle className={'text-blue-600'} size={18} />
                         </div>
                       </Tooltip>
-                    </p>
+                    </div>
                     <Textarea
                       id='notes'
                       className='w-80 mt-3'

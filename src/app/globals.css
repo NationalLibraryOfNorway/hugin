@@ -55,7 +55,7 @@ input[type=number] {
 }
 
 .group-subtitle-style {
-    @apply text-lg font-bold;
+    @apply text-lg;
 }
 
 .input-text-style {

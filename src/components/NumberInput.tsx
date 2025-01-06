@@ -2,7 +2,7 @@
 
 import React, {FC} from 'react';
 import {ErrorMessage, FieldProps, useFormikContext} from 'formik';
-import {CiCircleMinus, CiCirclePlus} from 'react-icons/ci';
+import {FaCircleMinus, FaCirclePlus} from 'react-icons/fa6';
 
 interface NumberInputWithButtonsProps extends FieldProps {
   minValue?: number;
@@ -52,7 +52,7 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
           type='button'
           onClick={decreaseValue}
         >
-          <CiCircleMinus size={30} style={{color: 'red'}}/>
+          <FaCircleMinus size={30} className='text-red-500 hover:text-red-700'/>
         </button>
 
         <input
@@ -65,7 +65,7 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
           type='button'
           onClick={increaseValue}
         >
-          <CiCirclePlus size={30} style={{color: 'green'}}/>
+          <FaCirclePlus size={30} className='text-green-700 hover:text-green-900'/>
         </button>
 
       </div>
