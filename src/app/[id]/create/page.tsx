@@ -143,7 +143,7 @@ export default function Page({params}: { params: { id: string } }) {
                   <div>
                     <div className='group-title-style text-left mb-2'>
                       Hyllesignatur
-                      <Tooltip content='Plassering av avis i aternoster.'>
+                      <Tooltip content='Plassering av avis i paternoster.'>
                         <div className='inline-block ml-2'>
                           <FaQuestionCircle className={'text-blue-600'} size={18} />
                         </div>
