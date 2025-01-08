@@ -1,5 +1,5 @@
 import {AlreadyExistsError, NotFoundError} from '@/models/Errors';
-import { newspaper, title, box } from '@prisma/client';
+import {newspaper, title, box, contact_info} from '@prisma/client';
 
 export async function getLocalTitle(id: string): Promise<title> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${id}`);
@@ -36,6 +36,43 @@ export async function putLocalTitle(localTitle: title): Promise<Response> {
   }).catch((e: Error) => {
     return Promise.reject(new Error(`Failed to put title: ${e.message}`));
   });
+}
+
+export async function postLocalContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/contact_info`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(contactInfo)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to post contact info: ${e.message}`));
+  });
+}
+
+export async function putLocalContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/contact_info`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(contactInfo)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to put contact info: ${e.message}`));
+  });
+}
+
+export async function getContactInfoForTitle(titleId: number): Promise<contact_info[]> {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/contact_info`);
+
+  switch (response.status) {
+  case 200:
+    return await response.json() as Promise<contact_info[]>;
+  case 404:
+    return Promise.reject(new NotFoundError('Contact info not found'));
+  default:
+    return Promise.reject(new Error('Failed to fetch contact info'));
+  }
 }
 
 export async function updateActiveBoxForTitle(

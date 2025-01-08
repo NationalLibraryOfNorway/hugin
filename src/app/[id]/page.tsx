@@ -1,16 +1,17 @@
 'use client';
 
-import React, {useEffect, useState} from 'react';
+import React, {ChangeEvent, useEffect, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog, getLinkToNewspaperInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {
   getBoxForTitle,
+  getContactInfoForTitle,
   getLocalTitle,
   putLocalTitle,
   updateNotesForTitle,
   updateShelfForTitle
 } from '@/services/local.data';
-import {box, title} from '@prisma/client';
+import {box, contact_info, title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
@@ -23,12 +24,13 @@ import IssueList from '@/components/IssueList';
 import ErrorModal from '@/components/ErrorModal';
 import WarningLabel from '@/components/WarningLabel';
 import {catalogDateStringToNorwegianDateString} from '@/utils/dateUtils';
+import {TitleContactInfo} from '@/models/TitleContactInfo';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
   const [titleLink, setTitleLink] = useState<string>();
   const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
-  const [titleFromDb, setTitleFromDb] = useState<title>();
+  const [titleAndContact, setTitleAndContactFromDb] = useState<TitleContactInfo>();
   const [boxFromDb, setBoxFromDb] = useState<box>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
   const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
@@ -63,11 +65,24 @@ export default function Page({params}: { params: { id: string } }) {
   useEffect(() => {
     void getLocalTitle(params.id)
       .then((data: title) => {
-        setTitleFromDb(data);
         setTitleFromDbNotFound(false);
+        return data;
+      })
+      .then(async titleData => {
+        await getContactInfoForTitle(+params.id)
+          .then((contactData: contact_info[]) => {
+            setTitleAndContactFromDb({
+              title: titleData,
+              contactInfo: contactData
+            } as TitleContactInfo);
+          })
+          .catch(() => {
+            setErrorMessage('Får ikke kontakt med databasen for å se etter kontakt- og utgivelsesinformasjon.');
+            setShowError(true);
+          });
       })
       .catch((e: Error) => {
-        setTitleFromDb(undefined);
+        setTitleAndContactFromDb(undefined);
         if (e instanceof NotFoundError) {
           setTitleFromDbNotFound(true);
         } else {
@@ -97,6 +112,49 @@ export default function Page({params}: { params: { id: string } }) {
     }).then();
   }, [params.id]);
 
+  const handleSubmit = async (titleContactInfo: TitleContactInfo): Promise<Response> => {
+    return putLocalTitle({
+      id: +params.id,
+      vendor: titleContactInfo.title.vendor,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      contact_name: titleContactInfo.title.contact_name,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      release_pattern: titleContactInfo.title.release_pattern,
+      shelf: titleAndContact?.title.shelf ?? '',
+      notes:  titleAndContact?.title.notes ?? ''
+    });
+  };
+
+  const handleRemoveContact = (values: TitleContactInfo, index: number) => {
+    const newContacts = values?.contactInfo.filter((_, i) => i !== index);
+    setTitleAndContactFromDb({
+      ...values,
+      contactInfo: newContacts ?? []
+    } as TitleContactInfo);
+  };
+
+  const handleAddContact = (values: TitleContactInfo, type: 'email' | 'phone') => {
+    setTitleAndContactFromDb({
+      ...values,
+      contactInfo: [
+        ...values?.contactInfo ?? [],
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        {id: '', title_id: +params.id, contact_type: type, contact_value: ''}
+      ]
+    } as TitleContactInfo);
+  };
+
+  const handleChange = (e: ChangeEvent) => {
+    console.log('Handling change...');
+    const {id, value} = e.target as HTMLInputElement;
+    console.log('id', id);
+    console.log('value', value);
+    setTitleAndContactFromDb({
+      ...titleAndContact as TitleContactInfo,
+      [id]: value
+    });
+  };
+
   function boxToString(b: box) : string {
     return b.id + (b.date_from ? ` (fra ${new Date(b.date_from).toLocaleDateString('no-NB')})` : '');
   }
@@ -110,12 +168,16 @@ export default function Page({params}: { params: { id: string } }) {
   }
 
   function updateShelfLocally(shelf: string): void {
-    setTitleFromDb({...titleFromDb as title, ['shelf']: shelf});
+    // setTitleFromDb({...titleFromDb as title, ['shelf']: shelf});
+    setTitleAndContactFromDb({
+      ...titleAndContact as TitleContactInfo,
+      title: {...titleAndContact?.title as title, ['shelf']: shelf}
+    });
   }
 
   return (
     <div className='w-9/12 flex flex-col content-center'>
-      {titleFromDb ? (<>
+      {titleAndContact ? (<> {/* TODO: Fiks slik at det funker også når contactInfo ikke finnes. */}
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div className='flex flex-col grow mx-10'>
             <div>
@@ -143,7 +205,7 @@ export default function Page({params}: { params: { id: string } }) {
                 <div className='flex flex-row justify-between items-center mt-4'>
                   <EditTextInput
                     name='Hyllesignatur'
-                    value={titleFromDb.shelf ?? ''}
+                    value={titleAndContact.title.shelf ?? ''}
                     onSubmit={submitShelf}
                     onSuccess={updateShelfLocally}
                     className='w-96'
@@ -179,7 +241,7 @@ export default function Page({params}: { params: { id: string } }) {
               </div>
 
               {boxFromDb ? (
-                <IssueList title={titleFromDb} box={boxFromDb}/>
+                <IssueList title={titleAndContact.title} box={boxFromDb}/>
               ) : (
                 <p className='mt-20 group-content-style text-start'>Legg til eske for å legge inn avisutgaver</p>
               )}
@@ -189,9 +251,9 @@ export default function Page({params}: { params: { id: string } }) {
 
           <div className="flex flex-col w-96">
             <div className='items-start mt-16 w-72 mb-6'>
-              {titleFromDb &&
+              {titleAndContact &&
                   <NotesComponent
-                    notes={titleFromDb.notes ?? ''}
+                    notes={titleAndContact.title.notes ?? ''}
                     onSubmit={submitNotes}
                     maxRows={2}
                     notesTitle='Merknad/kommentar på tittel:'
@@ -200,8 +262,12 @@ export default function Page({params}: { params: { id: string } }) {
             </div>
 
             <ContactAndReleaseInfo
-              titleFromDb={titleFromDb}
-              onSubmit={putLocalTitle}
+              titleFromDb={titleAndContact.title}
+              contactInfo={titleAndContact.contactInfo}
+              onSubmit={handleSubmit}
+              handleChangeEvent={handleChange}
+              handleAdd={handleAddContact}
+              handleRemove={handleRemoveContact}
             />
 
           </div>

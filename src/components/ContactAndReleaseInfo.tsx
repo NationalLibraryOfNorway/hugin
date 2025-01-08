@@ -1,5 +1,5 @@
 import React, {FC, useState} from 'react';
-import {title} from '@prisma/client';
+import {contact_info, title} from '@prisma/client';
 import {Button} from '@nextui-org/button';
 import {FaEdit, FaSave} from 'react-icons/fa';
 import {ImCross} from 'react-icons/im';
@@ -11,28 +11,34 @@ import ReleasePatternForm from '@/components/ReleasePatternForm';
 import ContactInformationForm from '@/components/ContactInformationForm';
 import ReleasePattern from '@/components/ReleasePattern';
 import ContactInformation from '@/components/ContactInformation';
+import {TitleContactInfo} from '@/models/TitleContactInfo';
 
 
 interface ContactAndReleaseInfoProps {
   titleFromDb: title;
-  onSubmit: (title: title) => Promise<Response>;
+  contactInfo: contact_info[];
+  onSubmit: (contactAndReleaseInfo: TitleContactInfo) => Promise<Response>;
+  handleChangeEvent: (e: React.ChangeEvent) => void;
+  handleAdd: (values: TitleContactInfo, type: 'email' | 'phone') => void;
+  handleRemove: (values: TitleContactInfo, index: number) => void;
   className?: string;
 }
 
-const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAndReleaseInfoProps) => {
+const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (
+  {titleFromDb, contactInfo, onSubmit, handleAdd, handleRemove, handleChangeEvent, className} : ContactAndReleaseInfoProps
+) => {
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [currentValue, setCurrentValue] = useState<title>(props.titleFromDb);
   const [showError, setShowError] = useState<boolean>(false);
 
   return (
-    <div className={'flex flex-col border-style p-3 m-0' + props.className}>
+    <div className={'flex flex-col border-style p-3 m-0' + className}>
       {isEditing ? (
         <>
           <Formik
-            initialValues={currentValue}
-            onSubmit={(values: title, {setSubmitting, resetForm}) => {
-              void props.onSubmit(values)
+            initialValues={{title: titleFromDb, contactInfo}}
+            onSubmit={(values: TitleContactInfo, {setSubmitting, resetForm}) => {
+              void onSubmit(values)
                 .then((res: Response) => {
                   if (res.ok) {
                     setShowSuccess(true);
@@ -40,7 +46,7 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                       setShowSuccess(false);
                     }, 3000);
                     resetForm({values});
-                    setCurrentValue(values);
+                    // setCurrentValue(values);
                   } else {
                     setShowError(true);
                   }
@@ -66,13 +72,18 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
                 <Form className='flex flex-col items-start'>
                   <ContactInformationForm
                     className={'flex flex-col w-full'}
-                    values={values}
-                    handleChange={handleChange}
+                    values={{
+                      title: titleFromDb,
+                      contactInfo
+                    }}
+                    handleChange={handleChangeEvent}
                     handleBlur={handleBlur}
+                    handleAdd={handleAdd}
+                    handleRemove={handleRemove}
                   />
                   <p className='group-title-style mb-2 mt-6 text-left'> Utgivelsesmønster </p>
                   <ReleasePatternForm
-                    releasePattern={values.release_pattern}
+                    releasePattern={values.title.release_pattern}
                     handleChange={handleChange}
                     handleBlur={handleBlur}
                   />
@@ -111,19 +122,18 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
         </>
       ) : (
         <>
-          {currentValue &&
+          {titleFromDb &&
               <div className='flex flex-col'>
                 <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
 
                 <ContactInformation
-                  vendor={currentValue.vendor}
-                  contactName={currentValue.contact_name}
-                  contactEmail={currentValue.contact_email}
-                  contactPhone={currentValue.contact_phone}
+                  vendor={titleFromDb.vendor}
+                  contactName={titleFromDb.contact_name}
+                  contactInformation={contactInfo}
                 />
 
-                {currentValue.release_pattern &&
-                    <ReleasePattern releasePattern={currentValue.release_pattern}/>
+                {titleFromDb.release_pattern &&
+                    <ReleasePattern releasePattern={titleFromDb.release_pattern}/>
                 }
                 <Button
                   type="button"

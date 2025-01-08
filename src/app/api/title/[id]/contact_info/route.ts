@@ -25,11 +25,18 @@ export async function GET(req: NextRequest, params: IdParams): Promise<NextRespo
 export async function POST(req: NextRequest): Promise<NextResponse> {
   const localContactInfo = await req.json() as contact_info[];
 
+  // Filter out the id field as it is an empty string
+  const contactInfoToCreate = localContactInfo.map(contact => {
+    const { title_id, contact_type, contact_value } = contact;
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    return { title_id, contact_type, contact_value };
+  });
+
   return prisma.contact_info.createMany({
-    data: { ...localContactInfo }
+    data: contactInfoToCreate.filter(contact => contact.contact_value !== '')
   })
     .then(() => {
-      return NextResponse.json(localContactInfo, {status: 201});
+      return NextResponse.json(contactInfoToCreate, {status: 201});
     })
     .catch((e: Error) => {
       return NextResponse.json({error: `Failed to create contact_info: ${e.message}`}, {status: 500});
