@@ -7,16 +7,39 @@ import {Key} from 'react';
 import {searchNewspaperTitlesInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import ActiveLabel from '@/components/ActiveLabel';
+import {FaSearch} from 'react-icons/fa';
 
 export default function SearchBar(props: {inHeader: boolean}) {
   const router = useRouter();
+
+  function sortTitlesByFilterMatch(titles: CatalogTitle[], filter: string): CatalogTitle[] {
+    return [...titles].sort((a, b) => {
+      const aIndex = a.name.toLowerCase().indexOf(filter.toLowerCase());
+      const bIndex = b.name.toLowerCase().indexOf(filter.toLowerCase());
+      if (aIndex === 0 && bIndex !== 0) {
+        return -1;
+      }
+      if (aIndex !== 0 && bIndex === 0) {
+        return 1;
+      }
+      if (!a.endDate && b.endDate) {
+        return -1;
+      }
+      if (a.endDate && !b.endDate) {
+        return 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
+  }
 
   const titles = useAsyncList<CatalogTitle>({
     async load({signal, filterText}) {
       if (!filterText) {
         return {items: []};
       }
-      const data = await searchNewspaperTitlesInCatalog(filterText, signal);
+      let data = await searchNewspaperTitlesInCatalog(filterText, signal);
+      data = sortTitlesByFilterMatch(data, filterText);
+
       return { items: data };
     }
   });
@@ -56,6 +79,7 @@ export default function SearchBar(props: {inHeader: boolean}) {
           e.continuePropagation();
         }
       }}
+      endContent={<FaSearch className='opacity-85' />}
     >
       {(title: CatalogTitle) =>
         <AutocompleteItem
