@@ -3,13 +3,14 @@ import {title} from '@prisma/client';
 import {Button} from '@nextui-org/button';
 import {FaEdit, FaSave} from 'react-icons/fa';
 import {ImCross} from 'react-icons/im';
-import {Field, Form, Formik} from 'formik';
-import {Table, TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
-import NumberInputWithButtons from '@/components/NumberInput';
-import {validateBetweenZeroAndFive} from '@/utils/validationUtils';
+import {Form, Formik} from 'formik';
 import SuccessModal from '@/components/SuccessModal';
 import ErrorModal from '@/components/ErrorModal';
 import {Spinner} from '@nextui-org/react';
+import ReleasePatternForm from '@/components/ReleasePatternForm';
+import ContactInformationForm from '@/components/ContactInformationForm';
+import ReleasePattern from '@/components/ReleasePattern';
+import ContactInformation from '@/components/ContactInformation';
 
 
 interface ContactAndReleaseInfoProps {
@@ -63,177 +64,18 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
             }) => (
               <div>
                 <Form className='flex flex-col items-start'>
-                  <p className='group-title-style mb-2 text-left'>Kontaktinformasjon</p>
-                  <label htmlFor='vendor' className='group-subtitle-style mb-1 self-start'> Avleverer </label>
-                  <Field
-                    type='text'
-                    id='vendor'
-                    className='input-text-style mb-3'
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.vendor ?? ''}
+                  <ContactInformationForm
+                    className={'flex flex-col w-full'}
+                    values={values}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
                   />
-
-                  <label htmlFor='contact_name' className='group-subtitle-style mb-1 self-start'> Navn </label>
-                  <Field
-                    type='text'
-                    id='contact_name'
-                    className='input-text-style mb-3'
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.contact_name ?? ''}
-                  />
-
-                  <label htmlFor='contact_email' className='group-subtitle-style mb-1 self-start'> E-post </label>
-                  <Field
-                    type='text'
-                    id='contact_email'
-                    className='input-text-style mb-3'
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.contact_email ?? ''}
-                  />
-
-                  <label htmlFor='contact_phone' className='group-subtitle-style mb-1 self-start'> Telefon </label>
-                  <Field
-                    type='text'
-                    id='contact_phone'
-                    className='input-text-style'
-                    onChange={handleChange}
-                    onBlur={handleBlur}
-                    value={values.contact_phone ?? ''}
-                  />
-
                   <p className='group-title-style mb-2 mt-6 text-left'> Utgivelsesmønster </p>
-                  <Table hideHeader removeWrapper
-                    className='table-fixed text-left mb-5'
-                    aria-labelledby='releaseTable'
-                  >
-                    <TableHeader>
-                      <TableColumn>Dag</TableColumn>
-                      <TableColumn>Antall</TableColumn>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow className='text-left'>
-                        <TableCell className='text-lg p-0'>Mandag</TableCell>
-                        <TableCell className='py-0 pr-0 w-full'>
-                          <Field
-                            name={'release_pattern[0]'}
-                            value={+values.release_pattern[0]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow>
-                        <TableCell className='text-lg p-0'>Tirsdag</TableCell>
-                        <TableCell className='py-0 pr-0'>
-                          <Field
-                            name={'release_pattern[1]'}
-                            value={+values.release_pattern[1]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow>
-                        <TableCell className='text-lg p-0'>Onsdag</TableCell>
-                        <TableCell className='py-0 pr-0'>
-                          <Field
-                            name={'release_pattern[2]'}
-                            value={+values.release_pattern[2]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow>
-                        <TableCell className='text-lg p-0'>Torsdag</TableCell>
-                        <TableCell className='py-0 pr-0'>
-                          <Field
-                            name={'release_pattern[3]'}
-                            value={+values.release_pattern[3]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow>
-                        <TableCell className='text-lg p-0'>Fredag</TableCell>
-                        <TableCell className='py-0 pr-0'>
-                          <Field
-                            name={'release_pattern[4]'}
-                            value={+values.release_pattern[4]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow>
-                        <TableCell className='text-lg p-0'>Lørdag</TableCell>
-                        <TableCell className='py-0 pr-0'>
-                          <Field
-                            name={'release_pattern[5]'}
-                            value={+values.release_pattern[5]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-
-                      <TableRow>
-                        <TableCell className='text-lg p-0'>Søndag</TableCell>
-                        <TableCell className='py-0 pr-0'>
-                          <Field
-                            name={'release_pattern[6]'}
-                            value={+values.release_pattern[6]}
-                            component={NumberInputWithButtons}
-                            className='input-number-style'
-                            onChange={handleChange}
-                            validate={validateBetweenZeroAndFive}
-                            onBlur={handleBlur}
-                            minValue={0}
-                            maxValue={5}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
+                  <ReleasePatternForm
+                    releasePattern={values.release_pattern}
+                    handleChange={handleChange}
+                    handleBlur={handleBlur}
+                  />
                   {isSubmitting ? (
                     <Spinner className='self-center p-1' size='lg'/>
                   ) : (
@@ -270,86 +112,29 @@ const ContactAndReleaseInfo: FC<ContactAndReleaseInfoProps> = (props: ContactAnd
       ) : (
         <>
           {currentValue &&
-                  <div className='flex flex-col'>
-                    <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
+              <div className='flex flex-col'>
+                <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
 
-                    {currentValue.vendor &&
-                          <div className="self-start flex flex-row">
-                            <p className="group-subtitle-style">Avleverer: </p>
-                            <p className="group-content-style ml-3">{currentValue.vendor}</p>
-                          </div>
-                    }
+                <ContactInformation
+                  vendor={currentValue.vendor}
+                  contactName={currentValue.contact_name}
+                  contactEmail={currentValue.contact_email}
+                  contactPhone={currentValue.contact_phone}
+                />
 
-                    {currentValue.contact_name &&
-                          <div className="self-start flex flex-row">
-                            <p className="group-subtitle-style">Kontaktperson: </p>
-                            <p className="group-content-style ml-3">{currentValue.contact_name}</p>
-                          </div>
-                    }
-
-                    {currentValue.contact_email &&
-                    <div className="self-start flex flex-row">
-                      <p className="group-subtitle-style">E-post: </p>
-                      <p className="group-content-style ml-3">{currentValue.contact_email}</p>
-                    </div>
-                    }
-
-                    {currentValue.contact_phone &&
-                    <div className="self-start flex flex-row">
-                      <p className="group-subtitle-style">Telefon: </p>
-                      <p className="group-content-style ml-3">{currentValue.contact_phone}</p>
-                    </div>
-                    }
-
-                    {currentValue.release_pattern &&
-                    <div className="self-start mt-12">
-                      <h2 className="group-title-style mb-2">Utgivelsesmønster:</h2>
-
-                      <table className="table-fixed">
-                        <tbody className="text-left">
-                          <tr>
-                            <td className="pr-3 font-bold">Mandag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[0]}</td>
-                          </tr>
-                          <tr>
-                            <td className="font-bold">Tirsdag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[1]}</td>
-                          </tr>
-                          <tr>
-                            <td className="font-bold">Onsdag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[2]}</td>
-                          </tr>
-                          <tr>
-                            <td className="font-bold">Torsdag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[3]}</td>
-                          </tr>
-                          <tr>
-                            <td className="font-bold">Fredag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[4]}</td>
-                          </tr>
-                          <tr>
-                            <td className="font-bold">Lørdag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[5]}</td>
-                          </tr>
-                          <tr>
-                            <td className="font-bold">Søndag:</td>
-                            <td className='group-content-style'>{currentValue.release_pattern[6]}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                    }
-
-                    <Button
-                      type="button"
-                      size="lg"
-                      className="edit-button-style mt-5"
-                      endContent={<FaEdit size={25}/>}
-                      onClick={() => setIsEditing(true)}
-                    >
-                      Rediger
-                    </Button>
-                  </div>
+                {currentValue.release_pattern &&
+                    <ReleasePattern releasePattern={currentValue.release_pattern}/>
+                }
+                <Button
+                  type="button"
+                  size="lg"
+                  className="edit-button-style mt-5"
+                  endContent={<FaEdit size={25}/>}
+                  onClick={() => setIsEditing(true)}
+                >
+                  Rediger
+                </Button>
+              </div>
           }
         </>
       )}
