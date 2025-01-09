@@ -1,12 +1,14 @@
 'use client';
 
-import React, {ChangeEvent, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog, getLinkToNewspaperInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {
+  deleteContactInfo,
   getBoxForTitle,
   getContactInfoForTitle,
   getLocalTitle,
+  putContactInfo,
   putLocalTitle,
   updateNotesForTitle,
   updateShelfForTitle
@@ -15,29 +17,40 @@ import {box, contact_info, title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
-import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit, FaExternalLinkAlt} from 'react-icons/fa';
+import {Alert} from '@nextui-org/alert';
+import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit, FaExternalLinkAlt, FaSave} from 'react-icons/fa';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
-import ContactAndReleaseInfo from '@/components/ContactAndReleaseInfo';
 import IssueList from '@/components/IssueList';
 import ErrorModal from '@/components/ErrorModal';
 import WarningLabel from '@/components/WarningLabel';
 import {catalogDateStringToNorwegianDateString} from '@/utils/dateUtils';
 import {TitleContactInfo} from '@/models/TitleContactInfo';
+import {Form, Formik} from 'formik';
+import SuccessModal from '@/components/SuccessModal';
+import {Spinner} from '@nextui-org/spinner';
+import ReleasePatternForm from '@/components/ReleasePatternForm';
+import ContactInformationForm from '@/components/ContactInformationForm';
+import {ImCross} from 'react-icons/im';
+import ContactInformation from '@/components/ContactInformation';
+import ReleasePattern from '@/components/ReleasePattern';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
   const [titleLink, setTitleLink] = useState<string>();
   const [catalogTitle, setCatalogTitle] = useState<CatalogTitle>();
-  const [titleAndContact, setTitleAndContactFromDb] = useState<TitleContactInfo>();
+  const [titleContact, setTitleContact] = useState<TitleContactInfo>();
   const [boxFromDb, setBoxFromDb] = useState<box>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
   const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
   const router = useRouter();
   const titleFromQueryParams = useSearchParams()?.get('title');
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
+  const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>('Noe gikk galt.');
+  const [contactsToDelete, setContactsToDelete] = useState<contact_info[]>([]);
 
   useEffect(() => {
     if (titleFromQueryParams) {
@@ -62,7 +75,7 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params, titleFromQueryParams, titleString]);
 
-  useEffect(() => {
+  const fetchTitleAndContactInformation = useCallback(() => {
     void getLocalTitle(params.id)
       .then((data: title) => {
         setTitleFromDbNotFound(false);
@@ -71,9 +84,17 @@ export default function Page({params}: { params: { id: string } }) {
       .then(async titleData => {
         await getContactInfoForTitle(+params.id)
           .then((contactData: contact_info[]) => {
-            setTitleAndContactFromDb({
+            const dataToAdd = contactData.length === 0 ?
+              [
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                {id: '', title_id: +params.id, contact_type: 'email', contact_value: ''},
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                {id: '', title_id: +params.id, contact_type: 'phone', contact_value: ''}
+              ] :
+              contactData;
+            setTitleContact({
               title: titleData,
-              contactInfo: contactData
+              contactInfo: dataToAdd
             } as TitleContactInfo);
           })
           .catch(() => {
@@ -82,7 +103,7 @@ export default function Page({params}: { params: { id: string } }) {
           });
       })
       .catch((e: Error) => {
-        setTitleAndContactFromDb(undefined);
+        setTitleContact(undefined);
         if (e instanceof NotFoundError) {
           setTitleFromDbNotFound(true);
         } else {
@@ -90,6 +111,10 @@ export default function Page({params}: { params: { id: string } }) {
           setShowError(true);
         }
       });
+  }, [params.id]);
+
+  useEffect(() => {
+    fetchTitleAndContactInformation();
   }, [params]);
 
   useEffect(() => {
@@ -113,28 +138,51 @@ export default function Page({params}: { params: { id: string } }) {
   }, [params.id]);
 
   const handleSubmit = async (titleContactInfo: TitleContactInfo): Promise<Response> => {
-    return putLocalTitle({
+    const titlePut = await putLocalTitle({
       id: +params.id,
       vendor: titleContactInfo.title.vendor,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       contact_name: titleContactInfo.title.contact_name,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       release_pattern: titleContactInfo.title.release_pattern,
-      shelf: titleAndContact?.title.shelf ?? '',
-      notes:  titleAndContact?.title.notes ?? ''
+      shelf: titleContact?.title.shelf ?? '',
+      notes:  titleContact?.title.notes ?? ''
     });
+    const contactPut = await putContactInfo(+params.id, titleContactInfo.contactInfo);
+    const contactDelete = await Promise.all(contactsToDelete.map(async contact => {
+      return await deleteContactInfo(+params.id, [contact]);
+    }));
+
+    if (titlePut.ok && contactPut.ok && contactDelete.every(res => res.ok)) {
+      return new Response('Success');
+    } else {
+      setErrorMessage('Noe gikk galt ved lagring av kontakt- og utgivelsesinformasjonen.');
+      setShowError(true);
+      return new Response('Failure');
+    }
   };
 
+  useEffect(() => {
+    console.log('titleContact changed:', titleContact);
+  }, [titleContact]);
+
   const handleRemoveContact = (values: TitleContactInfo, index: number) => {
+    console.log('Removing contact', values);
     const newContacts = values?.contactInfo.filter((_, i) => i !== index);
-    setTitleAndContactFromDb({
+    setTitleContact({
       ...values,
       contactInfo: newContacts ?? []
     } as TitleContactInfo);
+
+    // if the contact was in the database (has an id !== ''), add it to the list of contacts to delete
+    if (values.contactInfo[index].id !== '') {
+      setContactsToDelete([...contactsToDelete, values.contactInfo[index]]);
+    }
   };
 
   const handleAddContact = (values: TitleContactInfo, type: 'email' | 'phone') => {
-    setTitleAndContactFromDb({
+    console.log('Adding contact', values);
+    setTitleContact({
       ...values,
       contactInfo: [
         ...values?.contactInfo ?? [],
@@ -142,17 +190,6 @@ export default function Page({params}: { params: { id: string } }) {
         {id: '', title_id: +params.id, contact_type: type, contact_value: ''}
       ]
     } as TitleContactInfo);
-  };
-
-  const handleChange = (e: ChangeEvent) => {
-    console.log('Handling change...');
-    const {id, value} = e.target as HTMLInputElement;
-    console.log('id', id);
-    console.log('value', value);
-    setTitleAndContactFromDb({
-      ...titleAndContact as TitleContactInfo,
-      [id]: value
-    });
   };
 
   function boxToString(b: box) : string {
@@ -168,16 +205,15 @@ export default function Page({params}: { params: { id: string } }) {
   }
 
   function updateShelfLocally(shelf: string): void {
-    // setTitleFromDb({...titleFromDb as title, ['shelf']: shelf});
-    setTitleAndContactFromDb({
-      ...titleAndContact as TitleContactInfo,
-      title: {...titleAndContact?.title as title, ['shelf']: shelf}
+    setTitleContact({
+      ...titleContact as TitleContactInfo,
+      title: {...titleContact?.title as title, ['shelf']: shelf}
     });
   }
 
   return (
     <div className='w-9/12 flex flex-col content-center'>
-      {titleAndContact ? (<> {/* TODO: Fiks slik at det funker også når contactInfo ikke finnes. */}
+      {titleContact ? (<> {/* TODO: Fiks slik at det funker også når contactInfo ikke finnes. */}
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div className='flex flex-col grow mx-10'>
             <div>
@@ -205,7 +241,7 @@ export default function Page({params}: { params: { id: string } }) {
                 <div className='flex flex-row justify-between items-center mt-4'>
                   <EditTextInput
                     name='Hyllesignatur'
-                    value={titleAndContact.title.shelf ?? ''}
+                    value={titleContact.title.shelf ?? ''}
                     onSubmit={submitShelf}
                     onSuccess={updateShelfLocally}
                     className='w-96'
@@ -241,7 +277,7 @@ export default function Page({params}: { params: { id: string } }) {
               </div>
 
               {boxFromDb ? (
-                <IssueList title={titleAndContact.title} box={boxFromDb}/>
+                <IssueList title={titleContact.title} box={boxFromDb}/>
               ) : (
                 <p className='mt-20 group-content-style text-start'>Legg til eske for å legge inn avisutgaver</p>
               )}
@@ -251,25 +287,143 @@ export default function Page({params}: { params: { id: string } }) {
 
           <div className="flex flex-col w-96">
             <div className='items-start mt-16 w-72 mb-6'>
-              {titleAndContact &&
+              {titleContact &&
                   <NotesComponent
-                    notes={titleAndContact.title.notes ?? ''}
+                    notes={titleContact.title.notes ?? ''}
                     onSubmit={submitNotes}
                     maxRows={2}
                     notesTitle='Merknad/kommentar på tittel:'
                   />
               }
             </div>
+            <div className='flex flex-col border-style p-3 m-0'>
+              {isEditing ? (
+                <>
+                  <Formik
+                    enableReinitialize
+                    initialValues={titleContact}
+                    onSubmit={(values: TitleContactInfo, {setSubmitting, resetForm}) => {
+                      void handleSubmit(values)
+                        .then((res: Response) => {
+                          if (res.ok) {
+                            setShowSuccess(true);
+                            setTimeout(() => {
+                              setShowSuccess(false);
+                            }, 5000);
+                            resetForm({values});
+                          } else {
+                            setShowError(true);
+                          }
+                        })
+                        .then(() => fetchTitleAndContactInformation())
+                        .catch(() =>  {
+                          setShowError(true);
+                        })
+                        .finally(() => {
+                          setIsEditing(false);
+                          setSubmitting(false);
 
-            <ContactAndReleaseInfo
-              titleFromDb={titleAndContact.title}
-              contactInfo={titleAndContact.contactInfo}
-              onSubmit={handleSubmit}
-              handleChangeEvent={handleChange}
-              handleAdd={handleAddContact}
-              handleRemove={handleRemoveContact}
-            />
+                        });
+                    }}
+                  >
+                    {({
+                      values,
+                      handleChange,
+                      isSubmitting,
+                      handleBlur,
+                      isValid,
+                      resetForm
+                    }) => (
+                      <div>
+                        <Form className='flex flex-col items-start'>
+                          <ContactInformationForm
+                            className={'flex flex-col w-full'}
+                            values={values}
+                            handleChange={handleChange}
+                            handleBlur={handleBlur}
+                            handleAdd={handleAddContact}
+                            handleRemove={handleRemoveContact}
+                          />
+                          <p className='group-title-style mb-2 mt-6 text-left'> Utgivelsesmønster </p>
+                          <ReleasePatternForm
+                            releasePattern={values.title.release_pattern}
+                            handleChange={handleChange}
+                            handleBlur={handleBlur}
+                          />
+                          {isSubmitting ? (
+                            <Spinner className='self-center p-1' size='lg'/>
+                          ) : (
+                            <div className='flex flex-row justify-between w-full'>
+                              <Button
+                                type="submit"
+                                size="lg"
+                                className="save-button-style"
+                                endContent={<FaSave size={25}/>}
+                                disabled={!isValid || isSubmitting}
+                              >
+                                Lagre
+                              </Button>
 
+                              <Button
+                                type="button"
+                                size="lg"
+                                className="abort-button-style"
+                                endContent={<ImCross size={25}/>}
+                                onClick={() => {
+                                  resetForm();
+                                  setIsEditing(false);
+                                }}
+                              >
+                                Avbryt
+                              </Button>
+                            </div>
+                          )}
+                        </Form>
+                      </div>
+                    )}
+                  </Formik>
+                </>
+              ) : (
+                <>
+                  {titleContact &&
+                    <div className='flex flex-col'>
+                      <h1 className="group-title-style self-start mb-2"> Kontaktinformasjon: </h1>
+
+                      <ContactInformation
+                        vendor={titleContact.title.vendor}
+                        contactName={titleContact.title.contact_name}
+                        contactInformation={titleContact.contactInfo}
+                      />
+
+                      {titleContact.title.release_pattern &&
+                          <ReleasePattern releasePattern={titleContact.title.release_pattern}/>
+                      }
+                      <Button
+                        type="button"
+                        size="lg"
+                        className="edit-button-style mt-5"
+                        endContent={<FaEdit size={25}/>}
+                        onClick={() => setIsEditing(true)}
+                      >
+                        Rediger
+                      </Button>
+                    </div>
+                  }
+                </>
+              )}
+
+              {showSuccess && (
+                <div className='my-2.5'>
+                  <Alert color='success' title='Kontaktinformasjonen ble lagret' onClose={() => setShowSuccess(false)} />
+                </div>
+              )}
+
+              <ErrorModal
+                text='Noe gikk galt ved lagring av kontakt- og utgivelsesinformasjonen.'
+                onExit={() => setShowError(false)}
+                showModal={showError}
+              />
+            </div>
           </div>
         </div>
       </>
@@ -280,6 +434,7 @@ export default function Page({params}: { params: { id: string } }) {
       )
       }
 
+      { /* TODO: make title not found component */ }
       {titleFromDbNotFound &&
           <>
             {titleString ? (
@@ -318,7 +473,6 @@ export default function Page({params}: { params: { id: string } }) {
                 Legg til informasjon
               </Button>
             </div>
-
           </>
       }
 

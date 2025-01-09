@@ -38,7 +38,7 @@ export async function putLocalTitle(localTitle: title): Promise<Response> {
   });
 }
 
-export async function postLocalContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
+export async function postContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
   return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/contact_info`, {
     method: 'POST',
     headers: {
@@ -50,7 +50,7 @@ export async function postLocalContactInfo(titleId: number, contactInfo: contact
   });
 }
 
-export async function putLocalContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
+export async function putContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
   return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/contact_info`, {
     method: 'PUT',
     headers: {
@@ -59,6 +59,18 @@ export async function putLocalContactInfo(titleId: number, contactInfo: contact_
     body: JSON.stringify(contactInfo)
   }).catch((e: Error) => {
     return Promise.reject(new Error(`Failed to put contact info: ${e.message}`));
+  });
+}
+
+export async function deleteContactInfo(titleId: number, contactInfo: contact_info[]): Promise<Response> {
+  return await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/title/${titleId}/contact_info`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(contactInfo)
+  }).catch((e: Error) => {
+    return Promise.reject(new Error(`Failed to delete contact info: ${e.message}`));
   });
 }
 

@@ -10,13 +10,13 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@nextui-org/react": "2.4.8",
+    "@nextui-org/react": "2.6.11",
     "@prisma/client": "5.20.0",
     "@react-stately/data": "3.11.6",
     "@sentry/nextjs": "8.32.0",
     "formik": "2.4.6",
     "framer-motion": "11.8.0",
-    "next": "14.2.13",
+    "next": "14.2.23",
     "prisma": "5.20.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",

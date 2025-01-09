@@ -2,7 +2,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {contact_info} from '@prisma/client';
-import {getLocalTitle, postLocalContactInfo, postLocalTitle} from '@/services/local.data';
+import {getLocalTitle, postContactInfo, postLocalTitle} from '@/services/local.data';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {Field, Form, Formik} from 'formik';
@@ -147,7 +147,7 @@ export default function Page({params}: { params: { id: string } }) {
                   }
                 })
                 .then(async () => {
-                  await postLocalContactInfo(+params.id, values.contactInfo).then(res => {
+                  await postContactInfo(+params.id, values.contactInfo).then(res => {
                     if (res.ok) {
                       showSavedMessage();
                     } else {
