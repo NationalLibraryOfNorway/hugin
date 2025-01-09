@@ -54,7 +54,7 @@ const InfoModal: FC<InfoModalProps> = ({
               type='button'
               size='lg'
               className='abort-button-style mt-5'
-              onClick={() => handleExit()}
+              onPress={() => handleExit()}
             >
               Lukk
             </Button>

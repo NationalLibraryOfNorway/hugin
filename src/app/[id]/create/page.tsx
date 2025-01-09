@@ -106,7 +106,7 @@ export default function Page({params}: { params: { id: string } }) {
         type='button'
         className='abort-button-style'
         startContent={<FaArrowAltCircleLeft/>}
-        onClick={() => router.push(`/${params.id}?title=${titleString}`)}
+        onPress={() => router.push(`/${params.id}?title=${titleString}`)}
       >
         Tilbake til titteloversikt
       </Button>

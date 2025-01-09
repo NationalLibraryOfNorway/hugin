@@ -205,7 +205,7 @@ export default function IssueList(props: {title: title; box: box}) {
                         type="button"
                         className="edit-button-style"
                         disabled={isSubmitting}
-                        onClick={() => {
+                        onPress={() => {
                           insert(0, proposeNewIssue(values.issues));
                         }}
                       >
@@ -306,13 +306,13 @@ export default function IssueList(props: {title: title; box: box}) {
                                           <Button isIconOnly
                                             className='save-button-style mr-1 [&]:text-medium [&]:bg-green-400'
                                             type='button'
-                                            onClick={() => updateIssue(issue)}>
+                                            onPress={() => updateIssue(issue)}>
                                             <FaSave/>
                                           </Button>
                                           <Button isIconOnly
                                             className='abort-button-style mr-1'
                                             type='button'
-                                            onClick={() => stopEditingIssue()}>
+                                            onPress={() => stopEditingIssue()}>
                                             <ImCross/>
                                           </Button>
                                         </>
@@ -323,7 +323,7 @@ export default function IssueList(props: {title: title; box: box}) {
                                       className={isEditingIssue() ? 'opacity-25 mr-0.5' : 'edit-button-style [&]:text-medium mr-0.5'}
                                       type='button'
                                       disabled={isEditingIssue()}
-                                      onClick={() => startEditingIssue(index)}
+                                      onPress={() => startEditingIssue(index)}
                                     >
                                       <FiEdit/>
                                     </Button>
@@ -333,7 +333,7 @@ export default function IssueList(props: {title: title; box: box}) {
                               <Button isIconOnly
                                 type="button"
                                 className='delete-button-style'
-                                onClick={() => {
+                                onPress={() => {
                                   if (!newspaperIsSaved(index, values.issues.length)) {
                                     remove(index);
                                   } else {

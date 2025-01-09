@@ -28,7 +28,6 @@ import WarningLabel from '@/components/WarningLabel';
 import {catalogDateStringToNorwegianDateString} from '@/utils/dateUtils';
 import {TitleContactInfo} from '@/models/TitleContactInfo';
 import {Form, Formik} from 'formik';
-import SuccessModal from '@/components/SuccessModal';
 import {Spinner} from '@nextui-org/spinner';
 import ReleasePatternForm from '@/components/ReleasePatternForm';
 import ContactInformationForm from '@/components/ContactInformationForm';
@@ -271,7 +270,7 @@ export default function Page({params}: { params: { id: string } }) {
                   endContent={<FaBoxOpen size={25}/>}
                   size={'md'}
                   className="edit-button-style ml-4 [&]:text-medium"
-                  onClick={() => setShowBoxRegistrationModal(true)}>
+                  onPress={() => setShowBoxRegistrationModal(true)}>
                   Ny eske
                 </Button>
               </div>
@@ -369,7 +368,7 @@ export default function Page({params}: { params: { id: string } }) {
                                 size="lg"
                                 className="abort-button-style"
                                 endContent={<ImCross size={25}/>}
-                                onClick={() => {
+                                onPress={() => {
                                   resetForm();
                                   setIsEditing(false);
                                 }}
@@ -403,7 +402,7 @@ export default function Page({params}: { params: { id: string } }) {
                         size="lg"
                         className="edit-button-style mt-5"
                         endContent={<FaEdit size={25}/>}
-                        onClick={() => setIsEditing(true)}
+                        onPress={() => setIsEditing(true)}
                       >
                         Rediger
                       </Button>
@@ -459,7 +458,7 @@ export default function Page({params}: { params: { id: string } }) {
                 size={'lg'}
                 startContent={<FaArrowAltCircleLeft/>}
                 className="abort-button-style"
-                onClick={() => router.push('/')}
+                onPress={() => router.push('/')}
               >
                 Tilbake
               </Button>
@@ -468,7 +467,7 @@ export default function Page({params}: { params: { id: string } }) {
                 size={'lg'}
                 className="edit-button-style"
                 endContent={<FaEdit/>}
-                onClick={() => router.push(`/${params.id}/create?title=${titleString}`)}
+                onPress={() => router.push(`/${params.id}/create?title=${titleString}`)}
               >
                 Legg til informasjon
               </Button>

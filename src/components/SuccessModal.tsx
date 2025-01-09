@@ -48,7 +48,7 @@ const SuccessModal: FC<SuccessModalProps> = ({
               type='button'
               size='lg'
               className="abort-button-style mt-5"
-              onClick={() => {buttonOnClick && buttonOnClick();}}
+              onPress={() => {buttonOnClick && buttonOnClick();}}
             >
               {buttonText}
             </Button>
