@@ -104,7 +104,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
             startContent={<FaArrowAltCircleLeft/>}
             size={'lg'}
             className="abort-button-style mt-4"
-            onPress={() => props.closeModal()}>
+            onClick={() => props.closeModal()}>
             Avbryt
           </Button>
         </div>
@@ -116,7 +116,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
           showInfo.sameTitle ? (
             <>
               Esken er allerede registrert på denne tittelen ({props.titleName}). Ønsker du å laste inn den eksisterende esken?<br/>
-              <Button className="edit-button-style" onPress={() => {
+              <Button className="edit-button-style" onClick={() => {
                 void updateActiveBoxForTitle(props.titleId, existingBox!.id);
                 props.updateBoxInfo(existingBox!);
                 props.closeModal();

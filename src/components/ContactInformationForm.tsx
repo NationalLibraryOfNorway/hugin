@@ -76,7 +76,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
               variant="light"
               color="primary"
               className='text-md'
-              onPress={() => handleAdd(values, 'phone')}
+              onClick={() => handleAdd(values, 'phone')}
             >
               + Legg til telefon
             </Button>
@@ -119,7 +119,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
               variant="light"
               color="primary"
               className="text-md"
-              onPress={() => handleAdd(values, 'email')}
+              onClick={() => handleAdd(values, 'email')}
             >
               + Legg til e-post
             </Button>

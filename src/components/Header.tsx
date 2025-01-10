@@ -22,7 +22,7 @@ export default function Header() {
         <Link
           color="foreground"
           className="font-bold text-2xl hover:cursor-pointer"
-          onPress={() => router.push('/')}
+          onClick={() => router.push('/')}
         >
           <Image className="mr-2" src="/hugin/hugin.svg" alt="Hugin logo" width={45} height={45}/>
           Hugin

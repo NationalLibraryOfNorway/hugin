@@ -57,7 +57,7 @@ const ErrorModal: FC<ErrorModalProps> = ({
               type='button'
               size='lg'
               className='abort-button-style mt-5'
-              onPress={() => handleExit()}
+              onClick={() => handleExit()}
             >
               Lukk
             </Button>

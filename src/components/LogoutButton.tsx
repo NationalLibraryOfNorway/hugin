@@ -9,7 +9,7 @@ const LogoutButton = () => {
     <Button
       className="edit-button-style"
       endContent={<FaSignOutAlt size={25} />}
-      onPress={logout}
+      onClick={logout}
     >
       Logg ut
     </Button>

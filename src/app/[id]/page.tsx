@@ -257,7 +257,7 @@ export default function Page({params}: { params: { id: string } }) {
                   endContent={<FaBoxOpen size={25}/>}
                   size={'md'}
                   className="edit-button-style ml-4 [&]:text-medium"
-                  onPress={() => setShowBoxRegistrationModal(true)}>
+                  onClick={() => setShowBoxRegistrationModal(true)}>
                   Ny eske
                 </Button>
               </div>
@@ -355,7 +355,7 @@ export default function Page({params}: { params: { id: string } }) {
                                 size="lg"
                                 className="abort-button-style"
                                 endContent={<ImCross size={25}/>}
-                                onPress={() => {
+                                onClick={() => {
                                   resetForm();
                                   setIsEditing(false);
                                 }}
@@ -389,7 +389,7 @@ export default function Page({params}: { params: { id: string } }) {
                         size="lg"
                         className="edit-button-style mt-5"
                         endContent={<FaEdit size={25}/>}
-                        onPress={() => setIsEditing(true)}
+                        onClick={() => setIsEditing(true)}
                       >
                         Rediger
                       </Button>
@@ -452,7 +452,7 @@ export default function Page({params}: { params: { id: string } }) {
                 size={'lg'}
                 startContent={<FaArrowAltCircleLeft/>}
                 className="abort-button-style"
-                onPress={() => router.push('/')}
+                onClick={() => router.push('/')}
               >
                 Tilbake
               </Button>
@@ -461,7 +461,7 @@ export default function Page({params}: { params: { id: string } }) {
                 size={'lg'}
                 className="edit-button-style"
                 endContent={<FaEdit/>}
-                onPress={() => router.push(`/${params.id}/create?title=${titleString}`)}
+                onClick={() => router.push(`/${params.id}/create?title=${titleString}`)}
               >
                 Legg til informasjon
               </Button>

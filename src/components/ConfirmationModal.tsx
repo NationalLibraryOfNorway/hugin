@@ -70,7 +70,7 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({
               type='button'
               size='lg'
               className='abort-button-style mt-5'
-              onPress={() => handleExit()}
+              onClick={() => handleExit()}
             >
               Avbryt
             </Button>
@@ -80,7 +80,7 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({
                 size='lg'
                 className='save-button-style mt-5'
                 disabled={isLoading}
-                onPress={() => {
+                onClick={() => {
                   handleConfirm();
                 }}
                 endContent={isLoading ? <Spinner size={'sm'}/> : undefined}
