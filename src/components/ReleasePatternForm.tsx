@@ -30,7 +30,7 @@ const ReleasePatternForm: FC<ReleasePatternProps> = ({releasePattern, handleChan
             <TableCell className='text-lg p-0'>{day}</TableCell>
             <TableCell className='m-2.5 py-0 pr-0 w-full'>
               <Field
-                name={`release_pattern[${index}]`}
+                name={`title.release_pattern[${index}]`}
                 value={releasePattern[index]}
                 component={NumberInputWithButtons}
                 className='input-number-style'

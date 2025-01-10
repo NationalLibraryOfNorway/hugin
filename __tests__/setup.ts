@@ -44,7 +44,8 @@ beforeAll(() => {
     getNewspapersForBoxOnTitle: vi.fn(),
     postNewBoxForTitle: vi.fn(),
     postNewIssuesForTitle: vi.fn(),
-    deleteIssue: vi.fn()
+    deleteIssue: vi.fn(),
+    getContactInfoForTitle: vi.fn(),
   }));
 
   const ResizeObserverMock = vi.fn(() => ({

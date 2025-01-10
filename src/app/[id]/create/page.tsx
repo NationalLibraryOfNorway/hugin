@@ -1,8 +1,8 @@
 'use client';
 
 import React, {useEffect, useState} from 'react';
-import {title} from '@prisma/client';
-import {getLocalTitle, postLocalTitle} from '@/services/local.data';
+import {contact_info} from '@prisma/client';
+import {getLocalTitle, postContactInfo, postLocalTitle} from '@/services/local.data';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {Field, Form, Formik} from 'formik';
@@ -16,11 +16,12 @@ import ErrorModal from '@/components/ErrorModal';
 import {Spinner, Tooltip} from '@nextui-org/react';
 import ContactInformationForm from '@/components/ContactInformationForm';
 import ReleasePatternForm from '@/components/ReleasePatternForm';
+import {TitleContactInfo} from '@/models/TitleContactInfo';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
   const [titleString, setTitleString] = useState<string>();
-  const [titleFromDb, setTitleFromDb] = useState<title>();
+  const [titleAndContactFromDb, setTitleAndContactFromDb] = useState<TitleContactInfo>();
   const [saveMessageIsVisible, setSaveMessageIsVisible] = useState<boolean>(false);
   const titleFromQueryParams = useSearchParams()?.get('title');
   const [showError, setShowError] = useState<boolean>(false);
@@ -50,16 +51,24 @@ export default function Page({params}: { params: { id: string } }) {
       })
       .catch((e: Error) => {
         if (e instanceof NotFoundError) {
-          setTitleFromDb({
-            id: +params.id,
-            vendor: '',
-            /* eslint-disable @typescript-eslint/naming-convention */
-            contact_name: '',
-            contact_email: '',
-            contact_phone: '',
-            release_pattern: [0, 0, 0, 0, 0, 0, 0],
-            /* eslint-enable @typescript-eslint/naming-convention */
-          } as title);
+          setTitleAndContactFromDb({
+            title: {
+              id: +params.id,
+              vendor: '',
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              contact_name: '',
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              release_pattern: [0, 0, 0, 0, 0, 0, 0],
+              shelf: '',
+              notes: ''
+            },
+            contactInfo: [
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              {id: '', title_id: +params.id, contact_type: 'email', contact_value: ''},
+              // eslint-disable-next-line @typescript-eslint/naming-convention
+              {id: '', title_id: +params.id, contact_type: 'phone', contact_value: ''}
+            ] as contact_info[]
+          });
         } else {
           setErrorText('Noe gikk galt ved henting av tittelinformasjon.');
           setShowError(true);
@@ -71,6 +80,25 @@ export default function Page({params}: { params: { id: string } }) {
     setSaveMessageIsVisible(true);
     setTimeout(() => setSaveMessageIsVisible(false), 5000);
   }
+
+  const handleRemoveContact = (values: TitleContactInfo, index: number) => {
+    const newContacts = values?.contactInfo.filter((_, i) => i !== index);
+    setTitleAndContactFromDb({
+      ...values,
+      contactInfo: newContacts ?? []
+    } as TitleContactInfo);
+  };
+
+  const handleAddContact = (values: TitleContactInfo, type: 'email' | 'phone') => {
+    setTitleAndContactFromDb({
+      ...values,
+      contactInfo: [
+        ...values?.contactInfo ?? [],
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        {id: '', title_id: +params.id, contact_type: type, contact_value: ''}
+      ]
+    } as TitleContactInfo);
+  };
 
   return (
     <div className='flex w-9/12 flex-col max-w-screen-lg items-start'>
@@ -96,20 +124,40 @@ export default function Page({params}: { params: { id: string } }) {
         </div>
       </div>
 
-      {titleFromDb ? (
+      {titleAndContactFromDb ? (
         <div>
           <Formik
             enableReinitialize
-            initialValues={titleFromDb}
-            onSubmit={(values: title, {setSubmitting}) => {
-              void postLocalTitle(values)
+            initialValues={titleAndContactFromDb}
+            onSubmit={(values: TitleContactInfo, {setSubmitting}) => {
+              void postLocalTitle({
+                id: +params.id,
+                vendor: values.title.vendor,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                contact_name: values.title.contact_name,
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                release_pattern: values.title.release_pattern,
+                shelf: '',
+                notes: ''
+              })
                 .then(res => {
-                  if (res.ok) {
-                    showSavedMessage();
-                  } else {
+                  if (!res.ok) {
                     setErrorText('Noe gikk galt ved lagring.');
                     setShowError(true);
                   }
+                })
+                .then(async () => {
+                  await postContactInfo(+params.id, values.contactInfo).then(res => {
+                    if (res.ok) {
+                      showSavedMessage();
+                    } else {
+                      setErrorText('Noe gikk galt ved lagring av kontaktinformasjon.');
+                      setShowError(true);
+                    }
+                  }).catch(() => {
+                    setErrorText('Noe gikk galt ved lagring av kontaktinformasjon.');
+                    setShowError(true);
+                  });
                 })
                 .catch(() => {
                   setErrorText('Noe gikk galt ved lagring.');
@@ -133,11 +181,13 @@ export default function Page({params}: { params: { id: string } }) {
                     values={values}
                     handleChange={handleChange}
                     handleBlur={handleBlur}
+                    handleRemove={handleRemoveContact}
+                    handleAdd={handleAddContact}
                   />
 
                   <div className='w-60 overflow-auto flex flex-col mb-6'>
                     <p className='group-title-style mb-4 text-left'> Utgivelsesmønster </p>
-                    <ReleasePatternForm releasePattern={values.release_pattern} handleChange={handleChange} handleBlur={handleBlur} />
+                    <ReleasePatternForm releasePattern={values.title.release_pattern} handleChange={handleChange} handleBlur={handleBlur} />
                   </div>
 
                   <div>
@@ -151,11 +201,11 @@ export default function Page({params}: { params: { id: string } }) {
                     </div>
                     <Field
                       type='text'
-                      id='shelf'
+                      id='title.shelf'
                       className='input-text-style'
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.shelf ?? ''}
+                      value={values.title.shelf ?? ''}
                     />
 
                     <div className='group-title-style text-left mt-6'>
@@ -167,13 +217,13 @@ export default function Page({params}: { params: { id: string } }) {
                       </Tooltip>
                     </div>
                     <Textarea
-                      id='notes'
+                      id='title.notes'
                       className='w-80 mt-3'
                       variant='bordered'
                       maxRows={10}
                       onChange={handleChange}
                       onBlur={handleBlur}
-                      value={values.notes ?? ''}
+                      value={values.title.notes ?? ''}
                     />
                   </div>
                 </div>

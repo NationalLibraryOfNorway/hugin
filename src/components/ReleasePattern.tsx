@@ -9,7 +9,7 @@ const ReleasePattern = (props: ReleasePatternProps) => {
   const daysOfWeek = ['Mandag', 'Tirsdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lørdag', 'Søndag'];
 
   return (
-    <div className="self-start mt-12">
+    <div className="self-start mt-5">
       <h2 className="group-title-style mb-2">Utgivelsesmønster:</h2>
       <table className="table-fixed">
         <tbody className="text-left">
