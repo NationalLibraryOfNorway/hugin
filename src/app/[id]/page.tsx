@@ -14,10 +14,10 @@ import {
   updateShelfForTitle
 } from '@/services/local.data';
 import {box, contact_info, title} from '@prisma/client';
-import {useRouter, useSearchParams} from 'next/navigation';
+import {useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
-import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit, FaExternalLinkAlt, FaSave} from 'react-icons/fa';
+import {FaBoxOpen, FaEdit, FaExternalLinkAlt, FaSave} from 'react-icons/fa';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
 import EditTextInput from '@/components/EditTextInput';
@@ -33,6 +33,8 @@ import ContactInformationForm from '@/components/ContactInformationForm';
 import {ImCross} from 'react-icons/im';
 import ContactInformation from '@/components/ContactInformation';
 import ReleasePattern from '@/components/ReleasePattern';
+import TitleNotFound from '@/components/TitleNotFound';
+import SuccessAlert from '@/components/SuccessAlert';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -42,7 +44,6 @@ export default function Page({params}: { params: { id: string } }) {
   const [boxFromDb, setBoxFromDb] = useState<box>();
   const [titleFromDbNotFound, setTitleFromDbNotFound] = useState<boolean>(false);
   const [showBoxRegistrationModal, setShowBoxRegistrationModal] = useState<boolean>(false);
-  const router = useRouter();
   const titleFromQueryParams = useSearchParams()?.get('title');
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [showError, setShowError] = useState<boolean>(false);
@@ -199,7 +200,7 @@ export default function Page({params}: { params: { id: string } }) {
 
   return (
     <div className='w-9/12 flex flex-col content-center'>
-      {titleContact ? (<> {/* TODO: Fiks slik at det funker også når contactInfo ikke finnes. */}
+      {titleContact ? (<>
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div className='flex flex-col grow mx-10'>
             <div>
@@ -398,18 +399,9 @@ export default function Page({params}: { params: { id: string } }) {
                 </>
               )}
 
-              {showSuccess && (
-                <div className='my-2.5 px-2.5 py-1 border-green-500 bg-green-100 border-1 rounded-xl flex justify-between'>
-                  <p className='text-green-900 p-2'>Kontaktinformasjonen ble lagret</p>
-                  <button
-                    type="button"
-                    className="text-green-900"
-                    onClick={() => setShowSuccess(false)}
-                  >
-                    x
-                  </button>
-                </div>
-              )}
+              {showSuccess &&
+                <SuccessAlert message={'Kontaktinformasjonen ble lagret'} onClick={() => setShowSuccess(false)}/>
+              }
 
               <ErrorModal
                 text='Noe gikk galt ved lagring av kontakt- og utgivelsesinformasjonen.'
@@ -427,46 +419,8 @@ export default function Page({params}: { params: { id: string } }) {
       )
       }
 
-      { /* TODO: make title not found component */ }
       {titleFromDbNotFound &&
-          <>
-            {titleString ? (
-              <div className='flex flex-col items-center'>
-                <h1 className="top-title-style">{titleString}</h1>
-                {catalogTitle && catalogTitle.endDate && (
-                  <WarningLabel
-                    className="mt-2"
-                    text={`Denne avisen ble avsluttet ${catalogDateStringToNorwegianDateString(catalogTitle.endDate)}`}
-                  />
-                )}
-              </div>
-            ) : (
-              <p>Henter tittel ...</p>
-            )}
-
-            <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å
-              legge til? </p>
-            <div className="mt-12 flex justify-between max-w-3xl w-full self-center">
-              <Button
-                type="button"
-                size={'lg'}
-                startContent={<FaArrowAltCircleLeft/>}
-                className="abort-button-style"
-                onClick={() => router.push('/')}
-              >
-                Tilbake
-              </Button>
-              <Button
-                type="button"
-                size={'lg'}
-                className="edit-button-style"
-                endContent={<FaEdit/>}
-                onClick={() => router.push(`/${params.id}/create?title=${titleString}`)}
-              >
-                Legg til informasjon
-              </Button>
-            </div>
-          </>
+        <TitleNotFound titleId={+params.id} titleString={titleString} catalogTitle={catalogTitle}/>
       }
 
       <ErrorModal
