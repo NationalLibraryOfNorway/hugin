@@ -2,8 +2,8 @@ import {beforeEach, expect, test, vi} from 'vitest';
 import {render, screen} from '@testing-library/react';
 import Page from '@/app/[id]/page';
 import {fetchNewspaperTitleFromCatalog, getLinkToNewspaperInCatalog} from '@/services/catalog.data';
-import {MockBox1, MockCatalogTitle1, MockNewspaper1, MockTitle} from '../../mockdata';
-import {getBoxForTitle, getLocalTitle, getNewspapersForBoxOnTitle} from '@/services/local.data';
+import {MockBox1, MockCatalogTitle1, MockContactEmail1, MockContactPhone1, MockNewspaper1, MockTitle} from '../../mockdata';
+import {getBoxForTitle, getContactInfoForTitle, getLocalTitle, getNewspapersForBoxOnTitle} from '@/services/local.data';
 import {NotFoundError} from '@/models/Errors';
 
 beforeEach(() => {
@@ -12,6 +12,7 @@ beforeEach(() => {
   vi.mocked(getLocalTitle).mockImplementation(() => Promise.resolve(MockTitle));
   vi.mocked(getBoxForTitle).mockImplementation(() => Promise.resolve(MockBox1));
   vi.mocked(getNewspapersForBoxOnTitle).mockImplementation(() => Promise.resolve([MockNewspaper1]));
+  vi.mocked(getContactInfoForTitle).mockImplementation(() => Promise.resolve([MockContactEmail1, MockContactPhone1]));
   render(<Page params={{id: ''}}/>);
 });
 
@@ -31,8 +32,8 @@ test('Title page displays shelf', async () => {
 test('Title page displays contact info', async () => {
   await screen.findByText('Kontaktinformasjon:');
   expect(screen.findByText(MockTitle.contact_name!)).toBeTruthy();
-  expect(screen.findByText(MockTitle.contact_email!)).toBeTruthy();
-  expect(screen.findByText(MockTitle.contact_phone!)).toBeTruthy();
+  expect(screen.findByText(MockContactEmail1.contact_value)).toBeTruthy();
+  expect(screen.findByText(MockContactPhone1.contact_value)).toBeTruthy();
   expect(screen.findByText(MockTitle.vendor!)).toBeTruthy();
 });
 

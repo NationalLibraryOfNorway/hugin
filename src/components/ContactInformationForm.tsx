@@ -3,6 +3,7 @@ import React, {ChangeEvent, FC} from 'react';
 import {Field, FieldArray} from 'formik';
 import {TitleContactInfo} from '@/models/TitleContactInfo';
 import {FaCircleMinus} from 'react-icons/fa6';
+import {Button} from '@nextui-org/button';
 
 interface ContactInformationProps {
   values: TitleContactInfo;
@@ -70,13 +71,15 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
                 </div>
               )
             ))}
-            <button
+            <Button
               type="button"
-              className='row-action-button-style text-gray-700'
-              onClick={() => handleAdd(values, 'phone')}
+              variant="light"
+              color="primary"
+              className='text-md'
+              onPress={() => handleAdd(values, 'phone')}
             >
               + Legg til telefon
-            </button>
+            </Button>
           </>
         )}
       />
@@ -111,13 +114,15 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
                 </div>
               )
             ))}
-            <button
+            <Button
               type="button"
-              className='row-action-button-style text-gray-700'
-              onClick={() => handleAdd(values, 'email')}
+              variant="light"
+              color="primary"
+              className="text-md"
+              onPress={() => handleAdd(values, 'email')}
             >
               + Legg til e-post
-            </button>
+            </Button>
           </>
         )}
       />

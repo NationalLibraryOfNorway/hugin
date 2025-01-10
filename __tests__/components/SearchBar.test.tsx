@@ -14,7 +14,7 @@ test('SearchBar should render', async () => {
   await vi.waitFor(() => expect(screen.getByRole('combobox')).toBeTruthy());
 });
 
-test('SearchBar should have help test', async () => {
+test('SearchBar should have help text', async () => {
   await vi.waitFor(() => expect(screen.getByText('Søk etter avistittel')).toBeTruthy());
 });
 

@@ -17,7 +17,6 @@ import {box, contact_info, title} from '@prisma/client';
 import {useRouter, useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
 import {Button} from '@nextui-org/button';
-import {Alert} from '@nextui-org/alert';
 import {FaArrowAltCircleLeft, FaBoxOpen, FaEdit, FaExternalLinkAlt, FaSave} from 'react-icons/fa';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
@@ -83,17 +82,9 @@ export default function Page({params}: { params: { id: string } }) {
       .then(async titleData => {
         await getContactInfoForTitle(+params.id)
           .then((contactData: contact_info[]) => {
-            const dataToAdd = contactData.length === 0 ?
-              [
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                {id: '', title_id: +params.id, contact_type: 'email', contact_value: ''},
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                {id: '', title_id: +params.id, contact_type: 'phone', contact_value: ''}
-              ] :
-              contactData;
             setTitleContact({
               title: titleData,
-              contactInfo: dataToAdd
+              contactInfo: contactData
             } as TitleContactInfo);
           })
           .catch(() => {
@@ -408,8 +399,15 @@ export default function Page({params}: { params: { id: string } }) {
               )}
 
               {showSuccess && (
-                <div className='my-2.5'>
-                  <Alert color='success' title='Kontaktinformasjonen ble lagret' onClose={() => setShowSuccess(false)} />
+                <div className='my-2.5 px-2.5 py-1 border-green-500 bg-green-100 border-1 rounded-xl flex justify-between'>
+                  <p className='text-green-900 p-2'>Kontaktinformasjonen ble lagret</p>
+                  <button
+                    type="button"
+                    className="text-green-900"
+                    onClick={() => setShowSuccess(false)}
+                  >
+                    x
+                  </button>
                 </div>
               )}
 
