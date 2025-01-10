@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import React, {ChangeEvent, FC, useEffect} from 'react';
+import React, {ChangeEvent, FC} from 'react';
 import {Field, FieldArray} from 'formik';
 import {TitleContactInfo} from '@/models/TitleContactInfo';
 import {FaCircleMinus} from 'react-icons/fa6';
@@ -14,26 +14,6 @@ interface ContactInformationProps {
 }
 
 const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChange, handleBlur, handleAdd, handleRemove, className}) => {
-
-  useEffect(() => {
-    const hasEmail = values.contactInfo.some(contact => contact.contact_type === 'email');
-    const hasPhone = values.contactInfo.some(contact => contact.contact_type === 'phone');
-    if (!hasEmail) {
-      values.contactInfo.push({ id: '', title_id: values.title.id, contact_type: 'email', contact_value: '' });
-    }
-    if (!hasPhone) {
-      values.contactInfo.push({ id: '', title_id: values.title.id, contact_type: 'phone', contact_value: '' });
-    }
-
-  }, [values]);
-
-  const emailRemoveButtonShouldBeDisabled = (): boolean => {
-    return values.contactInfo.filter(c => c.contact_type === 'email').length <= 1;
-  };
-
-  const phoneRemoveButtonShouldBeDisabled = (): boolean => {
-    return values.contactInfo.filter(c => c.contact_type === 'phone').length <= 1;
-  };
 
   return (
     <div className={className}>
@@ -82,10 +62,8 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
                         type="button"
                         className="row-action-button-style"
                         onClick={() => handleRemove(values, index)}
-                        disabled={phoneRemoveButtonShouldBeDisabled()}
                       >
-                        <FaCircleMinus size={24}
-                          className={phoneRemoveButtonShouldBeDisabled() ? 'text-gray-500' : 'text-blue-500'}/>
+                        <FaCircleMinus size={24} className='text-blue-500'/>
                       </button>
                     </div>
                   </div>
@@ -97,7 +75,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
               className='row-action-button-style text-gray-700'
               onClick={() => handleAdd(values, 'phone')}
             >
-              Legg til telefon
+              + Legg til telefon
             </button>
           </>
         )}
@@ -125,10 +103,8 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
                         type="button"
                         className="row-action-button-style"
                         onClick={() => handleRemove(values, index)}
-                        disabled={emailRemoveButtonShouldBeDisabled()}
                       >
-                        <FaCircleMinus size={24}
-                          className={emailRemoveButtonShouldBeDisabled() ? 'text-gray-500' : 'text-blue-500'}/>
+                        <FaCircleMinus size={24} className='text-blue-500'/>
                       </button>
                     </div>
                   </div>
@@ -140,7 +116,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
               className='row-action-button-style text-gray-700'
               onClick={() => handleAdd(values, 'email')}
             >
-              Legg til e-post
+              + Legg til e-post
             </button>
           </>
         )}

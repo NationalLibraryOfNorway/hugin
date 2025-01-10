@@ -28,7 +28,7 @@ const ContactInformation = (props: ContactInformationProps) => {
         </div>
       )}
 
-      {phoneNumbers && phoneNumbers.length > 0 && (
+      {phoneNumbers && phoneNumbers.length > 0 && phoneNumbers[0].contact_value !== '' && (
         <div className="self-start flex flex-row">
           <p className="group-subtitle-style">Telefonnummer</p>
           <p className="group-content-style ml-3">
@@ -42,7 +42,7 @@ const ContactInformation = (props: ContactInformationProps) => {
         </div>
       )}
 
-      {emails && emails.length > 0 && (
+      {emails && emails.length > 0 && emails[0].contact_value !== '' && (
         <div className="self-start flex flex-row">
           <p className="group-subtitle-style">{emails.length > 1 ? 'E-postadresser' : 'E-postadresse'}</p>
           <p className="group-content-style ml-3">

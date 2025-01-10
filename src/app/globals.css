@@ -21,7 +21,7 @@ input[type=number] {
 
 .row-action-button-style {
     @apply ml-2 hover:cursor-pointer;
-    @apply disabled:cursor-default disabled:border-gray-500;
+    @apply text-blue-500 font-bold;
 }
 
 .edit-button-style {

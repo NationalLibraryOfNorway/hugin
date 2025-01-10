@@ -1,6 +1,6 @@
 'use client';
 
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {fetchNewspaperTitleFromCatalog, getLinkToNewspaperInCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {
@@ -112,9 +112,11 @@ export default function Page({params}: { params: { id: string } }) {
       });
   }, [params.id]);
 
+  const fetchTitleAndContactInformationRef = useRef(fetchTitleAndContactInformation);
+
   useEffect(() => {
-    fetchTitleAndContactInformation();
-  }, [params]);
+    fetchTitleAndContactInformationRef.current();
+  }, []);
 
   useEffect(() => {
     void getLinkToNewspaperInCatalog(params.id)
@@ -161,12 +163,7 @@ export default function Page({params}: { params: { id: string } }) {
     }
   };
 
-  useEffect(() => {
-    console.log('titleContact changed:', titleContact);
-  }, [titleContact]);
-
   const handleRemoveContact = (values: TitleContactInfo, index: number) => {
-    console.log('Removing contact', values);
     const newContacts = values?.contactInfo.filter((_, i) => i !== index);
     setTitleContact({
       ...values,
@@ -180,7 +177,6 @@ export default function Page({params}: { params: { id: string } }) {
   };
 
   const handleAddContact = (values: TitleContactInfo, type: 'email' | 'phone') => {
-    console.log('Adding contact', values);
     setTitleContact({
       ...values,
       contactInfo: [
