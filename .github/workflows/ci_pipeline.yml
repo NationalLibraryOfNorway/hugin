@@ -3,12 +3,12 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - "**"
-    tags:
-      - "v*.*.*"
-  pull_request:
-    branches:
-      - "main"
+      - "testtesttesttesttest"
+#    tags:
+#      - "v*.*.*"
+#  pull_request:
+#    branches:
+#      - "main"
 
 env:
   APP_VERSION: ${{ github.ref_name }}
