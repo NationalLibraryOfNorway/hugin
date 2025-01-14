@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hugin-deployment
+  labels:
+    app: hugin
+  namespace: tekst-stage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hugin
+  template:
+    metadata:
+      labels:
+        app: hugin
+    spec:
+      containers:
+        - name: hugin
+          image: <harbor_url>/tekst/hugin:<version>
+          ports:
+            - name: app-port
+              containerPort: 3000
+          imagePullPolicy: Always
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: hugin-service
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: 3000
+  selector:
+    app: hugin
+  type: ClusterIP
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hugin-ingress
+  namespace: tekst-stage
+spec:
+  rules:
+    - host: <host_url>
+      http:
+        paths:
+          - path: /hugin
+            pathType: Prefix
+            backend:
+              service:
+                name: hugin-service
+                port:
+                  number: 80
+
