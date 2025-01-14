@@ -16,6 +16,6 @@ jobs:
       SET_ENV: true
     secrets:
       VAULT_URL: ${{ secrets.VAULT_URL }}
-      VAULT_SECRET_PATH: kv/team/text/data
+      VAULT_SECRET_PATH: ${{ secrets.VAULT_SECRET_PATH }}
       VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
       VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
