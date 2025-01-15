@@ -12,7 +12,7 @@ jobs:
     with:
       ENVIRONMENT: "stage"
       NODE_VERSION: "20.17.0"
-      SET_ENV: 'true'
+      SET_ENV: true
       BUILD_OUTPUT_PATH: ".next"
     secrets:
       VAULT_URL: ${{ secrets.VAULT_URL }}
