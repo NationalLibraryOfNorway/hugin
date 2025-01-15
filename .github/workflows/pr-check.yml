@@ -9,7 +9,7 @@ on:
 jobs:
   node_pull_request_check:
     name: Node pull request check
-    uses: NationalLibraryOfNorway/tekst-workflows/.github/workflows/node-check.yml@feat/node-workflows
+    uses: NationalLibraryOfNorway/tekst-workflows/.github/workflows/node-check.yml@main
     with:
       ENVIRONMENT: "stage"
       NODE_VERSION: "20.17.0"
