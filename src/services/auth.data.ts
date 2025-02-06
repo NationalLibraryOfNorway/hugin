@@ -1,8 +1,8 @@
-import {User} from '@/models/UserToken';
+import {UserToken} from '@/models/UserToken';
 import {ProblemDetail} from '@/models/ProblemDetail';
 import {NextResponse} from 'next/server';
 
-export async function signIn(code: string, redirectUrl: string): Promise<User> {
+export async function signIn(code: string, redirectUrl: string): Promise<UserToken> {
   const data = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/auth/signin`, {
     method: 'POST',
     headers: {
@@ -16,7 +16,7 @@ export async function signIn(code: string, redirectUrl: string): Promise<User> {
       }
       return response;
     });
-  return await data.json() as User;
+  return await data.json() as UserToken;
 }
 
 export async function signOut(): Promise<NextResponse> {
@@ -38,12 +38,12 @@ export async function signOut(): Promise<NextResponse> {
     });
 }
 
-export async function refresh(): Promise<User> {
+export async function refresh(): Promise<UserToken> {
   const data = await fetch(`${process.env.NEXT_PUBLIC_BASE_PATH}/api/auth/refresh`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'
     }
   });
-  return await data.json() as User;
+  return await data.json() as UserToken;
 }
