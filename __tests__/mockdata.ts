@@ -61,8 +61,6 @@ export const MockNewspaper2: newspaper = {
   catalog_id: '123456'
 };
 
-// todo usertoken with right role
-
 export const MockUserToken: UserToken = {
   groups: ['T_relation_avis'],
   name: 'Testern',
