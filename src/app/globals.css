@@ -19,6 +19,11 @@ input[type=number] {
     height: 266px;
 }
 
+.row-action-button-style {
+    @apply ml-2 hover:cursor-pointer;
+    @apply text-blue-500 font-bold;
+}
+
 .edit-button-style {
     @apply bg-blue-300 enabled:hover:bg-blue-500;
     @apply text-xl font-bold text-black;

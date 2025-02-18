@@ -8,19 +8,18 @@ datasource db {
 }
 
 model title {
-  id              Int     @id
-  contact_email   String? @db.VarChar
-  contact_name    String? @db.VarChar
-  contact_phone   String? @db.VarChar
-  vendor          String? @db.VarChar
-  release_pattern Int[]   @default([0, 0, 0, 0, 0, 0, 0])
-  shelf           String? @db.VarChar
-  notes           String? @db.VarChar
+  id              Int            @id
+  contact_name    String?        @db.VarChar
+  vendor          String?        @db.VarChar
+  release_pattern Int[]          @default([0, 0, 0, 0, 0, 0, 0])
+  shelf           String?        @db.VarChar
+  notes           String?        @db.VarChar
   box             box[]
+  contact_info    contact_info[]
 }
 
 model newspaper {
-  edition    String?   @db.VarChar
+  edition    String    @db.VarChar
   date       DateTime? @db.Date
   received   Boolean?
   username   String?   @db.VarChar
@@ -37,4 +36,19 @@ model box {
   title_id  Int
   title     title       @relation(fields: [title_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
   newspaper newspaper[]
+}
+
+model contact_info {
+  id            String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title_id      Int?
+  contact_type  contact_type?
+  contact_value String?       @db.VarChar
+  title         title?        @relation(fields: [title_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([title_id, contact_type, contact_value], map: "unique_contact")
+}
+
+enum contact_type {
+  phone
+  email
 }

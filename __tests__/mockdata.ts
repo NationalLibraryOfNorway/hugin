@@ -1,4 +1,4 @@
-import {box, newspaper, title} from '@prisma/client';
+import {box, contact_info, newspaper, title} from '@prisma/client';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {UserToken} from '@/models/UserToken';
 
@@ -6,9 +6,7 @@ import {UserToken} from '@/models/UserToken';
 
 export const MockTitle: title = {
   id: 987,
-  contact_email: 'hugin@hugin.no',
   contact_name: 'Hugin Huginson',
-  contact_phone: '12345678',
   vendor: 'Hugin AS',
   release_pattern: [1, 0, 1, 0, 1, 0, 0],
   shelf: '1-1',
@@ -51,14 +49,18 @@ export const MockNewspaper1: newspaper = {
   catalog_id: '123456'
 };
 
-export const MockNewspaper2: newspaper = {
-  edition: '2',
-  date: new Date(2024, 1, 2),
-  received: true,
-  username: 'testuser',
-  notes: 'notater på avis',
-  box_id: MockBox1.id,
-  catalog_id: '123456'
+export const MockContactEmail1: contact_info = {
+  id: 'c15d58c6-bc44-49d9-9cbb-e4df84748fde',
+  title_id: MockTitle.id,
+  contact_type: 'email',
+  contact_value: 'hugin@hugin.no',
+};
+
+export const MockContactPhone1: contact_info = {
+  id: 'd712ce79-f51a-49ed-b7e6-0df2552d325c',
+  title_id: MockTitle.id,
+  contact_type: 'phone',
+  contact_value: '12345678',
 };
 
 export const MockUserToken: UserToken = {
