@@ -3,8 +3,9 @@
 import {createContext, useCallback, useContext, useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import keycloakConfig from '@/lib/keycloak';
-import {User} from '@/models/UserToken';
+import {User, UserToken} from '@/models/UserToken';
 import {refresh, signIn, signOut} from '@/services/auth.data';
+import {isAuthorized} from '@/utils/authUtils';
 
 interface IAuthContext {
   authenticated: boolean;
@@ -21,7 +22,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
   const router = useRouter();
 
   const [authenticated, setAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<User>();
+  const [user, setUser] = useState<UserToken>();
   const [intervalId, setIntervalId] = useState<number>();
 
   const handleNotAuthenticated = useCallback(() => {
@@ -43,9 +44,8 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     const codeInParams = new URLSearchParams(window.location.search).get('code');
     if (codeInParams) {
       const redirectUrl = new URLSearchParams({redirectUrl: trimRedirectUrl(window.location.href)}).toString();
-      void signIn(codeInParams, redirectUrl).then((token: User) => {
-        handleIsAuthenticated(token);
-        router.push('/');
+      void signIn(codeInParams, redirectUrl).then((token: UserToken) => {
+        handleIsAuthenticated(token, true);
       }).catch((e: Error) => {
         console.error('Failed to sign in: ', e.message);
         handleNotAuthenticated();
@@ -60,10 +60,15 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleIsAuthenticated = (newUser: User) => {
+  const handleIsAuthenticated = (newUser: UserToken, shouldRouteToRoot: boolean = false) => {
     if (newUser) {
       setUser(newUser);
       setAuthenticated(true);
+      if (!isAuthorized(newUser)) {
+        router.push('/unauthorized');
+      } else if (shouldRouteToRoot) {
+        router.push('/');
+      }
     }
   };
 
@@ -78,7 +83,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         await refreshToken();
       }
       setIntervalId(window.setInterval(() => {
-        void refreshToken().then((newUser: User) => {
+        void refreshToken().then((newUser: UserToken) => {
           handleIsAuthenticated(newUser);
         })
           .catch((e: Error) => {

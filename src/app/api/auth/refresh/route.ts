@@ -1,5 +1,5 @@
 import {NextResponse} from 'next/server';
-import {User, UserToken} from '@/models/UserToken';
+import {UserToken} from '@/models/UserToken';
 import {getRefreshToken, setUserCookie} from '@/utils/cookieUtils';
 
 // POST api/auth/refresh
@@ -25,6 +25,5 @@ export async function POST(): Promise<NextResponse> {
 
   setUserCookie(newToken);
 
-  const user: User = {name: newToken.name, expires: newToken.expires};
-  return NextResponse.json(user, {status: 200});
+  return NextResponse.json(newToken, {status: 200});
 }

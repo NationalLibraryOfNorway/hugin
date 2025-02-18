@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from 'next/server';
-import {User, UserToken} from '@/models/UserToken';
+import {UserToken} from '@/models/UserToken';
 import {ProblemDetail} from '@/models/ProblemDetail';
 import {setUserCookie} from '@/utils/cookieUtils';
 
@@ -38,6 +38,5 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   setUserCookie(userToken);
 
-  const user: User = {name: userToken.name, expires: userToken.expires};
-  return NextResponse.json(user, {status: 200});
+  return NextResponse.json(userToken, {status: 200});
 }

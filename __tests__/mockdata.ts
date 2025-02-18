@@ -1,5 +1,6 @@
 import {box, newspaper, title} from '@prisma/client';
 import {CatalogTitle} from '@/models/CatalogTitle';
+import {UserToken} from '@/models/UserToken';
 
 /* eslint-disable @typescript-eslint/naming-convention */
 
@@ -58,4 +59,13 @@ export const MockNewspaper2: newspaper = {
   notes: 'notater på avis',
   box_id: MockBox1.id,
   catalog_id: '123456'
+};
+
+export const MockUserToken: UserToken = {
+  groups: ['T_relation_avis'],
+  name: 'Testern',
+  accessToken: '',
+  expires: new Date(2050, 3, 6),
+  refreshToken: '',
+  refreshExpires: new Date(2050, 3, 6),
 };
