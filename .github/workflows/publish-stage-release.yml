@@ -1,0 +1,18 @@
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build-and-deploy:
+    uses: NationalLibraryOfNorway/tekst-workflows/.github/workflows/node-build-and-deploy.yml@main
+    with:
+      ENVIRONMENT: "stage"
+      NODE_VERSION: "20.17.0"
+      SET_ENV: true
+      BUILD_OUTPUT_PATH: ".next"
+    secrets:
+      VAULT_URL: ${{ secrets.VAULT_URL }}
+      VAULT_SECRET_PATH: ${{ secrets.VAULT_SECRET_PATH }}
+      VAULT_ROLE_ID: ${{ secrets.VAULT_ROLE_ID }}
+      VAULT_SECRET_ID: ${{ secrets.VAULT_SECRET_ID }}
