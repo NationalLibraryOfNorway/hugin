@@ -14,6 +14,7 @@ jobs:
       ENVIRONMENT: "stage"
       NODE_VERSION: "20.17.0"
       SET_ENV: true
+      USE_CHROME: false
     secrets:
       VAULT_URL: ${{ secrets.VAULT_URL }}
       VAULT_SECRET_PATH: ${{ secrets.VAULT_SECRET_PATH }}
