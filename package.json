@@ -5,9 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
+    "build:stage": "prisma generate && next build",
+    "build:prod": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "test": "vitest",
+    "test:ci": "vitest",
     "prisma:migrate:deploy": "prisma migrate deploy"
   },
   "dependencies": {
