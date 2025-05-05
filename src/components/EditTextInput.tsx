@@ -94,14 +94,13 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
                 variant='flat'
                 className='ml-1'
                 data-testid='abort-button'
+                onClick={() => setIsEditing(false)}
               >
                 <IconContext.Provider value={{
                   className: 'icon-style [&]:text-xl',
                   size: '1.5em'
                 }}>
-                  <ImCross
-                    onClick={() => setIsEditing(false)}
-                  />
+                  <ImCross />
                 </IconContext.Provider>
               </AccessibleButton>
             </Form>

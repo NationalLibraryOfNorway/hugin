@@ -34,7 +34,7 @@ const AccessibleButton = forwardRef<HTMLButtonElement, AccessibleButtonProps>(
                 (triggerOnSpace && e.key === ' ')
       ) {
         e.preventDefault();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
         onClick?.(e as any);
       }
     };
