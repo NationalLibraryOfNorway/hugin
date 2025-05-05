@@ -7,7 +7,6 @@ import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {Field, Form, Formik} from 'formik';
 import {useRouter, useSearchParams} from 'next/navigation';
-import {Button} from '@nextui-org/button';
 import {NotFoundError} from '@/models/Errors';
 import SuccessModal from '@/components/SuccessModal';
 import {FaArrowAltCircleLeft, FaQuestionCircle, FaSave} from 'react-icons/fa';
@@ -17,6 +16,7 @@ import {Spinner, Tooltip} from '@nextui-org/react';
 import ContactInformationForm from '@/components/ContactInformationForm';
 import ReleasePatternForm from '@/components/ReleasePatternForm';
 import {TitleContactInfo} from '@/models/TitleContactInfo';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 export default function Page({params}: { params: { id: string } }) {
   const router = useRouter();
@@ -102,14 +102,15 @@ export default function Page({params}: { params: { id: string } }) {
 
   return (
     <div className='flex w-9/12 flex-col max-w-screen-lg items-start'>
-      <Button
+      <AccessibleButton
         type='button'
-        className='abort-button-style'
+        variant='flat'
+        color='secondary'
         startContent={<FaArrowAltCircleLeft/>}
         onClick={() => router.push(`/${params.id}?title=${titleString}`)}
       >
         Tilbake til titteloversikt
-      </Button>
+      </AccessibleButton>
 
       <div className='flex flex-row justify-between mt-6 mb-10'>
         <div>
@@ -232,15 +233,16 @@ export default function Page({params}: { params: { id: string } }) {
                   {isSubmitting ? (
                     <Spinner size={'lg'} className='py-3'/>
                   ) : (
-                    <Button
+                    <AccessibleButton
                       type='submit'
+                      variant='solid'
+                      color='primary'
                       disabled={isSubmitting || !isValid}
                       size='lg'
                       endContent={<FaSave/>}
-                      className='save-button-style'
                     >
                       Lagre
-                    </Button>
+                    </AccessibleButton>
                   )}
                 </div>
               </Form>

@@ -1,8 +1,7 @@
-import {FC, useCallback, useEffect, useState} from 'react';
-import {Button} from '@nextui-org/button';
-import {useOutsideClick} from '@/hooks/useOutsideClick';
-import {Spinner} from '@nextui-org/react';
-
+import React, {FC, useCallback, useState} from 'react';
+import Modal from '@/components/ui/Modal';
+import { FaExclamationTriangle } from 'react-icons/fa';
+import { Spinner } from '@nextui-org/react';
 
 interface ConfirmationModalProps {
   showModal: boolean;
@@ -21,77 +20,51 @@ const ConfirmationModal: FC<ConfirmationModalProps> = ({
   buttonOnClick,
   onExit
 }) => {
-  const ref = useOutsideClick(() => handleExit());
-  const [currentShowModal, setCurrentShowModal] = useState<boolean>(showModal ?? true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const handleExit = useCallback(() => {
+  const handleClose = useCallback(() => {
     if (onExit) onExit();
-    setCurrentShowModal(false);
     setIsLoading(false);
   }, [onExit]);
 
-  const handleConfirm = useCallback(() => {
-    setIsLoading(true);
-    if (buttonOnClick)  {
-      void buttonOnClick().then(() => setIsLoading(false));
+  const handleConfirmClick = useCallback(() => {
+    if (buttonOnClick) {
+      setIsLoading(true);
+      // Using void to explicitly indicate we're ignoring the promise
+      void buttonOnClick().finally(() => {
+        setIsLoading(false);
+      });
     } else {
-      handleExit();
+      handleClose();
     }
-  }, [buttonOnClick, handleExit]);
+  }, [buttonOnClick, handleClose]);
 
-  useEffect(() => {
-    setCurrentShowModal(showModal ?? true);
-  }, [showModal]);
-
-  useEffect(() => {
-    function handleEscapeKeyDown(event: KeyboardEvent) {
-      if (event.code === 'Escape') {
-        event.preventDefault();
-        handleExit();
-      }
-    }
-    setTimeout(() => document.addEventListener('keydown', handleEscapeKeyDown));
-    return () => document.removeEventListener('keydown', handleEscapeKeyDown);
-  }, [handleExit]);
-
-  if (!currentShowModal) return null;
 
   return (
-    <div className='fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-40'>
-      <div ref={ref} className='p-8 border border-blue-400 w-2/5 rounded-xl bg-white'>
-        <div className='text-center'>
-          <h3 className='top-title-style'> {header} </h3>
-          <p className='group-content-style mt-3 whitespace-pre-wrap'>
-            {text}
-          </p>
-          <div className='flex flex-row justify-evenly'>
-            <Button
-              type='button'
-              size='lg'
-              className='abort-button-style mt-5'
-              onClick={() => handleExit()}
-            >
-              Avbryt
-            </Button>
-            {buttonText &&
-              <Button
-                type='button'
-                size='lg'
-                className='save-button-style mt-5'
-                disabled={isLoading}
-                onClick={() => {
-                  handleConfirm();
-                }}
-                endContent={isLoading ? <Spinner size={'sm'}/> : undefined}
-              >
-                {buttonText}
-              </Button>
-            }
-          </div>
+    <Modal
+      isOpen={showModal}
+      onClose={handleClose}
+      title={header}
+      contentClassName="border border-blue-400 rounded-xl bg-white"
+      primaryActionText={buttonText}
+      onPrimaryAction={buttonText ? handleConfirmClick : undefined}
+      secondaryActionText="Avbryt"
+    >
+      <div className="flex items-center justify-center flex-col">
+        <div className="rounded-full bg-yellow-100 p-3 mb-4">
+          <FaExclamationTriangle className="text-yellow-500" size={24} />
+        </div>
+        <div className="group-content-style mt-3 whitespace-pre-wrap text-center">
+          {isLoading ? (
+            <div className="flex justify-center items-center py-4">
+              <Spinner size="lg" />
+            </div>
+          ) : (
+            text
+          )}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

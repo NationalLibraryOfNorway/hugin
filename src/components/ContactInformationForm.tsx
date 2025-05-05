@@ -3,7 +3,7 @@ import React, {ChangeEvent, FC} from 'react';
 import {Field, FieldArray} from 'formik';
 import {TitleContactInfo} from '@/models/TitleContactInfo';
 import {FaCircleMinus} from 'react-icons/fa6';
-import {Button} from '@nextui-org/button';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 interface ContactInformationProps {
   values: TitleContactInfo;
@@ -59,19 +59,21 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
                         onBlur={handleBlur}
                         value={contact.contact_value ?? ''}
                       />
-                      <button
+                      <AccessibleButton
                         type="button"
-                        className="row-action-button-style"
+                        isIconOnly
                         onClick={() => handleRemove(values, index)}
+                        variant="light"
+                        color="primary"
                       >
                         <FaCircleMinus size={24} className='text-blue-500'/>
-                      </button>
+                      </AccessibleButton>
                     </div>
                   </div>
                 </div>
               )
             ))}
-            <Button
+            <AccessibleButton
               type="button"
               variant="light"
               color="primary"
@@ -79,7 +81,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
               onClick={() => handleAdd(values, 'phone')}
             >
               + Legg til telefon
-            </Button>
+            </AccessibleButton>
           </>
         )}
       />
@@ -102,19 +104,21 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
                         onBlur={handleBlur}
                         value={contact.contact_value ?? ''}
                       />
-                      <button
+                      <AccessibleButton
                         type="button"
-                        className="row-action-button-style"
+                        variant="light"
+                        isIconOnly
+                        color="primary"
                         onClick={() => handleRemove(values, index)}
                       >
                         <FaCircleMinus size={24} className='text-blue-500'/>
-                      </button>
+                      </AccessibleButton>
                     </div>
                   </div>
                 </div>
               )
             ))}
-            <Button
+            <AccessibleButton
               type="button"
               variant="light"
               color="primary"
@@ -122,7 +126,7 @@ const ContactInformationForm: FC<ContactInformationProps> = ({values, handleChan
               onClick={() => handleAdd(values, 'email')}
             >
               + Legg til e-post
-            </Button>
+            </AccessibleButton>
           </>
         )}
       />

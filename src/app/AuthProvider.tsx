@@ -60,7 +60,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleIsAuthenticated = (newUser: UserToken, shouldRouteToRoot: boolean = false) => {
+  const handleIsAuthenticated = useCallback((newUser: UserToken, shouldRouteToRoot: boolean = false) => {
     if (newUser) {
       setUser(newUser);
       setAuthenticated(true);
@@ -70,7 +70,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
         router.push('/');
       }
     }
-  };
+  }, [router]);
 
   const refreshToken = useCallback(async () => {
     return refresh();
@@ -92,7 +92,7 @@ export const AuthProvider = ({children}: { children: React.ReactNode }) => {
           });
       }, (1000 * 60 * 4.75))); // Refresh every 4.75 minutes (fifteen seconds before expiry)
     }
-  }, [handleNotAuthenticated, intervalId, refreshToken, user?.expires]);
+  }, [handleNotAuthenticated, handleIsAuthenticated, intervalId, refreshToken, user?.expires]);
 
   useEffect(() => {
     void setIntervalToRefreshAccessToken();

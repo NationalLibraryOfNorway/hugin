@@ -1,8 +1,7 @@
-import {FC, useCallback, useEffect, useState} from 'react';
-import {useOutsideClick} from '@/hooks/useOutsideClick';
-import {Button} from '@nextui-org/button';
+import React, { FC } from 'react';
+import Modal from '@/components/ui/Modal';
 import Link from 'next/link';
-
+import { ImCross } from 'react-icons/im';
 
 interface ErrorModalProps {
   text: string;
@@ -13,58 +12,32 @@ interface ErrorModalProps {
 const ErrorModal: FC<ErrorModalProps> = ({
   text,
   onExit,
-  showModal
+  showModal = true
 }) => {
-  const ref = useOutsideClick(() => handleExit());
-  const [currentShowModal, setCurrentShowModal] = useState<boolean>(showModal ?? true);
-
-  const handleExit = useCallback(() => {
+  const handleClose = () => {
     if (onExit) onExit();
-    setCurrentShowModal(false);
-  }, [onExit]);
-
-  useEffect(() => {
-    function handleEscapeKeyDown(event: KeyboardEvent) {
-      if (event.code === 'Escape') {
-        event.preventDefault();
-        handleExit();
-      }
-    }
-
-    setTimeout(() => document.addEventListener('keydown', handleEscapeKeyDown));
-
-    return () => document.removeEventListener('keydown', handleEscapeKeyDown);
-  }, [handleExit]);
-
-  useEffect(() => {
-    setCurrentShowModal(showModal ?? true);
-  }, [showModal]);
-
-  if (!currentShowModal) return null;
+  };
 
   return (
-    <div className='modal-backdrop'>
-      <div ref={ref} className='modal-style border-red-600 bg-red-300'>
-        <div className='text-center'>
-          <h3 className='top-title-style'> Ojsann... </h3>
-          <p className='group-content-style mt-3 whitespace-pre-wrap'>
-            {text}<br/>Kontakt tekst-teamet
-            <Link href='https://sd.nb.no' className='text-blue-600 font-bold' target='_blank'> her </Link>
-            dersom problemet vedvarer.
-          </p>
-          <div className='flex flex-row justify-evenly'>
-            <Button
-              type='button'
-              size='lg'
-              className='abort-button-style mt-5'
-              onClick={() => handleExit()}
-            >
-              Lukk
-            </Button>
-          </div>
+    <Modal
+      isOpen={showModal}
+      onClose={handleClose}
+      title="Ojsann..."
+      contentClassName="modal-style border-red-600 bg-red-300"
+      secondaryActionText="Lukk"
+      onSecondaryAction={handleClose}
+    >
+      <div className="flex items-center justify-center flex-col">
+        <div className="rounded-full bg-red-100 p-3 mb-4">
+          <ImCross className="text-red-500" size={24} />
+        </div>
+        <div className="group-content-style mt-3 whitespace-pre-wrap text-center">
+          {text}<br/>Kontakt tekst-teamet
+          <Link href='https://sd.nb.no' className='text-blue-600 font-bold' target='_blank'> her </Link>
+          dersom problemet vedvarer.
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

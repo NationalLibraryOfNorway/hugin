@@ -1,6 +1,6 @@
-import {FC, useCallback, useEffect} from 'react';
-import {Button} from '@nextui-org/button';
-import {useOutsideClick} from '@/hooks/useOutsideClick';
+import React, { FC } from 'react';
+import Modal from '@/components/ui/Modal';
+import { FaCheck } from 'react-icons/fa';
 
 interface SuccessModalProps {
   text: string;
@@ -15,47 +15,33 @@ const SuccessModal: FC<SuccessModalProps> = ({
   buttonText,
   buttonOnClick,
   onExit,
-  showModal
+  showModal = true
 }) => {
-  const ref = useOutsideClick(() => handleExit());
-
-  const handleExit = useCallback(() => {
+  const handleClose = () => {
     if (onExit) onExit();
-  }, [onExit]);
+  };
 
-  useEffect(() => {
-    function handleEscapeKeyDown(event: KeyboardEvent) {
-      if (event.code === 'Escape') {
-        event.preventDefault();
-        handleExit();
-      }
-    }
-
-    setTimeout(() => document.addEventListener('keydown', handleEscapeKeyDown));
-
-    return () => document.removeEventListener('keydown', handleEscapeKeyDown);
-  }, [handleExit]);
-
-  if (showModal === false) return null;
+  const handleAction = () => {
+    if (buttonOnClick) buttonOnClick();
+  };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center">
-      <div ref={ref} className="p-8 border w-96 rounded bg-white">
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-900"> {text} </h3>
-          {buttonText &&
-            <Button
-              type='button'
-              size='lg'
-              className="abort-button-style mt-5"
-              onClick={() => {buttonOnClick && buttonOnClick();}}
-            >
-              {buttonText}
-            </Button>
-          }
+    <Modal
+      isOpen={showModal}
+      onClose={handleClose}
+      contentClassName="w-96"
+      primaryActionText={buttonText}
+      onPrimaryAction={buttonText ? handleAction : undefined}
+    >
+      <div className="flex items-center justify-center flex-col">
+        <div className="rounded-full bg-green-100 p-3 mb-4">
+          <FaCheck className="text-green-500" size={24} />
         </div>
+        <h3 className="text-2xl font-bold text-gray-900 text-center">
+          {text}
+        </h3>
       </div>
-    </div>
+    </Modal>
   );
 };
 

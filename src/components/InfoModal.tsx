@@ -1,6 +1,6 @@
-import {FC, ReactNode, useCallback, useEffect, useState} from 'react';
-import {useOutsideClick} from '@/hooks/useOutsideClick';
-import {Button} from '@nextui-org/button';
+import React, { FC, ReactNode } from 'react';
+import Modal from '@/components/ui/Modal';
+import { FaInfoCircle } from 'react-icons/fa';
 
 interface InfoModalProps {
   header: string;
@@ -13,55 +13,30 @@ const InfoModal: FC<InfoModalProps> = ({
   header,
   content,
   onExit,
-  showModal
+  showModal = true
 }) => {
-  const ref = useOutsideClick(() => handleExit());
-  const [currentShowModal, setCurrentShowModal] = useState<boolean>(showModal ?? true);
-
-  const handleExit = useCallback(() => {
+  const handleClose = () => {
     if (onExit) onExit();
-    setCurrentShowModal(false);
-  }, [onExit]);
-
-  useEffect(() => {
-
-    function handleEscapeKeyDown(event: KeyboardEvent) {
-      if (event.code === 'Escape') {
-        event.preventDefault();
-        handleExit();
-      }
-    }
-
-    setTimeout(() => document.addEventListener('keydown', handleEscapeKeyDown));
-
-    return () => document.removeEventListener('keydown', handleEscapeKeyDown);
-  }, [handleExit]);
-
-  useEffect(() => {
-    setCurrentShowModal(showModal ?? true);
-  }, [showModal]);
-
-  if (!currentShowModal) return null;
+  };
 
   return (
-    <div className='modal-backdrop'>
-      <div ref={ref} className='modal-style border-gray-600 bg-gray-100'>
-        <div className='text-center'>
-          <h3 className='top-title-style'>{header}</h3>
-          <p className='group-content-style mt-3 whitespace-pre-wrap'>{content}</p>
-          <div className='flex flex-row justify-evenly'>
-            <Button
-              type='button'
-              size='lg'
-              className='abort-button-style mt-5'
-              onClick={() => handleExit()}
-            >
-              Lukk
-            </Button>
-          </div>
+    <Modal
+      isOpen={showModal}
+      onClose={handleClose}
+      title={header}
+      contentClassName="modal-style border-gray-600 bg-gray-100"
+      secondaryActionText="Lukk"
+      onSecondaryAction={handleClose}
+    >
+      <div className="flex items-center justify-center flex-col">
+        <div className="rounded-full bg-blue-100 p-3 mb-4">
+          <FaInfoCircle className="text-blue-500" size={24} />
+        </div>
+        <div className="group-content-style mt-3 whitespace-pre-wrap text-center">
+          {content}
         </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 

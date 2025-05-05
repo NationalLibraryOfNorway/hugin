@@ -16,7 +16,6 @@ import {
 import {box, contact_info, title} from '@prisma/client';
 import {useSearchParams} from 'next/navigation';
 import {NotFoundError} from '@/models/Errors';
-import {Button} from '@nextui-org/button';
 import {FaBoxOpen, FaEdit, FaExternalLinkAlt, FaSave} from 'react-icons/fa';
 import BoxRegistrationModal from '@/components/BoxRegistrationModal';
 import NotesComponent from '@/components/NotesComponent';
@@ -35,6 +34,7 @@ import ContactInformation from '@/components/ContactInformation';
 import ReleasePattern from '@/components/ReleasePattern';
 import TitleNotFound from '@/components/TitleNotFound';
 import SuccessAlert from '@/components/SuccessAlert';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 export default function Page({params}: { params: { id: string } }) {
   const [titleString, setTitleString] = useState<string>();
@@ -254,13 +254,14 @@ export default function Page({params}: { params: { id: string } }) {
                       titleId={params.id}/>
                 }
 
-                <Button
-                  endContent={<FaBoxOpen size={25}/>}
-                  size={'md'}
-                  className="edit-button-style ml-4 [&]:text-medium"
+                <AccessibleButton
+                  endContent={<FaBoxOpen size={18}/>}
+                  variant='flat'
+                  color='secondary'
+                  className='ml-2'
                   onClick={() => setShowBoxRegistrationModal(true)}>
                   Ny eske
-                </Button>
+                </AccessibleButton>
               </div>
 
               {boxFromDb ? (
@@ -341,28 +342,28 @@ export default function Page({params}: { params: { id: string } }) {
                             <Spinner className='self-center p-1' size='lg'/>
                           ) : (
                             <div className='flex flex-row justify-between w-full'>
-                              <Button
-                                type="submit"
-                                size="lg"
-                                className="save-button-style"
-                                endContent={<FaSave size={25}/>}
-                                disabled={!isValid || isSubmitting}
-                              >
-                                Lagre
-                              </Button>
-
-                              <Button
+                              <AccessibleButton
                                 type="button"
-                                size="lg"
-                                className="abort-button-style"
-                                endContent={<ImCross size={25}/>}
+                                variant='flat'
+                                color='secondary'
+                                endContent={<ImCross size={18}/>}
                                 onClick={() => {
                                   resetForm();
                                   setIsEditing(false);
                                 }}
                               >
                                 Avbryt
-                              </Button>
+                              </AccessibleButton>
+
+                              <AccessibleButton
+                                type="submit"
+                                variant='solid'
+                                color='primary'
+                                endContent={<FaSave size={18}/>}
+                                disabled={!isValid || isSubmitting}
+                              >
+                                Lagre
+                              </AccessibleButton>
                             </div>
                           )}
                         </Form>
@@ -385,15 +386,16 @@ export default function Page({params}: { params: { id: string } }) {
                       {titleContact.title.release_pattern &&
                           <ReleasePattern releasePattern={titleContact.title.release_pattern}/>
                       }
-                      <Button
+                      <AccessibleButton
                         type="button"
-                        size="lg"
-                        className="edit-button-style mt-5"
-                        endContent={<FaEdit size={25}/>}
+                        variant='flat'
+                        color='secondary'
+                        className='mt-1'
+                        endContent={<FaEdit size={18}/>}
                         onClick={() => setIsEditing(true)}
                       >
                         Rediger
-                      </Button>
+                      </AccessibleButton>
                     </div>
                   }
                 </>
