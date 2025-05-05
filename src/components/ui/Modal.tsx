@@ -128,7 +128,6 @@ const Modal: React.FC<ModalProps> = ({
     }
   }, [isOpen, autoFocus]);
 
-  // Handle overlay click
   const handleOverlayClick = (e: React.MouseEvent) => {
     if (closeOnOverlayClick && modalRef.current === e.target) {
       onClose();
@@ -137,7 +136,7 @@ const Modal: React.FC<ModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Use portal to render modal at the document body level
+  // The portal will render modal at the document body level
   return createPortal(
     <div
       ref={modalRef}

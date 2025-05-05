@@ -204,16 +204,16 @@ export default function Page({params}: { params: { id: string } }) {
         <div className='flex flex-row flex-wrap self-center w-full justify-evenly'>
           <div className='flex flex-col grow mx-10'>
             <div>
-              <div className='w-full mb-3'>
+              <div className='w-full mb-3 border-style p-3'>
                 {titleString ? (
                   <h1 className="top-title-style">{titleString}</h1>
                 ) : (
                   <p>Henter tittel ...</p>
                 )}
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-start gap-2">
                   <p className="group-title-style"> Katalog ID: </p>
                   <a className="group-content-style underline" href={titleLink} target="_blank">
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row gap-2 items-center">
                       <p>{params.id}</p>
                       <FaExternalLinkAlt/>
                     </div>
@@ -225,7 +225,7 @@ export default function Page({params}: { params: { id: string } }) {
                     text={`Denne avisen ble avsluttet ${catalogDateStringToNorwegianDateString(catalogTitle.endDate)}`}
                   />
                 )}
-                <div className='flex flex-row justify-between items-center mt-4'>
+                <div className='flex flex-col justify-between gap-2.5 mt-4'>
                   <EditTextInput
                     name='Hyllesignatur'
                     value={titleContact.title.shelf ?? ''}
@@ -233,35 +233,35 @@ export default function Page({params}: { params: { id: string } }) {
                     onSuccess={updateShelfLocally}
                     className='w-96'
                   />
+
+                  <div className='flex flex-row flex-wrap items-center'>
+                    {boxFromDb ? (
+                      <>
+                        <p className="group-title-style">Eske til registrering: </p>
+                        <p className="group-content-style ml-2">{boxToString(boxFromDb)}</p>
+                      </>
+                    ) : (<p className="group-content-style"> Ingen eske registrert </p>)
+                    }
+
+                    {showBoxRegistrationModal &&
+                        <BoxRegistrationModal
+                          text='Registrer en ny eske'
+                          closeModal={() => setShowBoxRegistrationModal(false)}
+                          updateBoxInfo={setBoxFromDb}
+                          titleName={titleString ?? ''}
+                          titleId={params.id}/>
+                    }
+
+                    <AccessibleButton
+                      endContent={<FaBoxOpen size={18}/>}
+                      variant='flat'
+                      color='secondary'
+                      className='ml-2'
+                      onClick={() => setShowBoxRegistrationModal(true)}>
+                      Ny eske
+                    </AccessibleButton>
+                  </div>
                 </div>
-              </div>
-
-              <div className='flex flex-row flex-wrap items-center'>
-                {boxFromDb ? (
-                  <>
-                    <p className="group-title-style">Eske til registrering: </p>
-                    <p className="group-content-style ml-2">{boxToString(boxFromDb)}</p>
-                  </>
-                ) : (<p className="group-content-style"> Ingen eske registrert </p>)
-                }
-
-                {showBoxRegistrationModal &&
-                    <BoxRegistrationModal
-                      text='Registrer en ny eske'
-                      closeModal={() => setShowBoxRegistrationModal(false)}
-                      updateBoxInfo={setBoxFromDb}
-                      titleName={titleString ?? ''}
-                      titleId={params.id}/>
-                }
-
-                <AccessibleButton
-                  endContent={<FaBoxOpen size={18}/>}
-                  variant='flat'
-                  color='secondary'
-                  className='ml-2'
-                  onClick={() => setShowBoxRegistrationModal(true)}>
-                  Ny eske
-                </AccessibleButton>
               </div>
 
               {boxFromDb ? (
@@ -274,7 +274,7 @@ export default function Page({params}: { params: { id: string } }) {
           </div>
 
           <div className="flex flex-col w-96">
-            <div className='items-start mt-16 w-72 mb-6'>
+            <div className='items-start mb-3 w-full border-style p-3'>
               {titleContact &&
                   <NotesComponent
                     notes={titleContact.title.notes ?? ''}

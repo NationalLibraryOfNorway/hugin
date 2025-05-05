@@ -57,6 +57,8 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
             <Textarea
               name='notes'
               id='notes'
+              variant='faded'
+              placeholder='Legg til kommentar'
               value={values.notes}
               onChange={handleChange}
               className='mb-2'
@@ -72,7 +74,9 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               startContent={isSubmitting && <Spinner size='sm' color='white'/>}
               endContent={<FaSave/>}
               className='w-full min-h-9'
-            >Lagre kommentar</AccessibleButton>
+            >
+              Lagre kommentar
+            </AccessibleButton>
           </Form>
         )}
       </Formik>
