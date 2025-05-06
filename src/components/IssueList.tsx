@@ -169,7 +169,8 @@ export default function IssueList(props: {title: title; box: box}) {
   }
 
   return (
-    <div className='w-full mb-6 mt-4 py-10 border-style m-30'>
+    <div className='w-full mb-6 py-3 border-style'>
+      <h1 className="group-title-style text-start mx-6 mb-2"> Aktiv eske ({props.box.id}) </h1>
       { loading ? (
         <Spinner/>
       ) : (
