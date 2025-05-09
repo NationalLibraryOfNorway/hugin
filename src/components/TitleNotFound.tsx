@@ -1,10 +1,10 @@
 import {CatalogTitle} from '@/models/CatalogTitle';
 import WarningLabel from '@/components/WarningLabel';
 import {catalogDateStringToNorwegianDateString} from '@/utils/dateUtils';
-import {Button} from '@nextui-org/button';
 import {FaArrowAltCircleLeft, FaEdit} from 'react-icons/fa';
 import React from 'react';
 import {useRouter} from 'next/navigation';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 interface TitleNotFoundProps {
   titleId: number;
@@ -34,24 +34,26 @@ const TitleNotFound = ({titleId, titleString, catalogTitle}: TitleNotFoundProps)
       <p className="mt-10 text-lg">Fant ikke kontakt- og utgivelsesinformasjon for denne tittelen. Ønsker du å
         legge til? </p>
       <div className="mt-12 flex justify-between max-w-3xl w-full self-center">
-        <Button
+        <AccessibleButton
           type="button"
-          size={'lg'}
+          variant='flat'
+          color='secondary'
+          size='lg'
           startContent={<FaArrowAltCircleLeft/>}
-          className="abort-button-style"
           onClick={() => router.push('/')}
         >
           Tilbake
-        </Button>
-        <Button
+        </AccessibleButton>
+        <AccessibleButton
           type="button"
-          size={'lg'}
-          className="edit-button-style"
+          variant='solid'
+          color='primary'
+          size='lg'
           endContent={<FaEdit/>}
           onClick={() => router.push(`/${titleId}/create?title=${titleString}`)}
         >
           Legg til informasjon
-        </Button>
+        </AccessibleButton>
       </div>
     </>
   );

@@ -3,6 +3,7 @@
 import React, {FC} from 'react';
 import {ErrorMessage, FieldProps, useFormikContext} from 'formik';
 import {FaCircleMinus, FaCirclePlus} from 'react-icons/fa6';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 interface NumberInputWithButtonsProps extends FieldProps {
   minValue?: number;
@@ -48,12 +49,15 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
   return (
     <div className='my-1.5'>
       <div className='flex flex-row gap-1'>
-        <button
+        <AccessibleButton
           type='button'
+          isIconOnly
+          variant='light'
+          color='primary'
           onClick={decreaseValue}
         >
-          <FaCircleMinus size={30} className='text-red-500 hover:text-red-700'/>
-        </button>
+          <FaCircleMinus size={30}/>
+        </AccessibleButton>
 
         <input
           type='number'
@@ -61,12 +65,15 @@ const NumberInputWithButtons: FC<NumberInputWithButtonsProps> = ({
           {...props}
         />
 
-        <button
+        <AccessibleButton
           type='button'
+          isIconOnly
+          variant='light'
+          color='primary'
           onClick={increaseValue}
         >
-          <FaCirclePlus size={30} className='text-green-700 hover:text-green-900'/>
-        </button>
+          <FaCirclePlus size={30}/>
+        </AccessibleButton>
 
       </div>
       <div className='mt-1 w-full'>

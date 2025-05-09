@@ -5,6 +5,7 @@ import {IconContext} from 'react-icons';
 import {ImCross} from 'react-icons/im';
 import ErrorModal from '@/components/ErrorModal';
 import {Spinner} from '@nextui-org/react';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 
 interface EditTextInputProps {
@@ -71,29 +72,37 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
               {isSubmitting ? (
                 <Spinner size='sm' className='px-1' />
               ) : (
-                <button
+                <AccessibleButton
                   type='submit'
                   disabled={isSubmitting || !dirty}
+                  isIconOnly
+                  color='primary'
+                  variant='solid'
                   data-testid='save-button'
                 >
                   <IconContext.Provider value={{
-                    className: 'icon-style save-button-style',
+                    className: 'icon-style [&]:text-xl',
                     size: '1.5em'
                   }}>
                     <FaSave/>
                   </IconContext.Provider>
-                </button>
+                </AccessibleButton>
               )}
-              <button className='ml-1' data-testid='abort-button'>
+              <AccessibleButton
+                isIconOnly
+                color='secondary'
+                variant='flat'
+                className='ml-1'
+                data-testid='abort-button'
+                onClick={() => setIsEditing(false)}
+              >
                 <IconContext.Provider value={{
-                  className: 'icon-style abort-button-style [&]:text-xl',
+                  className: 'icon-style [&]:text-xl',
                   size: '1.5em'
                 }}>
-                  <ImCross
-                    onClick={() => setIsEditing(false)}
-                  />
+                  <ImCross />
                 </IconContext.Provider>
-              </button>
+              </AccessibleButton>
             </Form>
           )}
         </Formik>
@@ -101,14 +110,20 @@ const EditTextInput: FC<EditTextInputProps> = (props: EditTextInputProps) => {
       ) : (
         <>
           <p className='group-content-style'>{currentValue}</p>
-          <button className='ml-2' onClick={() => setIsEditing(true)}>
+          <AccessibleButton
+            isIconOnly
+            color='secondary'
+            variant='flat'
+            className='ml-2'
+            onClick={() => setIsEditing(true)}
+          >
             <IconContext.Provider value={{
-              className: 'icon-style edit-button-style',
+              className: 'icon-style text-lg',
               size: '1.5em'
             }}>
               <FaEdit/>
             </IconContext.Provider>
-          </button>
+          </AccessibleButton>
         </>
       )}
       {showSuccess && <p className='ml-2'>Lagret!</p>}

@@ -1,9 +1,6 @@
 import React, {FC, useState} from 'react';
 import {Field, Form, Formik} from 'formik';
 import {getBoxById, postNewBoxForTitle, updateActiveBoxForTitle} from '@/services/local.data';
-import {FaArrowAltCircleLeft} from 'react-icons/fa';
-import {FiSave} from 'react-icons/fi';
-import {Button} from '@nextui-org/button';
 import ErrorModal from '@/components/ErrorModal';
 import {Calendar, Spinner} from '@nextui-org/react';
 import {box} from '@prisma/client';
@@ -13,7 +10,9 @@ import Link from 'next/link';
 import {fetchNewspaperTitleFromCatalog} from '@/services/catalog.data';
 import {CatalogTitle} from '@/models/CatalogTitle';
 import {dateToCalendarDate} from '@/utils/dateUtils';
-
+import AccessibleButton from '@/components/ui/AccessibleButton';
+import Modal from '@/components/ui/Modal';
+import {FaSave} from 'react-icons/fa';
 
 interface BoxRegistrationModalProps {
   text: string;
@@ -30,21 +29,24 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
   const [otherTitleName, setOtherTitleName] = useState<string|undefined>(undefined);
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center z-50">
-      <div className="p-8 border w-96 rounded bg-white">
+    <>
+      <Modal
+        isOpen={true}
+        onClose={props.closeModal}
+        title={props.text}
+        contentClassName="w-96"
+        secondaryActionText="Avbryt"
+      >
         <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-900 mb-4"> {props.text} </h3>
           <Formik
             initialValues={{boxId: '', startDate: new Date()}}
             onSubmit={(values, {setSubmitting}) => {
-
               setSubmitting(true);
               setTimeout(() => {
                 void postNewBoxForTitle(props.titleId, values.boxId, values.startDate)
                   .then(createdBox => {
                     props.updateBoxInfo(createdBox);
                     props.closeModal();
-
                   })
                   .catch(async (e: Error) => {
                     if (e instanceof AlreadyExistsError) {
@@ -86,48 +88,58 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
                 />
 
                 {isSubmitting ? (
-                  <Spinner size='lg' className='py-3'/>
+                  <Spinner size='lg' className='py-3 w-full'/>
                 ) : (
-                  <Button type="submit"
+                  <AccessibleButton
+                    type="submit"
+                    variant='solid'
+                    color='primary'
                     size={'lg'}
-                    endContent={<FiSave/>}
-                    className="save-button-style my-2"
+                    endContent={<FaSave     />}
+                    className="my-2 w-full"
                   >
                     Lagre ny eske
-                  </Button>
+                  </AccessibleButton>
                 )}
               </Form>
             )}
           </Formik>
-
-          <Button
-            startContent={<FaArrowAltCircleLeft/>}
-            size={'lg'}
-            className="abort-button-style mt-4"
-            onClick={() => props.closeModal()}>
-            Avbryt
-          </Button>
         </div>
-      </div>
+      </Modal>
 
       <InfoModal
         header="Esken finnes allerede"
         content={
-          showInfo.sameTitle ? (
-            <>
-              Esken er allerede registrert på denne tittelen ({props.titleName}). Ønsker du å laste inn den eksisterende esken?<br/>
-              <Button className="edit-button-style" onClick={() => {
-                void updateActiveBoxForTitle(props.titleId, existingBox!.id);
-                props.updateBoxInfo(existingBox!);
-                props.closeModal();
-              }}>Bruk eske</Button>
-            </>
-          ) : (
-            <>
-              Denne esken er allerede registrert på en annen tittel ({otherTitleName}).<br/>
-              <Button className="edit-button-style" as={Link} href={`/${existingBox?.title_id}`}>Gå til tittel</Button>
-            </>
-          )
+          <div className="flex flex-col items-center">
+            {showInfo.sameTitle ? (
+              <>
+                Esken er allerede registrert på denne tittelen ({props.titleName}). Ønsker du å laste inn den eksisterende esken?<br/>
+                <AccessibleButton
+                  variant='solid'
+                  color='primary'
+                  onClick={() => {
+                    void updateActiveBoxForTitle(props.titleId, existingBox!.id);
+                    props.updateBoxInfo(existingBox!);
+                    props.closeModal();
+                  }}
+                >
+                  Bruk eske
+                </AccessibleButton>
+              </>
+            ) : (
+              <>
+                Denne esken er allerede registrert på en annen tittel ({otherTitleName}).<br/>
+                <AccessibleButton
+                  variant='solid'
+                  color='primary'
+                  as={Link}
+                  href={`/${existingBox?.title_id}`}
+                >
+                  Gå til tittel
+                </AccessibleButton>
+              </>
+            )}
+          </div>
         }
         onExit={() => setShowInfo({showModal: false, sameTitle: false})}
         showModal={showInfo.showModal}
@@ -138,7 +150,7 @@ const BoxRegistrationModal: FC<BoxRegistrationModalProps> = (props: BoxRegistrat
         onExit={() => setShowError(false)}
         showModal={showError}
       />
-    </div>
+    </>
   );
 };
 

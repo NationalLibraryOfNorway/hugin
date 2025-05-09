@@ -24,29 +24,6 @@ input[type=number] {
     @apply text-blue-500 font-bold;
 }
 
-.edit-button-style {
-    @apply bg-blue-300 enabled:hover:bg-blue-500;
-    @apply text-xl font-bold text-black;
-    @apply disabled:bg-gray-400;
-}
-
-.abort-button-style {
-    @apply bg-yellow-300 enabled:hover:bg-yellow-500;
-    @apply text-medium font-bold text-black;
-}
-
-.save-button-style {
-    @apply bg-green-300 enabled:hover:bg-green-500;
-    @apply text-xl font-bold text-black;
-    @apply disabled:bg-gray-400;
-}
-
-.delete-button-style {
-    @apply bg-red-400 enabled:hover:bg-red-600;
-    @apply text-medium font-bold text-black;
-    @apply disabled:bg-gray-400;
-}
-
 .top-title-style {
     @apply text-4xl font-bold text-black;
 }
@@ -81,7 +58,7 @@ input[type=number] {
 
 /* NB: Må ha både margin og padding av ukjent grunn for at det skal bli mellomrom mellom border og innhold */
 .border-style {
-    @apply border-5 rounded-xl border-blue-200;
+    @apply border-1 border-slate-200 rounded-xl bg-foreground-50 shadow-md;
 }
 
 [data-today='true'] {

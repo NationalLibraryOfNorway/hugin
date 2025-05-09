@@ -1,10 +1,10 @@
 import {Form, Formik} from 'formik';
 import React, {FC, useState} from 'react';
 import {Textarea} from '@nextui-org/input';
-import {Button} from '@nextui-org/button';
 import {FaSave} from 'react-icons/fa';
 import ErrorModal from '@/components/ErrorModal';
 import {Spinner} from '@nextui-org/react';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 interface NotesProps {
   notes: string;
@@ -57,6 +57,8 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
             <Textarea
               name='notes'
               id='notes'
+              variant='faded'
+              placeholder='Legg til kommentar'
               value={values.notes}
               onChange={handleChange}
               className='mb-2'
@@ -64,14 +66,17 @@ const NotesComponent: FC<NotesProps> = (props: NotesProps) => {
               maxRows={props.maxRows ?? 5}
               endContent={showSuccess && <p className='italic text-sm'>Lagret!</p>}
             />
-            <Button
+            <AccessibleButton
               type='submit'
-              disabled={isSubmitting || !dirty}
-              startContent={isSubmitting && <Spinner size='sm'/>}
+              isDisabled={isSubmitting || !dirty}
+              variant='flat'
+              color='secondary'
+              startContent={isSubmitting && <Spinner size='sm' color='white'/>}
               endContent={<FaSave/>}
-              size={'sm'}
-              className='save-button-style [&]:text-small w-full min-h-9'
-            >Lagre kommentar</Button>
+              className='w-full min-h-9'
+            >
+              Lagre kommentar
+            </AccessibleButton>
           </Form>
         )}
       </Formik>

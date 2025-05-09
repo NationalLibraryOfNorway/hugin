@@ -2,8 +2,8 @@ import {box, newspaper, title} from '@prisma/client';
 import React, {ChangeEvent, useCallback, useEffect, useState} from 'react';
 import {deleteIssue, getNewspapersForBoxOnTitle, postNewIssuesForTitle, putIssue} from '@/services/local.data';
 import {Field, FieldArray, Form, Formik} from 'formik';
-import {FaSave, FaTrash} from 'react-icons/fa';
-import {Button, DatePicker, Spinner, Switch, Table, Tooltip} from '@nextui-org/react';
+import {FaPlus, FaSave, FaTrash} from 'react-icons/fa';
+import {DatePicker, Spinner, Switch, Table, Tooltip} from '@nextui-org/react';
 import {TableBody, TableCell, TableColumn, TableHeader, TableRow} from '@nextui-org/table';
 import ErrorModal from '@/components/ErrorModal';
 import ConfirmationModal from '@/components/ConfirmationModal';
@@ -12,6 +12,7 @@ import {FiEdit} from 'react-icons/fi';
 import {ImCross} from 'react-icons/im';
 import * as Yup from 'yup';
 import {checkDuplicateEditions} from '@/utils/validationUtils';
+import AccessibleButton from '@/components/ui/AccessibleButton';
 
 
 export default function IssueList(props: {title: title; box: box}) {
@@ -168,7 +169,8 @@ export default function IssueList(props: {title: title; box: box}) {
   }
 
   return (
-    <div className='w-full mb-6 mt-4 py-10 border-style m-30'>
+    <div className='w-full mb-6 py-3 border-style'>
+      <h1 className="group-title-style text-start mx-6 mb-2"> Aktiv eske ({props.box.id}) </h1>
       { loading ? (
         <Spinner/>
       ) : (
@@ -201,16 +203,18 @@ export default function IssueList(props: {title: title; box: box}) {
                 {({insert, remove}) => (
                   <div className="mx-6">
                     <div className='flex flex-row mb-5 justify-between items-center'>
-                      <Button
+                      <AccessibleButton
+                        endContent={<FaPlus />}
                         type="button"
-                        className="edit-button-style"
+                        variant='flat'
+                        color='primary'
                         disabled={isSubmitting}
                         onClick={() => {
                           insert(0, proposeNewIssue(values.issues));
                         }}
                       >
                         Legg til ny utgave
-                      </Button>
+                      </AccessibleButton>
 
                       {showSuccess &&
                         <p className='font-bold text-lg'> Lagret! </p>
@@ -223,12 +227,14 @@ export default function IssueList(props: {title: title; box: box}) {
                           content='Lagre aller avbryt endring av avisutgave først'
                           isDisabled={!isEditingIssue()}
                         >
-                          <Button
-                            className="save-button-style min-w-28"
+                          <AccessibleButton
+                            endContent={<FaSave size={18}/>}
+                            variant='solid'
+                            color='primary'
                             type="submit"
                             disabled={isSubmitting || isEditingIssue()}
-                            startContent={isSubmitting && <Spinner className='ml-1' size='sm'/>}
-                          >Lagre</Button>
+                            startContent={isSubmitting && <Spinner className='ml-1' size='sm' color='white'/>}
+                          >Lagre</AccessibleButton>
                         </Tooltip>
                       </div>
                     </div>
@@ -245,7 +251,7 @@ export default function IssueList(props: {title: title; box: box}) {
                       </TableHeader>
                       <TableBody>
                         {values.issues.map((issue, index) => (
-                          <TableRow key={index} className={isEditingIssue(index) ? 'bg-blue-200' : ''}>
+                          <TableRow key={index} className={isEditingIssue(index) ? 'bg-blue-50 border-1 border-blue-200' : ''}>
                             <TableCell className="text-lg">
                               {dayOfWeek(issue.date)}
                             </TableCell>
@@ -303,36 +309,47 @@ export default function IssueList(props: {title: title; box: box}) {
                                         <Spinner size='sm' className='mr-2'/>
                                         :
                                         <>
-                                          <Button isIconOnly
-                                            className='save-button-style mr-1 [&]:text-medium [&]:bg-green-400'
+                                          <AccessibleButton
+                                            isIconOnly
+                                            variant='solid'
+                                            color='success'
+                                            className='mr-1'
                                             type='button'
                                             onClick={() => updateIssue(issue)}>
                                             <FaSave/>
-                                          </Button>
-                                          <Button isIconOnly
-                                            className='abort-button-style mr-1'
+                                          </AccessibleButton>
+                                          <AccessibleButton
+                                            isIconOnly
+                                            variant='solid'
+                                            color='warning'
+                                            className='mr-1'
                                             type='button'
                                             onClick={() => stopEditingIssue()}>
                                             <ImCross/>
-                                          </Button>
+                                          </AccessibleButton>
                                         </>
                                       }
                                     </>
                                     :
-                                    <Button isIconOnly
-                                      className={isEditingIssue() ? 'opacity-25 mr-0.5' : 'edit-button-style [&]:text-medium mr-0.5'}
+                                    <AccessibleButton
+                                      isIconOnly
+                                      variant='flat'
+                                      color='primary'
+                                      className={isEditingIssue() ? 'opacity-25 mr-0.5' : 'mr-0.5'}
                                       type='button'
                                       disabled={isEditingIssue()}
                                       onClick={() => startEditingIssue(index)}
                                     >
                                       <FiEdit/>
-                                    </Button>
+                                    </AccessibleButton>
                                   }
                                 </>
                               }
-                              <Button isIconOnly
+                              <AccessibleButton
+                                isIconOnly
                                 type="button"
-                                className='delete-button-style'
+                                variant='flat'
+                                color="danger"
                                 onClick={() => {
                                   if (!newspaperIsSaved(index, values.issues.length)) {
                                     remove(index);
@@ -341,7 +358,7 @@ export default function IssueList(props: {title: title; box: box}) {
                                   }
                                 }}>
                                 <FaTrash size={16}/>
-                              </Button>
+                              </AccessibleButton>
                             </TableCell>
                           </TableRow>
                         ))}
