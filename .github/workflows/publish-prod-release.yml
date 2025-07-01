@@ -9,6 +9,7 @@ jobs:
     with:
       CLUSTER_NAME: "k8s"
       ENVIRONMENT: "prod"
+      USE_PRODUCTION_URL: TRUE
       NODE_VERSION: "20.17.0"
       SET_ENV: true
       BUILD_OUTPUT_PATH: ".next"
